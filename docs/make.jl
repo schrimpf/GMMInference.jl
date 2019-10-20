@@ -12,7 +12,7 @@ if runweave
     jmdfiles = filter(x->occursin(".jmd",x), readdir(joinpath("..","jmd")))
     for f in jmdfiles 
       weave(joinpath("..","jmd",f),out_path=joinpath("..","build"),
-            cache=:refresh,
+            cache=:user,
             cache_path=joinpath("..","weavecache"),
             doctype="github", mod=Main,
             args=Dict("md" => true))
@@ -32,13 +32,13 @@ end
 makedocs(
   modules=[GMMInference],
   format=Markdown(),
+  clean=false,
   pages=[
     "Home" => "index.md", # this won't get used anyway; we use mkdocs instead for interoperability with weave's markdown output.
   ],
   repo="https://github.com/schrimpf/GMMInference.jl/blob/{commit}{path}#L{line}",
   sitename="GMMInference.jl",
   authors="Paul Schrimpf <paul.schrimpf@gmail.com>",
-  assets=String[],
 )
 
 run(`mkdocs build`)

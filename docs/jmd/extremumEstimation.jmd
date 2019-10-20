@@ -6,13 +6,11 @@ date        : `j using Dates; print(Dates.today())`
 bibliography: "ee.bib"
 ---
 
-<a rel="license"
-href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative
-Commons License" style="border-width:0"
-src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
-/></a><br />This work is licensed under a <a rel="license"
-href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-Commons Attribution-ShareAlike 4.0 International License</a>.
+[![](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
+
+This work is licensed under a [Creative Commons Attribution-ShareAlike
+4.0 International
+License](http://creativecommons.org/licenses/by-sa/4.0/) 
 
 ### About this document {-}
 
@@ -34,6 +32,17 @@ $$
 \def\inprob{\,{\buildrel p \over \rightarrow}\,} 
 \def\indist{\,{\buildrel d \over \rightarrow}\,} 
 $$
+
+```julia; echo=false; results="hidden"
+markdown = try
+  "md" in keys(WEAVE_ARGS) && WEAVE_ARGS["md"]
+catch
+  false
+end
+if markdown
+  ENV["GKSwstype"]="nul"
+end
+```
 
 # Introduction
 
@@ -73,6 +82,7 @@ See @newey1994 for more details and examples.
 
 As a simple example, let's look look at some code for estimating a
 logit.
+
 ```julia
 using Distributions, Optim, ForwardDiff, BenchmarkTools
 function simulate_logit(observations, β)
@@ -93,6 +103,8 @@ k = 3
 Q = β -> -logit_likelihood(β,y,x)
 Q(β0)
 ```
+
+Now we maximize the likelihood using a few different algorithms from [Optim.jl](https://github.com/JuliaNLSolvers/Optim.jl)
 
 ```julia; cache=true
 @btime optimize(Q, zeros(k), NelderMead())
@@ -166,22 +178,17 @@ Then $\hat{\theta} \inprob \theta_0$
 
 ## Asymptotic normality
 
-<div class="theorem">
-**Asymptotic normality for extremum estimators**: assume
 
-1. $\hat{\theta} \inprob \theta_0$
-
-2. $\theta_0 \in interior(\Theta)$
-
-3. $\hat{Q}_n(\theta)$ is twice continuously differentiable in open $N$
-   containing $\theta$, and $\sup_{\theta \in N} \Vert \nabla^2
-                             \hat{Q}_n(\theta) - H(\theta) \Vert
-                             \inprob 0$ with $H(\theta_0)$ nonsingular
-4. $\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
-
-Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma
-  H^{-1} \right)$
-</div>
+!!! tipe "Asymptotic normality for extremum estimators"
+    Assume
+        1. $\hat{\theta} \inprob \theta_0$
+        2. $\theta_0 \in interior(\Theta)$
+        3. $\hat{Q}_n(\theta)$ is twice continuously differentiable in
+        open $N$ containing $\theta$, and 
+        $\sup_{\theta \in N} \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$ 
+        with $H(\theta_0)$ nonsingular
+        4. $\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
+    Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma H^{-1} \right)$
 
 Implementing this in Julia using automatic differentiation is pretty
 straightforward. 
@@ -219,6 +226,7 @@ display( avar.variance/n)
 display( -avar.invH/n)
 display(inv(avar.Σ)/n)
 ```
+
 For maximum likelihood, the information equality says $-H = \Sigma$,
 so the three expressions above have the same probability limit, and
 are each consistent estimates of the variance of $\hat{\theta}$.
@@ -259,6 +267,7 @@ Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, \nabla
 The following code uses the delta method to plot a 90% pointwise
 confidence band around the estimate marginal effect of one of the
 regressors. 
+
 ```julia
 using LinearAlgebra
 function logit_mfx(β,x)
