@@ -172,49 +172,49 @@ Q = β -&gt; -logit_likelihood(β,y,x)
 Q(β0)
 </code></pre>
 
-<pre><code>258.0747382418027
+<pre><code>259.75197622910895
 </code></pre>
 
 <p>Now we maximize the likelihood using a few different algorithms from <a href="https://github.com/JuliaNLSolvers/Optim.jl">Optim.jl</a></p>
 <pre><code class="julia">@btime optimize(Q, zeros(k), NelderMead())
 </code></pre>
 
-<pre><code>1.999 ms (1455 allocations: 1.92 MiB)
+<pre><code>2.110 ms (1519 allocations: 2.05 MiB)
 </code></pre>
 
 <pre><code class="julia">@btime optimize(Q, zeros(k), BFGS(), autodiff = :forward)
 </code></pre>
 
-<pre><code>752.882 μs (531 allocations: 1.26 MiB)
+<pre><code>686.415 μs (518 allocations: 1.22 MiB)
 </code></pre>
 
 <pre><code class="julia">@btime optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
 </code></pre>
 
-<pre><code>1.335 ms (404 allocations: 1.46 MiB)
+<pre><code>1.105 ms (364 allocations: 1.22 MiB)
  * Status: success
 
  * Candidate solution
-    Minimizer: [1.05e+00, 8.79e-01, 1.10e+00]
-    Minimum:   2.569076e+02
+    Minimizer: [8.09e-01, 1.01e+00, 8.92e-01]
+    Minimum:   2.581336e+02
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
     Initial Point: [0.00e+00, 0.00e+00, 0.00e+00]
 
  * Convergence measures
-    |x - x'|               = 1.70e-09 ≰ 0.0e+00
-    |x - x'|/|x'|          = 1.55e-09 ≰ 0.0e+00
-    |f(x) - f(x')|         = 5.12e-13 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 1.99e-15 ≰ 0.0e+00
-    |g(x)|                 = 1.31e-14 ≤ 1.0e-08
+    |x - x'|               = 1.15e-05 ≰ 0.0e+00
+    |x - x'|/|x'|          = 1.13e-05 ≰ 0.0e+00
+    |f(x) - f(x')|         = 6.24e-09 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 2.42e-11 ≰ 0.0e+00
+    |g(x)|                 = 3.78e-09 ≤ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
-    Iterations:    6
-    f(x) calls:    7
-    ∇f(x) calls:   7
-    ∇²f(x) calls:  6
+    Iterations:    5
+    f(x) calls:    6
+    ∇f(x) calls:   6
+    ∇²f(x) calls:  5
 </code></pre>
 
 <h3 id="aside-reverse-mode-automatic-differentiation">Aside: Reverse mode automatic differentiation<a class="headerlink" href="#aside-reverse-mode-automatic-differentiation" title="Permanent link">&para;</a></h3>
@@ -246,13 +246,13 @@ dQf = β-&gt;ForwardDiff.gradient(Q,β)
 @btime dQf(β0)
 </code></pre>
 
-<pre><code>27.686 μs (9 allocations: 47.73 KiB)
+<pre><code>25.534 μs (9 allocations: 47.73 KiB)
 </code></pre>
 
 <pre><code class="julia">@btime dQr(β0)
 </code></pre>
 
-<pre><code>313.200 μs (14720 allocations: 467.53 KiB)
+<pre><code>324.344 μs (14720 allocations: 467.53 KiB)
 </code></pre>
 
 <pre><code class="julia">
@@ -272,13 +272,13 @@ dQf = β-&gt;ForwardDiff.gradient(Q,β)
 <pre><code class="julia">@btime dQf(β0);
 </code></pre>
 
-<pre><code>6.479 ms (157 allocations: 2.56 MiB)
+<pre><code>6.256 ms (157 allocations: 2.56 MiB)
 </code></pre>
 
 <pre><code class="julia">@btime dQr(β0);
 </code></pre>
 
-<pre><code>781.998 μs (14721 allocations: 1.21 MiB)
+<pre><code>759.646 μs (14721 allocations: 1.21 MiB)
 </code></pre>
 
 <h1 id="review-of-extremum-estimator-theory">Review of extremum estimator theory<a class="headerlink" href="#review-of-extremum-estimator-theory" title="Permanent link">&para;</a></h1>
@@ -359,27 +359,27 @@ display( avar.variance/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00928029  0.00239577  0.00315508
- 0.00239577  0.00668479  0.00152528
- 0.00315508  0.00152528  0.0095348
+ 0.00769556  0.00127539  0.00215136
+ 0.00127539  0.0085588   0.00183072
+ 0.00215136  0.00183072  0.00782482
 </code></pre>
 
 <pre><code class="julia">display( -avar.invH/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00913225  0.00248748  0.00274226
- 0.00248748  0.00729283  0.00166625
- 0.00274226  0.00166625  0.0092269
+ 0.00791902  0.0017421   0.00200212
+ 0.0017421   0.00816584  0.00197979
+ 0.00200212  0.00197979  0.00813874
 </code></pre>
 
 <pre><code class="julia">display(inv(avar.Σ)/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00900638  0.00258837  0.00235019
- 0.00258837  0.00795827  0.00182601
- 0.00235019  0.00182601  0.00895207
+ 0.00818295  0.00219395  0.00184407
+ 0.00219395  0.00782916  0.00211475
+ 0.00184407  0.00211475  0.00847434
 </code></pre>
 
 <p>For maximum likelihood, the information equality says $-H = \Sigma$,
@@ -402,22 +402,22 @@ loat64,Array{Float64,2}}}},Array{Float64,2}}
 y ~ 0 + x1 + x2 + x3
 
 Coefficients:
-──────────────────────────────────────────────────────────────────
-    Estimate  Std. Error   z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
-──────────────────────────────────────────────────────────────────
-x1  1.1144     0.0955228  11.6663     &lt;1e-30   0.927175   1.30162 
-x2  0.766518   0.0853737   8.97839    &lt;1e-18   0.599189   0.933847
-x3  1.0486     0.0960169  10.921      &lt;1e-27   0.860412   1.23679 
-──────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────
+    Estimate  Std. Error  z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
+─────────────────────────────────────────────────────────────────
+x1  0.90249    0.0889745  10.1432    &lt;1e-23   0.728103    1.07688
+x2  0.975738   0.0903506  10.7995    &lt;1e-26   0.798654    1.15282
+x3  0.969384   0.0901994  10.7471    &lt;1e-26   0.792596    1.14617
+─────────────────────────────────────────────────────────────────
 </code></pre>
 
 <pre><code class="julia">display( vcov(glmest))
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.0091246   0.00248399  0.00273701
- 0.00248399  0.00728866  0.00166318
- 0.00273701  0.00166318  0.00921924
+ 0.00791646  0.00174064  0.00200043
+ 0.00174064  0.00816324  0.00197815
+ 0.00200043  0.00197815  0.00813593
 </code></pre>
 
 <h2 id="delta-method">Delta method<a class="headerlink" href="#delta-method" title="Permanent link">&para;</a></h2>
@@ -523,7 +523,7 @@ end
 <pre><code>kr_confint((β-&gt;begin
             #= none:2 =#
             counterfactual_sim(β, x, 10)
-        end), βhat, Ω, 1000) = [0.04439499999999999, 0.0533]
+        end), βhat, Ω, 1000) = [0.04259999999999999, 0.0509]
 </code></pre>
 
 <pre><code class="julia">
@@ -540,11 +540,11 @@ ghat = counterfactual_calc(βhat,x)
 </code></pre>
 
 <pre><code>[ghat + sqrt(v) * quantile(Normal(), 0.05), ghat + sqrt(v) * quantile(Norma
-l(), 0.95)] = Array{Float64,2}[[0.046211818250247935], [0.05162593513787290
-5]]
+l(), 0.95)] = Array{Float64,2}[[0.04472964569886642], [0.04941366980106006]
+]
 2-element Array{Array{Float64,2},1}:
- [0.046211818250247935]
- [0.051625935137872905]
+ [0.04472964569886642]
+ [0.04941366980106006]
 </code></pre>
 
 <h1 id="alternative-approaches-to-inference">Alternative approaches to inference<a class="headerlink" href="#alternative-approaches-to-inference" title="Permanent link">&para;</a></h1>
@@ -725,15 +725,15 @@ end
 @show β1 = opt1.minimizer
 </code></pre>
 
-<pre><code>β1 = opt1.minimizer = [1.0145534123705322, 1.0242684034091958]
+<pre><code>β1 = opt1.minimizer = [1.0266591858996164, 0.9984158796159845]
 </code></pre>
 
 <pre><code class="julia">display(gmmVar(β1, β-&gt;gi_ivshare(β,y,x,z),I))
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
- 0.000285235  8.90358e-5 
- 8.90358e-5   0.000383799
+  0.000234024  -1.5771e-5  
+ -1.5771e-5     0.000498286
 </code></pre>
 
 <pre><code class="julia">opteff = optimize(θ-&gt;gmmObj(θ,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(β1,y,x,z)))),
@@ -741,15 +741,15 @@ end
 @show βeff = opteff.minimizer
 </code></pre>
 
-<pre><code>βeff = opteff.minimizer = [1.0147154664931397, 1.0244482163000042]
+<pre><code>βeff = opteff.minimizer = [1.0267279161189637, 0.9985328562112743]
 </code></pre>
 
 <pre><code class="julia">display(gmmVar(βeff,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(β1,y,x,z)))))
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
- 0.000284147  8.77348e-5 
- 8.77348e-5   0.000382313
+  0.000233989  -1.57667e-5 
+ -1.57667e-5    0.000498293
 </code></pre>
 
 <pre><code class="julia">
@@ -759,7 +759,7 @@ optcue = optimize(ar_ivshare,
 @show βcue = optcue.minimizer
 </code></pre>
 
-<pre><code>βcue = optcue.minimizer = [1.0147061118060687, 1.0244444824965617]
+<pre><code>βcue = optcue.minimizer = [1.0266347795932598, 0.9986326604760309]
 </code></pre>
 
 <pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
@@ -767,8 +767,8 @@ display(Vcue)
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
- 0.000284144  8.77381e-5
- 8.77381e-5   0.00038232
+  0.00023403  -1.57692e-5 
+ -1.57692e-5   0.000498319
 </code></pre>
 
 <p>Now we compare confidence regions based on the Wald test, and from
@@ -814,7 +814,7 @@ optcue = optimize(ar_ivshare,
 @show βcue = optcue.minimizer
 </code></pre>
 
-<pre><code>βcue = optcue.minimizer = [0.9428824130446714, 1.0444571607070532]
+<pre><code>βcue = optcue.minimizer = [1.0725183957528415, 0.9592993880804888]
 </code></pre>
 
 <pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
@@ -822,8 +822,8 @@ display(Vcue)
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  0.222199  -0.196123
- -0.196123   0.1768
+  0.119572  -0.127301
+ -0.127301   0.138351
 </code></pre>
 
 <pre><code class="julia">plot_cr(βcue,Vcue, ar_ivshare)
@@ -866,7 +866,7 @@ function sim_p(π0)
   waldp1 = θ-&gt;(1.0-cdf(Chisq(length(β1)),(θ-β1)'*inv(V1)*(θ-β1)))
   [arp(β0) waldp(β0) waldp1(β0)]
 end
-πweak = ones(iv,k) .+ vcat(diagm(0=&gt;fill(0.05,k)),zeros(iv-k,k))  
+πweak = ones(iv,k) .+ vcat(diagm(0=&gt;fill(0.01,k)),zeros(iv-k,k))  
 πstrong = vcat(5*diagm(0=&gt;ones(k)),ones(iv-k,k)) 
 @time pweak=vcat([sim_p(πweak) for s in 1:S]...)
 </code></pre>
@@ -875,44 +875,44 @@ end
 ed)
 
  * Candidate solution
-    Minimizer: [-4.40e+03, 3.95e+03]
-    Minimum:   4.874404e-01
+    Minimizer: [-3.93e+03, 3.83e+03]
+    Minimum:   2.225980e-01
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
     Initial Point: [1.00e+00, 1.00e+00]
 
  * Convergence measures
-    |x - x'|               = 1.49e+00 ≰ 0.0e+00
-    |x - x'|/|x'|          = 3.39e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 4.02e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 8.24e-08 ≰ 0.0e+00
-    |g(x)|                 = 1.49e-08 ≰ 1.0e-08
-
- * Work counters
-    Seconds run:   0  (vs limit Inf)
-    Iterations:    1000
-    f(x) calls:    1001
-    ∇f(x) calls:   1001
-    ∇²f(x) calls:  1001
-
- * Status: failure (reached maximum number of iterations) (line search fail
-ed)
-
- * Candidate solution
-    Minimizer: [-5.89e+03, 6.47e+03]
-    Minimum:   5.821442e-01
-
- * Found with
-    Algorithm:     Newton's Method (Trust Region)
-    Initial Point: [1.00e+00, 1.00e+00]
-
- * Convergence measures
-    |x - x'|               = 2.20e+00 ≰ 0.0e+00
+    |x - x'|               = 1.34e+00 ≰ 0.0e+00
     |x - x'|/|x'|          = 3.41e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 8.88e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 1.53e-07 ≰ 0.0e+00
-    |g(x)|                 = 2.20e-08 ≰ 1.0e-08
+    |f(x) - f(x')|         = 3.49e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 1.57e-07 ≰ 0.0e+00
+    |g(x)|                 = 1.34e-08 ≰ 1.0e-08
+
+ * Work counters
+    Seconds run:   0  (vs limit Inf)
+    Iterations:    1000
+    f(x) calls:    1001
+    ∇f(x) calls:   1001
+    ∇²f(x) calls:  999
+
+ * Status: failure (reached maximum number of iterations) (line search fail
+ed)
+
+ * Candidate solution
+    Minimizer: [-3.46e+03, 3.83e+03]
+    Minimum:   1.251924e-01
+
+ * Found with
+    Algorithm:     Newton's Method (Trust Region)
+    Initial Point: [1.00e+00, 1.00e+00]
+
+ * Convergence measures
+    |x - x'|               = 1.30e+00 ≰ 0.0e+00
+    |x - x'|/|x'|          = 3.39e-04 ≰ 0.0e+00
+    |f(x) - f(x')|         = 3.06e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 2.44e-07 ≰ 0.0e+00
+    |g(x)|                 = 1.30e-08 ≰ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
@@ -925,69 +925,44 @@ ed)
 ed)
 
  * Candidate solution
-    Minimizer: [-5.49e+03, 5.72e+03]
-    Minimum:   7.872632e-01
+    Minimizer: [-4.04e+03, 3.22e+03]
+    Minimum:   2.789843e-01
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
     Initial Point: [1.00e+00, 1.00e+00]
 
  * Convergence measures
-    |x - x'|               = 1.94e+00 ≰ 0.0e+00
+    |x - x'|               = 1.37e+00 ≰ 0.0e+00
     |x - x'|/|x'|          = 3.40e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 7.27e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 9.23e-08 ≰ 0.0e+00
-    |g(x)|                 = 1.94e-08 ≰ 1.0e-08
+    |f(x) - f(x')|         = 3.08e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 1.10e-07 ≰ 0.0e+00
+    |g(x)|                 = 1.37e-08 ≰ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
     Iterations:    1000
     f(x) calls:    1001
     ∇f(x) calls:   1001
-    ∇²f(x) calls:  1001
+    ∇²f(x) calls:  1000
 
  * Status: failure (reached maximum number of iterations) (line search fail
 ed)
 
  * Candidate solution
-    Minimizer: [-6.36e+03, 5.94e+03]
-    Minimum:   3.890028e+00
+    Minimizer: [-4.73e+03, 4.64e+03]
+    Minimum:   2.712463e-01
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
     Initial Point: [1.00e+00, 1.00e+00]
 
  * Convergence measures
-    |x - x'|               = 2.17e+00 ≰ 0.0e+00
-    |x - x'|/|x'|          = 3.41e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 8.80e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 2.26e-08 ≰ 0.0e+00
-    |g(x)|                 = 2.17e-08 ≰ 1.0e-08
-
- * Work counters
-    Seconds run:   0  (vs limit Inf)
-    Iterations:    1000
-    f(x) calls:    1001
-    ∇f(x) calls:   1001
-    ∇²f(x) calls:  1001
-
- * Status: failure (reached maximum number of iterations) (line search fail
-ed)
-
- * Candidate solution
-    Minimizer: [-3.47e+03, 3.40e+03]
-    Minimum:   1.518139e+00
-
- * Found with
-    Algorithm:     Newton's Method (Trust Region)
-    Initial Point: [1.00e+00, 1.00e+00]
-
- * Convergence measures
-    |x - x'|               = 1.18e+00 ≰ 0.0e+00
+    |x - x'|               = 1.60e+00 ≰ 0.0e+00
     |x - x'|/|x'|          = 3.39e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 2.71e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 1.78e-08 ≰ 0.0e+00
-    |g(x)|                 = 1.17e-08 ≰ 1.0e-08
+    |f(x) - f(x')|         = 5.05e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 1.86e-07 ≰ 0.0e+00
+    |g(x)|                 = 1.60e-08 ≰ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
@@ -1000,19 +975,19 @@ ed)
 ed)
 
  * Candidate solution
-    Minimizer: [-3.18e+03, 3.12e+03]
-    Minimum:   6.713847e-01
+    Minimizer: [-3.14e+03, 2.78e+03]
+    Minimum:   4.074644e-01
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
     Initial Point: [1.00e+00, 1.00e+00]
 
  * Convergence measures
-    |x - x'|               = 1.07e+00 ≰ 0.0e+00
+    |x - x'|               = 1.06e+00 ≰ 0.0e+00
     |x - x'|/|x'|          = 3.37e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 2.26e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 3.37e-08 ≰ 0.0e+00
-    |g(x)|                 = 1.07e-08 ≰ 1.0e-08
+    |f(x) - f(x')|         = 2.00e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 4.90e-08 ≰ 0.0e+00
+    |g(x)|                 = 1.06e-08 ≰ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
@@ -1025,34 +1000,34 @@ ed)
 ed)
 
  * Candidate solution
-    Minimizer: [-4.05e+03, 4.10e+03]
-    Minimum:   4.408658e-01
+    Minimizer: [-3.01e+03, 3.05e+03]
+    Minimum:   2.493430e-01
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
     Initial Point: [1.00e+00, 1.00e+00]
 
  * Convergence measures
-    |x - x'|               = 1.39e+00 ≰ 0.0e+00
-    |x - x'|/|x'|          = 3.39e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 3.81e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 8.64e-08 ≰ 0.0e+00
-    |g(x)|                 = 1.39e-08 ≰ 1.0e-08
+    |x - x'|               = 1.04e+00 ≰ 0.0e+00
+    |x - x'|/|x'|          = 3.40e-04 ≰ 0.0e+00
+    |f(x) - f(x')|         = 2.13e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 8.54e-08 ≰ 0.0e+00
+    |g(x)|                 = 1.04e-08 ≰ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
     Iterations:    1000
     f(x) calls:    1001
     ∇f(x) calls:   1001
-    ∇²f(x) calls:  1001
+    ∇²f(x) calls:  1000
 
- 13.680833 seconds (22.65 M allocations: 2.731 GiB, 29.44% gc time)
+ 13.794973 seconds (22.50 M allocations: 2.549 GiB, 29.91% gc time)
 </code></pre>
 
 <pre><code class="julia">@time pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 </code></pre>
 
-<pre><code>1.529543 seconds (1.09 M allocations: 749.063 MiB, 44.41% gc time)
+<pre><code>1.856937 seconds (1.07 M allocations: 731.861 MiB, 35.93% gc time)
 </code></pre>
 
 <pre><code class="julia">
@@ -1191,7 +1166,7 @@ AR, red is KLM, and black is CLR. </p>
 <pre><code class="julia">n = 50
 k = 2
 iv =3 
-π0 = vcat(diagm(0=&gt;ones(k)),0.2*ones(iv-k,k)) 
+π0 = vcat(0.1*diagm(0=&gt;ones(k)),0.2*ones(iv-k,k)) 
 ρ = 0.5  
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
@@ -1214,7 +1189,7 @@ stronger.</p>
 <pre><code class="julia">n = 50
 k = 2
 iv =3 
-π0 = vcat(diagm(0=&gt;ones(k)),ones(iv-k,k)) 
+π0 = vcat(3*diagm(0=&gt;ones(k)),ones(iv-k,k)) 
 ρ = 0.5  
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
@@ -1252,8 +1227,8 @@ function sim_p(π0)
   pwald = θ -&gt; cdf(Chisq(length(β1)),(θ-β1)'*inv(V1)*(θ-β1))  
   [par(β0) pwald(β0) pclr(β0) pklm(β0)]
 end
-πweak = ones(iv,k) .+ vcat(diagm(0=&gt;fill(0.1,k)),zeros(iv-k,k))  
-πstrong = vcat(diagm(0=&gt;ones(k)),ones(iv-k,k)) 
+πweak = ones(iv,k) .+ vcat(diagm(0=&gt;fill(0.01,k)),zeros(iv-k,k))  
+πstrong = vcat(3*diagm(0=&gt;ones(k)),ones(iv-k,k)) 
 pweak=vcat([sim_p(πweak ) for s in 1:S]...)
 pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 
