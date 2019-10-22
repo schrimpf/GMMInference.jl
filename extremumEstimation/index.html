@@ -172,7 +172,7 @@ Q = β -&gt; -logit_likelihood(β,y,x)
 Q(β0)
 </code></pre>
 
-<pre><code>238.07127589357123
+<pre><code>247.94495389935804
 </code></pre>
 
 <p>Now we maximize the likelihood using a few different algorithms from <a href="https://github.com/JuliaNLSolvers/Optim.jl">Optim.jl</a></p>
@@ -301,20 +301,26 @@ Then $\hat{\theta} \inprob \theta_0$
 </div>
 
 <h2 id="asymptotic-normality">Asymptotic normality<a class="headerlink" href="#asymptotic-normality" title="Permanent link">&para;</a></h2>
-<div class="admonition tip">
+<div class="admonition note">
 <p class="admonition-title">Asymptotic normality for extremum estimators</p>
 <p>Assume</p>
-<pre><code>1. $\hat{\theta} \inprob \theta_0$
-
-2. $\theta_0 \in interior(\Theta)$
-
-3. $\hat{Q}_n(\theta)$ is twice continuously differentiable in
+<ol>
+<li>
+<p>$\hat{\theta} \inprob \theta_0$</p>
+</li>
+<li>
+<p>$\theta_0 \in interior(\Theta)$</p>
+</li>
+<li>
+<p>$\hat{Q}<em N="N" _in="\in" _theta="\theta">n(\theta)$ is twice continuously differentiable in
 open $N$ containing $\theta$, and 
-$\sup_{\theta \in N} \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$ 
-with $H(\theta_0)$ nonsingular
-
-4. $\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
-</code></pre>
+$\sup</em> \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$ 
+with $H(\theta_0)$ nonsingular</p>
+</li>
+<li>
+<p>$\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$</p>
+</li>
+</ol>
 <p>Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma H^{-1} \right)$</p>
 </div>
 <p>Implementing this in Julia using automatic differentiation is pretty
@@ -351,27 +357,27 @@ display( avar.variance/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.0082288   0.00300855  0.0023737 
- 0.00300855  0.00937819  0.0028747 
- 0.0023737   0.0028747   0.00875331
+ 0.00874458  0.00193052  0.00299081
+ 0.00193052  0.00825967  0.00290637
+ 0.00299081  0.00290637  0.0091346
 </code></pre>
 
 <pre><code class="julia">display( -avar.invH/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00804627  0.00254316  0.00221338
- 0.00254316  0.0091257   0.00221339
- 0.00221338  0.00221339  0.00870631
+ 0.00875523  0.00193273  0.00265786
+ 0.00193273  0.00853514  0.00257843
+ 0.00265786  0.00257843  0.00968396
 </code></pre>
 
 <pre><code class="julia">display(inv(avar.Σ)/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00788701  0.0020928   0.00208543
- 0.0020928   0.00893425  0.00155743
- 0.00208543  0.00155743  0.0087091
+ 0.00878106  0.00195331  0.00229133
+ 0.00195331  0.00884251  0.00220129
+ 0.00229133  0.00220129  0.0103269
 </code></pre>
 
 <p>For maximum likelihood, the information equality says $-H = \Sigma$,
@@ -801,7 +807,7 @@ optcue = optimize(ar_ivshare,
 @show βcue = optcue.minimizer
 </code></pre>
 
-<pre><code>βcue = optcue.minimizer = [2.3161241649766153, -0.43158872262489334]
+<pre><code>βcue = optcue.minimizer = [0.4573421590424937, 1.5420427291355276]
 </code></pre>
 
 <pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
@@ -809,8 +815,8 @@ display(Vcue)
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  4.56654  -5.09988
- -5.09988   5.71547
+  2.16181  -2.13397
+ -2.13397   2.11412
 </code></pre>
 
 <pre><code class="julia">plot_cr(βcue,Vcue, ar_ivshare)
