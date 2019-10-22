@@ -172,7 +172,7 @@ Q = β -&gt; -logit_likelihood(β,y,x)
 Q(β0)
 </code></pre>
 
-<pre><code>247.94495389935804
+<pre><code>238.7042051718122
 </code></pre>
 
 <p>Now we maximize the likelihood using a few different algorithms from <a href="https://github.com/JuliaNLSolvers/Optim.jl">Optim.jl</a></p>
@@ -287,22 +287,26 @@ dQf = β-&gt;ForwardDiff.gradient(Q,β)
 from 627, so we will just state some basic &ldquo;high-level&rdquo; conditions for
 consistency and asymptotic normality. </p>
 <h2 id="consistency">Consistency<a class="headerlink" href="#consistency" title="Permanent link">&para;</a></h2>
-<div class="theorem">
-**Consistency for extremum estimators**: assume
-
-1. $\hat{Q}_n(\theta)$ converges uniformly in probability to
-   $Q_0(\theta)$
-
-2. $Q_0(\theta)$ is uniquely maximized at $\theta_0$.
-
-3. $\Theta$ is compact and $Q_0(\theta)$ is continuous.
-
-Then $\hat{\theta} \inprob \theta_0$
+<div class="admonition tip">
+<p class="admonition-title"><strong>Theorem:</strong> Consistency for extremum estimators</p>
+<p>Assume</p>
+<ol>
+<li>
+<p>$\hat{Q}_n(\theta)$ converges uniformly in probability to
+$Q_0(\theta)$</p>
+</li>
+<li>
+<p>$Q_0(\theta)$ is uniquely maximized at $\theta_0$.</p>
+</li>
+<li>
+<p>$\Theta$ is compact and $Q_0(\theta)$ is continuous.</p>
+</li>
+</ol>
+<p>Then $\hat{\theta} \inprob \theta_0$</p>
 </div>
-
 <h2 id="asymptotic-normality">Asymptotic normality<a class="headerlink" href="#asymptotic-normality" title="Permanent link">&para;</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Asymptotic normality for extremum estimators</p>
+<div class="admonition tip">
+<p class="admonition-title"><strong>Theorem:</strong> Asymptotic normality for extremum estimators</p>
 <p>Assume</p>
 <ol>
 <li>
@@ -323,8 +327,7 @@ with $H(\theta_0)$ nonsingular</p>
 </ol>
 <p>Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma H^{-1} \right)$</p>
 </div>
-<p>Implementing this in Julia using automatic differentiation is pretty
-straightforward. </p>
+<p>Implementing this in Julia using automatic differentiation is straightforward. </p>
 <pre><code class="julia">function logit_likei(β,y,x)
   p = map(xb -&gt; cdf(Logistic(),xb), x*β)
   log.(ifelse.(y, p, 1.0 .- p))
@@ -357,27 +360,27 @@ display( avar.variance/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00874458  0.00193052  0.00299081
- 0.00193052  0.00825967  0.00290637
- 0.00299081  0.00290637  0.0091346
+ 0.00959153  0.00258025  0.00273836
+ 0.00258025  0.00840321  0.00252866
+ 0.00273836  0.00252866  0.00835634
 </code></pre>
 
 <pre><code class="julia">display( -avar.invH/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00875523  0.00193273  0.00265786
- 0.00193273  0.00853514  0.00257843
- 0.00265786  0.00257843  0.00968396
+ 0.0094303   0.002392    0.00290077
+ 0.002392    0.00797445  0.00249632
+ 0.00290077  0.00249632  0.00871832
 </code></pre>
 
 <pre><code class="julia">display(inv(avar.Σ)/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00878106  0.00195331  0.00229133
- 0.00195331  0.00884251  0.00220129
- 0.00229133  0.00220129  0.0103269
+ 0.0092827   0.00221771  0.00307316
+ 0.00221771  0.0075696   0.00246962
+ 0.00307316  0.00246962  0.00909932
 </code></pre>
 
 <p>For maximum likelihood, the information equality says $-H = \Sigma$,
@@ -428,14 +431,19 @@ situations we are more interested these transformation(s) of
 parameters than in the parameters themselves. The delta method is one
 convenient way to approximate the distribution of transformations of 
 the model parameters. </p>
-<div class="theorem">
-**Delta method** assume:
-1. $\sqrt{n} (\hat{\theta} - \theta_0) \indist N(0,\Omega)$
-2. $g: \R^k \to \R^m$ is continuously differentiable
-Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, \nabla
-      g(\theta_0)^T \Omega \nabla g(\theta_0)$
+<div class="admonition tip">
+<p class="admonition-title"><strong>Theorem:</strong> Delta method</p>
+<p>Assume:</p>
+<ol>
+<li>
+<p>$\sqrt{n} (\hat{\theta} - \theta_0) \indist N(0,\Omega)$</p>
+</li>
+<li>
+<p>$g: \R^k \to \R^m$ is continuously differentiable</p>
+</li>
+</ol>
+<p>Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, \nabla g(\theta_0)^T \Omega \nabla g(\theta_0)$</p>
 </div>
-
 <p>The following code uses the delta method to plot a 90% pointwise
 confidence band around the estimate marginal effect of one of the
 regressors. </p>
@@ -807,7 +815,7 @@ optcue = optimize(ar_ivshare,
 @show βcue = optcue.minimizer
 </code></pre>
 
-<pre><code>βcue = optcue.minimizer = [0.4573421590424937, 1.5420427291355276]
+<pre><code>βcue = optcue.minimizer = [1.343694239761664, 0.7164820001808698]
 </code></pre>
 
 <pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
@@ -815,8 +823,8 @@ display(Vcue)
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  2.16181  -2.13397
- -2.13397   2.11412
+  0.106978   -0.0990261
+ -0.0990261   0.0946307
 </code></pre>
 
 <pre><code class="julia">plot_cr(βcue,Vcue, ar_ivshare)
