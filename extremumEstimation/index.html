@@ -172,7 +172,7 @@ Q = β -&gt; -logit_likelihood(β,y,x)
 Q(β0)
 </code></pre>
 
-<pre><code>238.7042051718122
+<pre><code>248.93943221276638
 </code></pre>
 
 <p>Now we maximize the likelihood using a few different algorithms from <a href="https://github.com/JuliaNLSolvers/Optim.jl">Optim.jl</a></p>
@@ -288,7 +288,7 @@ from 627, so we will just state some basic &ldquo;high-level&rdquo; conditions f
 consistency and asymptotic normality. </p>
 <h2 id="consistency">Consistency<a class="headerlink" href="#consistency" title="Permanent link">&para;</a></h2>
 <div class="admonition tip">
-<p class="admonition-title"><strong>Theorem:</strong> Consistency for extremum estimators</p>
+<p class="admonition-title"><strong>Theorem:</strong> consistency for extremum estimators</p>
 <p>Assume</p>
 <ol>
 <li>
@@ -306,7 +306,7 @@ $Q_0(\theta)$</p>
 </div>
 <h2 id="asymptotic-normality">Asymptotic normality<a class="headerlink" href="#asymptotic-normality" title="Permanent link">&para;</a></h2>
 <div class="admonition tip">
-<p class="admonition-title"><strong>Theorem:</strong> Asymptotic normality for extremum estimators</p>
+<p class="admonition-title"><strong>Theorem:</strong> asymptotic normality for extremum estimators</p>
 <p>Assume</p>
 <ol>
 <li>
@@ -317,7 +317,7 @@ $Q_0(\theta)$</p>
 </li>
 <li>
 <p>$\hat{Q}<em N="N" _in="\in" _theta="\theta">n(\theta)$ is twice continuously differentiable in
-open $N$ containing $\theta$, and 
+open $N$ containing $\theta$ , and 
 $\sup</em> \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$ 
 with $H(\theta_0)$ nonsingular</p>
 </li>
@@ -360,27 +360,27 @@ display( avar.variance/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00959153  0.00258025  0.00273836
- 0.00258025  0.00840321  0.00252866
- 0.00273836  0.00252866  0.00835634
+ 0.00721113  0.00271849  0.00166534
+ 0.00271849  0.0091558   0.00225661
+ 0.00166534  0.00225661  0.00683188
 </code></pre>
 
 <pre><code class="julia">display( -avar.invH/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.0094303   0.002392    0.00290077
- 0.002392    0.00797445  0.00249632
- 0.00290077  0.00249632  0.00871832
+ 0.00705461  0.00229802  0.00164583
+ 0.00229802  0.00860508  0.00194691
+ 0.00164583  0.00194691  0.00724369
 </code></pre>
 
 <pre><code class="julia">display(inv(avar.Σ)/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.0092827   0.00221771  0.00307316
- 0.00221771  0.0075696   0.00246962
- 0.00307316  0.00246962  0.00909932
+ 0.00691884  0.00190216  0.00164713
+ 0.00190216  0.00810073  0.00164249
+ 0.00164713  0.00164249  0.00770393
 </code></pre>
 
 <p>For maximum likelihood, the information equality says $-H = \Sigma$,
@@ -672,11 +672,11 @@ This is the moment condition we will use to estimate $\beta$.</p>
 <p>First, we will simulate the model, then estimate it. This code looks
 at three variants of GMM. First, it computes an estimate with 
 $W_n = I$. Second, it computes an effeciently weighted estimated with 
-$W_n = \widehat{Var}( \nabla g_i(\hat{\theta}<em _1_="(1)">{(1)}) )$, where
+$W_n = \widehat{Var}( \nabla g_i(\hat{\theta}<em _1_="(1)">{(1)}) )$ , where
 $\hat{\theta}</em>$ is the first estimate. Third, it computes the
 continuous updating estimator, which uses $AR(\theta)$ as the
-objective function ($W$ is &ldquo;continuously updated&rdquo; to be 
-$\widehat{Var}( \nabla g_i(\theta))$). </p>
+objective function ( $W$ is &ldquo;continuously updated&rdquo; to be 
+$\widehat{Var}( \nabla g_i(\theta))$ ). </p>
 <pre><code class="julia">using Optim, ForwardDiff, LinearAlgebra, Distributions
 function simulate_ivshare(n,β,γ,ρ)
   z = randn(n, size(γ)[1])
@@ -815,7 +815,7 @@ optcue = optimize(ar_ivshare,
 @show βcue = optcue.minimizer
 </code></pre>
 
-<pre><code>βcue = optcue.minimizer = [1.343694239761664, 0.7164820001808698]
+<pre><code>βcue = optcue.minimizer = [-3.426190249819688, 5.850550801766639]
 </code></pre>
 
 <pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
@@ -823,8 +823,8 @@ display(Vcue)
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  0.106978   -0.0990261
- -0.0990261   0.0946307
+  863.58   -922.451
+ -922.451   985.434
 </code></pre>
 
 <pre><code class="julia">plot_cr(βcue,Vcue, ar_ivshare)
