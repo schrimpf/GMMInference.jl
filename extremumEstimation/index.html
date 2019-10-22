@@ -83,6 +83,7 @@
         <li class="main "><a href="#review-of-extremum-estimator-theory">Review of extremum estimator theory</a></li>
             <li><a href="#consistency">Consistency</a></li>
             <li><a href="#asymptotic-normality">Asymptotic normality</a></li>
+            <li><a href="#delta-method">Delta method</a></li>
         <li class="main "><a href="#alternative-approaches-to-inference">Alternative approaches to inference</a></li>
             <li><a href="#identification-robust-inference">Identification robust inference</a></li>
             <li><a href="#bootstrap">Bootstrap</a></li>
@@ -91,19 +92,15 @@
 </div></div>
                 <div class="col-md-9" role="main">
 
-<p><a rel="license"
-href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative
-Commons License" style="border-width:0"
-src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
-/></a><br />This work is licensed under a <a rel="license"
-href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+<p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
+<p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+4.0 International
+License</a> </p>
 <h3 -="-" id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
 <p>This document was created using Weave.jl. The code is available in
-<a href="https://github.com/ubcecon/ECON628_2018/paul">the course github
-repository</a>. The same
-document generates both static webpages and associated jupyter
-notebooks.</p>
+<a href="https://github.com/schrimpf/GMMInference.jl">on github</a>. The same
+document generates both static webpages and associated <a href="extremumEstimation.ipynb">jupyter
+notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
 \def\indep{\perp\!\!\!\perp}
@@ -120,31 +117,42 @@ notebooks.</p>
 </script>
 </p>
 <h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h1>
-<p>As you saw in 627, many, perhaps most, estimators in econometrics are
-extrumem estimators. That is, many estimators are defined by
+<p>Many, perhaps most, estimators in econometrics are extrumem
+estimators. That is, many estimators are defined by</p>
+<p>
 <script type="math/tex; mode=display">
-\hat{\theta} = \argmax_{\theta \in \Theta} \hat{Q}_n(\theta)
+\hat{\theta} = \argmax_{\theta \in \Theta}
+\hat{Q}_n(\theta) 
 </script>
-where $\hat{Q}_n(\theta)$ is some objective function that depends on
-data. Examples include maximum likelihood,
+</p>
+<p>where $\hat{Q}_n(\theta)$ is some objective
+function that depends on data. Examples include maximum likelihood, </p>
+<p>
 <script type="math/tex; mode=display">
-\hat{Q}_n(\theta) = \frac{1}{n} \sum_{i=1}^n f(z_i | \theta)
+\hat{Q}_n(\theta) = \frac{1}{n} \sum_{i=1}^n f(z_i | \theta) 
 </script>
-GMM,
+</p>
+<p>GMM,</p>
+<p>
 <script type="math/tex; mode=display">
 \hat{Q}_n(\theta) = \left(\frac{1}{n} \sum_{i=1}^n g(z_i,
 \theta)\right)' \hat{W} \left(\frac{1}{n} \sum_{i=1}^n g(z_i,
 \theta)\right)
 </script>
-and nonlinear least squares
+</p>
+<p>and nonlinear least squares </p>
+<p>
 <script type="math/tex; mode=display">
-\hat{Q}_n(\theta) = \frac{1}{n} \sum_{i=1}^n (y_i - h(x_i,\theta))^2.
+\hat{Q}_n(\theta) =
+\frac{1}{n} \sum_{i=1}^n (y_i - h(x_i,\theta))^2.  
 </script>
-See @newey1994 for more details and examples.</p>
+</p>
+<p>See [^1] for more details and examples.</p>
 <h2 id="example-logit">Example: logit<a class="headerlink" href="#example-logit" title="Permanent link">&para;</a></h2>
 <p>As a simple example, let&rsquo;s look look at some code for estimating a
 logit.</p>
-<pre><code class="julia">using Distributions, Optim, ForwardDiff, BenchmarkTools
+<pre><code class="julia">using Distributions, Optim, BenchmarkTools
+import ForwardDiff
 function simulate_logit(observations, β)
   x = randn(observations, length(β))
   y = (x*β + rand(Logistic(), observations)) .&gt;= 0.0
@@ -164,16 +172,55 @@ Q = β -&gt; -logit_likelihood(β,y,x)
 Q(β0)
 </code></pre>
 
-<p>```julia; cache=true
-@btime optimize(Q, zeros(k), NelderMead())
-@btime optimize(Q, zeros(k), BFGS(), autodiff = :forward)
-@btime optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)</p>
-<pre><code>
-### Aside: Reverse mode automatic differentiation
+<pre><code>248.2324273048153
+</code></pre>
 
-For functions $f:\R^n \to \R^m$, the work for forward
-automatic differentiation increases linearly with $n$. This is because
-forward automatic differentiation applies the chain rule to each of the $n$
+<p>Now we maximize the likelihood using a few different algorithms from <a href="https://github.com/JuliaNLSolvers/Optim.jl">Optim.jl</a></p>
+<pre><code class="julia">@btime optimize(Q, zeros(k), NelderMead())
+</code></pre>
+
+<pre><code>2.317 ms (1627 allocations: 2.25 MiB)
+</code></pre>
+
+<pre><code class="julia">@btime optimize(Q, zeros(k), BFGS(), autodiff = :forward)
+</code></pre>
+
+<pre><code>646.681 μs (531 allocations: 1.26 MiB)
+</code></pre>
+
+<pre><code class="julia">@btime optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
+</code></pre>
+
+<pre><code>1.170 ms (414 allocations: 1.46 MiB)
+ * Status: success
+
+ * Candidate solution
+    Minimizer: [9.39e-01, 9.23e-01, 1.01e+00]
+    Minimum:   2.505964e+02
+
+ * Found with
+    Algorithm:     Newton's Method (Trust Region)
+    Initial Point: [0.00e+00, 0.00e+00, 0.00e+00]
+
+ * Convergence measures
+    |x - x'|               = 6.39e-10 ≰ 0.0e+00
+    |x - x'|/|x'|          = 6.35e-10 ≰ 0.0e+00
+    |f(x) - f(x')|         = 1.71e-13 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 6.80e-16 ≰ 0.0e+00
+    |g(x)|                 = 1.34e-14 ≤ 1.0e-08
+
+ * Work counters
+    Seconds run:   0  (vs limit Inf)
+    Iterations:    6
+    f(x) calls:    7
+    ∇f(x) calls:   7
+    ∇²f(x) calls:  6
+</code></pre>
+
+<h3 id="aside-reverse-mode-automatic-differentiation">Aside: Reverse mode automatic differentiation<a class="headerlink" href="#aside-reverse-mode-automatic-differentiation" title="Permanent link">&para;</a></h3>
+<p>For functions $f:\R^n \to \R^m$, the work for forward automatic
+differentiation increases linearly with $n$. This is because forward
+automatic differentiation applies the chain rule to each of the $n$
 inputs. An alternative, is reverse automatic differentiation. Reverse
 automatic differentiation is also based on the chain rule, but it
 works backward from $f$ through intermediate steps back to $x$. The
@@ -182,37 +229,107 @@ have $m=1$, reverse automatic differentiation can often work well. The
 downsides of reverse automatic differentiation are that: (1) it can
 require a large amount of memory and (2) it is more difficult to
 implement. There are handful of Julia packages that provide reverse
-automatic differentiation, but they all have some limitations in terms
-of what functions thay can differentiate. Flux.jl and JuMP.jl, which were included
-as examples in the Solvers, Optimizers, and Automatic Differentiation
-notebook, uses reverse automatic differentiation. ReverseDiff.jl is
-another package for reverse automatic differentiation. ReverseDiff.jl
-places fewer restrictions on the functions that it can differentiate,
-but its creators no longer plan to update it.
-
-```julia; cache=true
-using ReverseDiff, Optim, BenchmarkTools
-dQr = β-&gt;ReverseDiff.gradient(Q,β)
+automatic differentiation, but they have some limitations in terms of
+what functions thay can differentiate. Flux.jl and Zygote.jl are two such packages.</p>
+<pre><code class="julia">using Optim, BenchmarkTools
+import Zygote
+dQr = β-&gt;Zygote.gradient(Q,β)[1]
 dQf = β-&gt;ForwardDiff.gradient(Q,β)
 
-hcat(dQr(β0) , dQf(β0))
+@show dQr(β0) ≈ dQf(β0)
+</code></pre>
 
-@btime optimize(Q, dQf, zeros(k), BFGS(); inplace=false)
-@btime optimize(Q, dQr, zeros(k), BFGS(); inplace=false)
+<pre><code>dQr(β0) ≈ dQf(β0) = true
+</code></pre>
 
-k = 100
+<pre><code class="julia">
+@btime dQf(β0)
+</code></pre>
+
+<pre><code>25.282 μs (9 allocations: 47.73 KiB)
+</code></pre>
+
+<pre><code class="julia">@btime dQr(β0)
+</code></pre>
+
+<pre><code>284.195 μs (14720 allocations: 467.53 KiB)
+</code></pre>
+
+<pre><code class="julia">
+n = 500
+k = 200
 β0 = ones(k)
 (y,x) = simulate_logit(n,β0)
 Q = β -&gt; -logit_likelihood(β,y,x)
-dQr = β-&gt;ReverseDiff.gradient(Q,β)
+dQr = β-&gt;Zygote.gradient(Q,β)[1]
 dQf = β-&gt;ForwardDiff.gradient(Q,β)
-hcat(dQr(β0) , dQf(β0))
-@btime optimize(Q, dQf, zeros(k), BFGS(); inplace=false)
-@btime optimize(Q, dQr, zeros(k), BFGS(); inplace=false)
+@show dQr(β0) ≈dQf(β0)
+</code></pre>
+
+<pre><code>dQr(β0) ≈ dQf(β0) = true
+</code></pre>
+
+<pre><code class="julia">@btime dQf(β0)
+</code></pre>
+
+<pre><code>6.371 ms (157 allocations: 2.56 MiB)
+</code></pre>
+
+<pre><code class="julia">@btime dQr(β0)
+</code></pre>
+
+<pre><code>697.756 μs (14721 allocations: 1.21 MiB)
+200-element Array{Float64,1}:
+  3.0552341551261666 
+ -3.703726733687362  
+  0.3715568868430932 
+  3.956894771709235  
+ -1.267492763029427  
+ -1.2596334473978716 
+ -3.87541335368208   
+  4.691322097138853  
+  3.953436906729464  
+  0.13673098394946814
+ -4.8708896981560414 
+ -1.8043232527364557 
+ -0.12380551111522226
+  3.8435352558731815 
+ -0.30476221753640936
+ -3.810169643875577  
+  5.489681881682488  
+ -3.2714506956615272 
+  0.23089347447928965
+ -2.3142362250447617 
+ -6.321197818414207  
+  2.0415389266884456 
+ -5.47851586105034   
+  ⋮                  
+ -4.799271378967648  
+  0.6631052614880448 
+  0.7498662291835414 
+ -1.9859898632439001 
+  2.323160729746129  
+ -0.44363705936381936
+  7.555228139031207  
+  3.798880174930394  
+  1.0168581985184826 
+ -1.618428564662709  
+ -2.798821115677992  
+ -2.582388046048763  
+ -4.2169778655321455 
+ -2.5509263377564353 
+ -8.104040280259445  
+ -1.1565503904704633 
+  2.322001839158843  
+  0.6570509459823082 
+  8.605996485715515  
+  5.8435547337912706 
+ -9.870956052320663  
+  0.34898333813166404
 </code></pre>
 
 <h1 id="review-of-extremum-estimator-theory">Review of extremum estimator theory<a class="headerlink" href="#review-of-extremum-estimator-theory" title="Permanent link">&para;</a></h1>
-<p>This is based on @newey1994. You should already be familiar with this
+<p>This is based on [^1]. You should already be familiar with this
 from 627, so we will just state some basic &ldquo;high-level&rdquo; conditions for
 consistency and asymptotic normality. </p>
 <h2 id="consistency">Consistency<a class="headerlink" href="#consistency" title="Permanent link">&para;</a></h2>
@@ -230,23 +347,18 @@ Then $\hat{\theta} \inprob \theta_0$
 </div>
 
 <h2 id="asymptotic-normality">Asymptotic normality<a class="headerlink" href="#asymptotic-normality" title="Permanent link">&para;</a></h2>
-<div class="theorem">
-**Asymptotic normality for extremum estimators**: assume
-
-1. $\hat{\theta} \inprob \theta_0$
-
-2. $\theta_0 \in interior(\Theta)$
-
-3. $\hat{Q}_n(\theta)$ is twice continuously differentiable in open $N$
-   containing $\theta$, and $\sup_{\theta \in N} \Vert \nabla^2
-                             \hat{Q}_n(\theta) - H(\theta) \Vert
-                             \inprob 0$ with $H(\theta_0)$ nonsingular
-4. $\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
-
-Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma
-  H^{-1} \right)$
+<div class="admonition tip">
+<p class="admonition-title">Asymptotic normality for extremum estimators</p>
+<p>Assume
+    1. $\hat{\theta} \inprob \theta_0$
+    2. $\theta_0 \in interior(\Theta)$
+    3. $\hat{Q}<em N="N" _in="\in" _theta="\theta">n(\theta)$ is twice continuously differentiable in
+    open $N$ containing $\theta$, and 
+    $\sup</em> \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$ 
+    with $H(\theta_0)$ nonsingular
+    4. $\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
+Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma H^{-1} \right)$</p>
 </div>
-
 <p>Implementing this in Julia using automatic differentiation is pretty
 straightforward. </p>
 <pre><code class="julia">function logit_likei(β,y,x)
@@ -278,8 +390,30 @@ end
 avar=asymptotic_variance(θ-&gt;logit_likelihood(θ,y,x),
                          θ-&gt;ForwardDiff.jacobian(β-&gt;logit_likei(β,y,x),θ),βhat)
 display( avar.variance/n)
-display( -avar.invH/n)
-display(inv(avar.Σ)/n)
+</code></pre>
+
+<pre><code>3×3 Array{Float64,2}:
+ 0.00842182  0.00238017  0.00240573
+ 0.00238017  0.0091754   0.00277839
+ 0.00240573  0.00277839  0.00854414
+</code></pre>
+
+<pre><code class="julia">display( -avar.invH/n)
+</code></pre>
+
+<pre><code>3×3 Array{Float64,2}:
+ 0.00862015  0.00259025  0.00261028
+ 0.00259025  0.00893277  0.00290528
+ 0.00261028  0.00290528  0.0090623
+</code></pre>
+
+<pre><code class="julia">display(inv(avar.Σ)/n)
+</code></pre>
+
+<pre><code>3×3 Array{Float64,2}:
+ 0.00882758  0.00280193  0.00282753
+ 0.00280193  0.00870883  0.00304335
+ 0.00282753  0.00304335  0.00961269
 </code></pre>
 
 <p>For maximum likelihood, the information equality says $-H = \Sigma$,
@@ -288,17 +422,40 @@ are each consistent estimates of the variance of $\hat{\theta}$.</p>
 <p>The code above is for demonstration and learning. If we really wanted
 to estimate a logit for research, it would be better to use a
 well-tested package. Here&rsquo;s how to estimate  a logit using GLM.jl. </p>
-<p>```julia;  cache=true
-using GLM, DataFrames
+<pre><code class="julia">using GLM, DataFrames
 df = DataFrame(x)
 df[:y] = y
 glmest=glm(@formula(y ~ -1 + x1+x2+x3), df, Binomial(),LogitLink())
 display( glmest)
-display( vcov(glmest))</p>
-<pre><code>
-## Delta method
+</code></pre>
 
-In many models, we are interested in some transformation of the
+<pre><code>StatsModels.TableRegressionModel{GeneralizedLinearModel{GLM.GlmResp{Array{F
+loat64,1},Binomial{Float64},LogitLink},GLM.DensePredChol{Float64,LinearAlge
+bra.Cholesky{Float64,Array{Float64,2}}}},Array{Float64,2}}
+
+y ~ 0 + x1 + x2 + x3
+
+Coefficients:
+─────────────────────────────────────────────────────────────────
+    Estimate  Std. Error  z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
+─────────────────────────────────────────────────────────────────
+x1   1.11882   0.098751   11.3297    &lt;1e-29   0.925272    1.31237
+x2   1.0377    0.0937201  11.0723    &lt;1e-27   0.854012    1.22139
+x3   1.11172   0.0926264  12.0022    &lt;1e-32   0.930176    1.29327
+─────────────────────────────────────────────────────────────────
+</code></pre>
+
+<pre><code class="julia">display( vcov(glmest))
+</code></pre>
+
+<pre><code>3×3 Array{Float64,2}:
+ 0.00975176  0.00289551  0.00278883
+ 0.00289551  0.00878346  0.00249607
+ 0.00278883  0.00249607  0.00857965
+</code></pre>
+
+<h2 id="delta-method">Delta method<a class="headerlink" href="#delta-method" title="Permanent link">&para;</a></h2>
+<p>In many models, we are interested in some transformation of the
 parameters in addition to the parameters themselves. For example, in a
 logit, we might want to report marginal effects in addition to the
 coefficients. In structural models, we typically use the parameter
@@ -306,21 +463,19 @@ estimates to conduct counterfactual simulations. In many
 situations we are more interested these transformation(s) of
 parameters than in the parameters themselves. The delta method is one
 convenient way to approximate the distribution of transformations of 
-the model parameters. 
-
-&lt;div class=&quot;theorem&quot;&gt;
+the model parameters. </p>
+<div class="theorem">
 **Delta method** assume:
 1. $\sqrt{n} (\hat{\theta} - \theta_0) \indist N(0,\Omega)$
 2. $g: \R^k \to \R^m$ is continuously differentiable
 Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, \nabla
       g(\theta_0)^T \Omega \nabla g(\theta_0)$
-&lt;/div&gt;
+</div>
 
-The following code uses the delta method to plot a 90% pointwise
+<p>The following code uses the delta method to plot a 90% pointwise
 confidence band around the estimate marginal effect of one of the
-regressors. 
-```julia
-using LinearAlgebra
+regressors. </p>
+<pre><code class="julia">using LinearAlgebra
 function logit_mfx(β,x)
   ForwardDiff.jacobian(β-&gt; map(xb -&gt; cdf(Logistic(),xb), x*β), β)  
 end
@@ -339,13 +494,13 @@ vmfx = delta_method(β-&gt;logit_mfx(β,xmfx)[:,1], βhat, avar.variance/n)
 sdfx = sqrt.(diag(vmfx))
 
 using Plots
-Plots.pyplot()
+Plots.gr()
 plot(xmfx[:,1],mfx[:,1],ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,
      xlabel=&quot;x[1]&quot;, ylabel=&quot;dP(y=1|x)/dx[1]&quot;, legend=false,
          title=&quot;Marginal effect of x[1] when x[2:k]=0&quot;)
-
 </code></pre>
 
+<p><img alt="" src="../figures/extremumEstimation_7_1.png" /></p>
 <p>The same approach can be used to compute standard errors and
 confidence regions for the results of more complicated counterfactual
 simulations, as long as the associated simulations are smooth
@@ -354,21 +509,27 @@ natural to write simulations with outcomes that are not smooth in the
 parameters. For example, the following code uses simulation to
 calculate the change in the probability of $y$ from adding 0.1 to
 $x$.</p>
-<p>```julia; cache=true
-function counterfactual_sim(β, x, S)
+<pre><code class="julia">function counterfactual_sim(β, x, S)
   function onesim()
     e = rand(Logistic(), size(x)[1])
-    baseline= (x<em>β .+ e .&gt; 0)
-    counterfactual= ((x.+0.1)</em>β .+ e .&gt; 0)
+    baseline= (x*β .+ e .&gt; 0)
+    counterfactual= ((x.+0.1)*β .+ e .&gt; 0)
     mean(counterfactual.-baseline)
   end
   mean([onesim() for s in 1:S])
 end
-ForwardDiff.gradient(β-&gt;counterfactual_sim(β,x,10),βhat)</p>
-<pre><code>
-Here, the gradient is 0 because the simulation function is a
+ForwardDiff.gradient(β-&gt;counterfactual_sim(β,x,10),βhat)
+</code></pre>
+
+<pre><code>3-element Array{Float64,1}:
+ 0.0
+ 0.0
+ 0.0
+</code></pre>
+
+<p>Here, the gradient is 0 because the simulation function is a
 step-function. In this situation, an alternative to the delta method
-is the simulation based approach of @krinsky1986. The procedure is
+is the simulation based approach of [^2]. The procedure is
 quite simple. Suppose 
 $\sqrt{n}(\hat{\theta} - \theta_0) \indist N(0,\Omega)$,
 and you want to an estimate of the distribution of $g(\theta)$. 
@@ -376,10 +537,8 @@ Repeatedly draw $\theta_s \sim N(\hat{\theta}, \Omega/n)$ and compute
 $g(\theta_s)$. Use the distribution of $g(\theta_s)$ for
 inference. For example, a 90% confidence interval for $g(\theta)$
 would be the 5%-tile of $g(\theta_s)$ to the 95%-tile of
-$g(\theta_s)$. 
-
-```julia; cache=true
-Ω = avar.variance/n
+$g(\theta_s)$. </p>
+<pre><code class="julia">Ω = avar.variance/n
 Ω = (Ω+Ω')/2         # otherwise, it's not exactly symmetric due to
                      # floating point roundoff
 function kr_confint(g, θ, Ω, simulations; coverage=0.9)
@@ -388,7 +547,15 @@ function kr_confint(g, θ, Ω, simulations; coverage=0.9)
 end
 
 @show kr_confint(β-&gt;counterfactual_sim(β,x,10), βhat, Ω, 1000)
+</code></pre>
 
+<pre><code>kr_confint((β-&gt;begin
+            #= none:2 =#
+            counterfactual_sim(β, x, 10)
+        end), βhat, Ω, 1000) = [0.04559499999999999, 0.0538]
+</code></pre>
+
+<pre><code class="julia">
 # a delta method based confidence interval for the same thing
 function counterfactual_calc(β, x)
   baseline      = cdf.(Logistic(), x*β)
@@ -401,21 +568,29 @@ ghat = counterfactual_calc(βhat,x)
        sqrt(v)*quantile(Normal(),0.95)]
 </code></pre>
 
+<pre><code>[ghat + sqrt(v) * quantile(Normal(), 0.05), ghat + sqrt(v) * quantile(Norma
+l(), 0.95)] = Array{Float64,2}[[0.04784303236242767], [0.05204338359570169]
+]
+2-element Array{Array{Float64,2},1}:
+ [0.04784303236242767]
+ [0.05204338359570169]
+</code></pre>
+
 <h1 id="alternative-approaches-to-inference">Alternative approaches to inference<a class="headerlink" href="#alternative-approaches-to-inference" title="Permanent link">&para;</a></h1>
 <h2 id="identification-robust-inference">Identification robust inference<a class="headerlink" href="#identification-robust-inference" title="Permanent link">&para;</a></h2>
-<p>As discussed in section 9 of @newey1994, there are three classic types
+<p>As discussed in section 9 of [^1], there are three classic types
 of statistics for testing restrictions on parameters. Suppose you want
 to test $H_0: a(\theta) = 0$. Let $\hat{\theta}$ denote the
 unrestricted estimate, and let $\hat{\theta}^r$ denote the
 estimate of $\theta$ subject to the restriction. Wald test-statistics
 are based on $\hat{\theta}-\hat{\theta}^r$. Lagrange multiplier tests
 look at the distribution of the estimated Lagrange
-multiplier. Likelihood ratio (aka distance metric in @newey1994) tests
+multiplier. Likelihood ratio (aka distance metric in [^1]) tests
 look at $Q_n(\hat{\theta}) - Q_n(\hat{\theta}^r)$. If we consider
 testing $H_0: \theta = \vartheta$ for some fixed $\vartheta$, then the
 usual approach based on the asymptotic normality of $\hat{\theta}$
 discussed above is exactly the same as the Wald test of this
-restriction. As discussed by @newey1994, under standard assumptions,
+restriction. As discussed by [^1], under standard assumptions,
 all three testing approaches are asymptotically equivalent. However,
 the tests can and will differ in finite samples. More importantly, in
 the face of identification problems, Wald tests tend to break down,
@@ -478,9 +653,9 @@ where $m$ is the number of moments (dimension of $g_i(\theta)$). This
 is called the Anderson-Rubin test. Note that this result holds without
 any explicit nonsingular assumption about a Hessian. Hence, there is
 hope that this result would be true even with identification
-problems. Indeed, it is. @stock2000 first proposed using this test
-statistic for weakly identified GMM estimators. @stock2002 gives an
-overview of this test and related tests with a focus on linear IV. @caner2009</p>
+problems. Indeed, it is. [^3] first proposed using this test
+statistic for weakly identified GMM estimators. [^4] gives an
+overview of this test and related tests with a focus on linear IV. [^5]</p>
 <p>Typical usage of the AR test is to invert the test to construct a
 confidence region for $\theta$. For each $\theta \in \Theta$, 
 let 
@@ -571,39 +746,74 @@ function ar(θ,gi)
 end
 </code></pre>
 
-<p>```julia; cache=true
-opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
+<pre><code>ar (generic function with 1 method)
+</code></pre>
+
+<pre><code class="julia">opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
                 zeros(k), BFGS(), autodiff =:forward)
 @show β1 = opt1.minimizer
-display(gmmVar(β1, β-&gt;gi_ivshare(β,y,x,z),I))
-opteff = optimize(θ-&gt;gmmObj(θ,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(β1,y,x,z)))),
+</code></pre>
+
+<pre><code>β1 = opt1.minimizer = [0.8854521460123125, 1.1015460590183836]
+</code></pre>
+
+<pre><code class="julia">display(gmmVar(β1, β-&gt;gi_ivshare(β,y,x,z),I))
+</code></pre>
+
+<pre><code>2×2 Array{Float64,2}:
+  0.00929388  -0.00484851
+ -0.00484851   0.00580595
+</code></pre>
+
+<pre><code class="julia">opteff = optimize(θ-&gt;gmmObj(θ,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(β1,y,x,z)))),
                   zeros(k), BFGS(), autodiff =:forward)
 @show βeff = opteff.minimizer
-display(gmmVar(βeff,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(β1,y,x,z)))))</p>
-<p>ar_ivshare = θ-&gt;ar(θ,β-&gt;gi_ivshare(β,y,x,z))
+</code></pre>
+
+<pre><code>βeff = opteff.minimizer = [0.8873675836194421, 1.1005964866780753]
+</code></pre>
+
+<pre><code class="julia">display(gmmVar(βeff,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(β1,y,x,z)))))
+</code></pre>
+
+<pre><code>2×2 Array{Float64,2}:
+  0.00793016  -0.00417373
+ -0.00417373   0.00546305
+</code></pre>
+
+<pre><code class="julia">
+ar_ivshare = θ-&gt;ar(θ,β-&gt;gi_ivshare(β,y,x,z))
 optcue = optimize(ar_ivshare,
                   β0, BFGS(), autodiff =:forward)
 @show βcue = optcue.minimizer
-Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
-display(Vcue)</p>
-<pre><code>
-Now we compare confidence regions based on the Wald test, and from
-inverting the AR statistic.
+</code></pre>
 
-```julia
-using Sobol, Plots
+<pre><code>βcue = optcue.minimizer = [0.8873573700225673, 1.100600447231436]
+</code></pre>
+
+<pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
+display(Vcue)
+</code></pre>
+
+<pre><code>2×2 Array{Float64,2}:
+  0.00793018  -0.00417373
+ -0.00417373   0.0054631
+</code></pre>
+
+<p>Now we compare confidence regions based on the Wald test, and from
+inverting the AR statistic.</p>
+<pre><code class="julia">using Plots
 function plot_cr(β,V, AR)
   lb = β - sqrt.(diag(V))*5
   ub = β + sqrt.(diag(V))*5
   ntest = 1000
-  rng = SobolSeq(2)
-  βtest = [next!(rng).*(ub-lb) .+ lb for i in 1:ntest]
+  βtest = [rand().*(ub-lb) .+ lb for i in 1:ntest]
   arstat = AR.(βtest)
   βtest = vcat(βtest'...)
   crit = quantile(Chisq(size(z)[2]), 0.9)
   scatter(βtest[:,1],βtest[:,2], group=(arstat.&lt;crit), legend=false,
           markersize=4, markerstrokewidth=0.0, seriesalpha=0.8,
-          xlabel=&quot;\\beta_1&quot;, ylabel=&quot;\\beta_2&quot;)
+          xlabel=&quot;β₁&quot;, ylabel=&quot;β₂&quot;)
   scatter!([β0[1]], [β0[2]], markersize=8)
   b1 = lb[1]:(ub[1]-lb[1])/100:ub[1]
   b2 = lb[2]:(ub[2]-lb[2])/100:ub[2]
@@ -617,9 +827,9 @@ function plot_cr(β,V, AR)
            legend=false)
 end
 plot_cr(βcue,Vcue, ar_ivshare)
-
 </code></pre>
 
+<p><img alt="" src="../figures/extremumEstimation_12_1.png" /></p>
 <p>The two confidence regions above are not too different because the
 simulated data was strongly identified. Let&rsquo;s see what happens when we
 change the simulation to have weaker identification.</p>
@@ -631,12 +841,24 @@ ar_ivshare = θ-&gt;ar(θ,β-&gt;gi_ivshare(β,y,x,z))
 optcue = optimize(ar_ivshare,
                   β0, BFGS(), autodiff =:forward)
 @show βcue = optcue.minimizer
-Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
-display(Vcue)
-plot_cr(βcue,Vcue, ar_ivshare)
-
 </code></pre>
 
+<pre><code>βcue = optcue.minimizer = [4.1275887222753575e14, -4.996887901311256e14]
+</code></pre>
+
+<pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
+display(Vcue)
+</code></pre>
+
+<pre><code>2×2 Array{Float64,2}:
+  1.60676e29  -1.56508e29
+ -1.56508e29   1.54162e29
+</code></pre>
+
+<pre><code class="julia">plot_cr(βcue,Vcue, ar_ivshare)
+</code></pre>
+
+<p><img alt="" src="../figures/extremumEstimation_13_1.png" /></p>
 <p>Now the confidence regions are dramatically different. Does either one
 have correct coverage? Let&rsquo;s simulate to find the size of the AR and
 Wald tests of $H_0 : \beta = \beta_0$</p>
@@ -676,8 +898,193 @@ end
 πweak = ones(iv,k) .+ vcat(diagm(0=&gt;fill(0.1,k)),zeros(iv-k,k))  
 πstrong = vcat(diagm(0=&gt;ones(k)),ones(iv-k,k)) 
 @time pweak=vcat([sim_p(πweak) for s in 1:S]...)
-@time pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
+</code></pre>
 
+<pre><code>* Status: failure (reached maximum number of iterations) (line search fail
+ed)
+
+ * Candidate solution
+    Minimizer: [-6.90e+03, 7.08e+03]
+    Minimum:   1.036783e+00
+
+ * Found with
+    Algorithm:     Newton's Method (Trust Region)
+    Initial Point: [1.00e+00, 1.00e+00]
+
+ * Convergence measures
+    |x - x'|               = 2.41e+00 ≰ 0.0e+00
+    |x - x'|/|x'|          = 3.41e-04 ≰ 0.0e+00
+    |f(x) - f(x')|         = 1.14e-07 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 1.10e-07 ≰ 0.0e+00
+    |g(x)|                 = 2.41e-08 ≰ 1.0e-08
+
+ * Work counters
+    Seconds run:   0  (vs limit Inf)
+    Iterations:    1000
+    f(x) calls:    1001
+    ∇f(x) calls:   1001
+    ∇²f(x) calls:  1001
+
+ * Status: failure (reached maximum number of iterations) (line search fail
+ed)
+
+ * Candidate solution
+    Minimizer: [-3.24e+03, 3.14e+03]
+    Minimum:   2.215844e-01
+
+ * Found with
+    Algorithm:     Newton's Method (Trust Region)
+    Initial Point: [1.00e+00, 1.00e+00]
+
+ * Convergence measures
+    |x - x'|               = 1.09e+00 ≰ 0.0e+00
+    |x - x'|/|x'|          = 3.38e-04 ≰ 0.0e+00
+    |f(x) - f(x')|         = 2.33e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 1.05e-07 ≰ 0.0e+00
+    |g(x)|                 = 1.09e-08 ≰ 1.0e-08
+
+ * Work counters
+    Seconds run:   0  (vs limit Inf)
+    Iterations:    1000
+    f(x) calls:    1001
+    ∇f(x) calls:   1001
+    ∇²f(x) calls:  1001
+
+ * Status: failure (reached maximum number of iterations) (line search fail
+ed)
+
+ * Candidate solution
+    Minimizer: [-3.87e+03, 4.17e+03]
+    Minimum:   9.625180e-01
+
+ * Found with
+    Algorithm:     Newton's Method (Trust Region)
+    Initial Point: [1.00e+00, 1.00e+00]
+
+ * Convergence measures
+    |x - x'|               = 1.41e+00 ≰ 0.0e+00
+    |x - x'|/|x'|          = 3.39e-04 ≰ 0.0e+00
+    |f(x) - f(x')|         = 3.72e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 3.86e-08 ≰ 0.0e+00
+    |g(x)|                 = 1.41e-08 ≰ 1.0e-08
+
+ * Work counters
+    Seconds run:   0  (vs limit Inf)
+    Iterations:    1000
+    f(x) calls:    1001
+    ∇f(x) calls:   1001
+    ∇²f(x) calls:  1001
+
+ * Status: failure (reached maximum number of iterations) (line search fail
+ed)
+
+ * Candidate solution
+    Minimizer: [-3.91e+03, 3.60e+03]
+    Minimum:   4.046139e-01
+
+ * Found with
+    Algorithm:     Newton's Method (Trust Region)
+    Initial Point: [1.00e+00, 1.00e+00]
+
+ * Convergence measures
+    |x - x'|               = 1.32e+00 ≰ 0.0e+00
+    |x - x'|/|x'|          = 3.39e-04 ≰ 0.0e+00
+    |f(x) - f(x')|         = 3.24e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 8.01e-08 ≰ 0.0e+00
+    |g(x)|                 = 1.32e-08 ≰ 1.0e-08
+
+ * Work counters
+    Seconds run:   0  (vs limit Inf)
+    Iterations:    1000
+    f(x) calls:    1001
+    ∇f(x) calls:   1001
+    ∇²f(x) calls:  1001
+
+ * Status: failure (reached maximum number of iterations) (line search fail
+ed)
+
+ * Candidate solution
+    Minimizer: [-5.14e+03, 4.89e+03]
+    Minimum:   4.725809e-01
+
+ * Found with
+    Algorithm:     Newton's Method (Trust Region)
+    Initial Point: [1.00e+00, 1.00e+00]
+
+ * Convergence measures
+    |x - x'|               = 1.75e+00 ≰ 0.0e+00
+    |x - x'|/|x'|          = 3.39e-04 ≰ 0.0e+00
+    |f(x) - f(x')|         = 5.80e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 1.23e-07 ≰ 0.0e+00
+    |g(x)|                 = 1.74e-08 ≰ 1.0e-08
+
+ * Work counters
+    Seconds run:   0  (vs limit Inf)
+    Iterations:    1000
+    f(x) calls:    1001
+    ∇f(x) calls:   1001
+    ∇²f(x) calls:  1001
+
+ * Status: failure (reached maximum number of iterations) (line search fail
+ed)
+
+ * Candidate solution
+    Minimizer: [-6.95e+03, 6.94e+03]
+    Minimum:   1.102248e+00
+
+ * Found with
+    Algorithm:     Newton's Method (Trust Region)
+    Initial Point: [1.00e+00, 1.00e+00]
+
+ * Convergence measures
+    |x - x'|               = 2.37e+00 ≰ 0.0e+00
+    |x - x'|/|x'|          = 3.41e-04 ≰ 0.0e+00
+    |f(x) - f(x')|         = 1.12e-07 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 1.02e-07 ≰ 0.0e+00
+    |g(x)|                 = 2.37e-08 ≰ 1.0e-08
+
+ * Work counters
+    Seconds run:   0  (vs limit Inf)
+    Iterations:    1000
+    f(x) calls:    1001
+    ∇f(x) calls:   1001
+    ∇²f(x) calls:  1001
+
+ * Status: failure (reached maximum number of iterations) (line search fail
+ed)
+
+ * Candidate solution
+    Minimizer: [-2.90e+03, 3.10e+03]
+    Minimum:   1.210583e+00
+
+ * Found with
+    Algorithm:     Newton's Method (Trust Region)
+    Initial Point: [1.00e+00, 1.00e+00]
+
+ * Convergence measures
+    |x - x'|               = 1.05e+00 ≰ 0.0e+00
+    |x - x'|/|x'|          = 3.37e-04 ≰ 0.0e+00
+    |f(x) - f(x')|         = 2.05e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 1.70e-08 ≰ 0.0e+00
+    |g(x)|                 = 1.05e-08 ≰ 1.0e-08
+
+ * Work counters
+    Seconds run:   0  (vs limit Inf)
+    Iterations:    1000
+    f(x) calls:    1001
+    ∇f(x) calls:   1001
+    ∇²f(x) calls:  1001
+
+ 11.697473 seconds (26.58 M allocations: 2.808 GiB, 14.59% gc time)
+</code></pre>
+
+<pre><code class="julia">@time pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
+</code></pre>
+
+<pre><code>0.748456 seconds (909.21 k allocations: 599.878 MiB, 18.39% gc time)
+</code></pre>
+
+<pre><code class="julia">
 pgrid = 0:0.01:1
 plot(pgrid, p-&gt;mean( pstrong[:,1] .&lt;= p), legend=:topleft,
      label=&quot;AR, strong ID&quot;, style=:dash, color=:red,
@@ -696,19 +1103,19 @@ plot!(pgrid, p-&gt;mean( pweak[:,3] .&lt;= p),
       label=&quot;Wald I, weak ID&quot;, style=:solid, color=:green)
 
 plot!(pgrid,pgrid,alpha=0.1, label=&quot;&quot;)
-
 </code></pre>
 
+<p><img alt="" src="../figures/extremumEstimation_14_1.png" /></p>
 <p>We see that the Wald test has fairly large size distortions, even when
 identification is strong. The AR test has approximately correct size
 for both the weakly and strongly identified DGP. </p>
 <h3 id="other-identification-robust-tests">Other identification robust tests<a class="headerlink" href="#other-identification-robust-tests" title="Permanent link">&para;</a></h3>
 <p>There are also identification robust versions of likelihood ratio and
-lagrange multiplier test. @moreira2003 proposed a conditional
+lagrange multiplier test. [^6] proposed a conditional
 likelihood ratio (CLR) test for weakly identified linear IV
-models. @kleibergen2005 developed a Lagrange multiplier (often called
+models. [^7] developed a Lagrange multiplier (often called
 the KLM) test and extended Moreira&rsquo;s CLR test to weakly identified GMM
-models.  More recently, @andrews2015 and @andrews2017 showed the
+models.  More recently, [^8] and [^9] showed the
 validity of these tests under more general conditions. These tests are
 somewhat more complicated than the AR test, but they have the
 advantage that they are often more powerful. The AR test statistic has
@@ -718,20 +1125,20 @@ distributions (as does the Wald statistic), where $k$ is the number of
 parameters. Consequently, when the model is overidentified, the CLR
 and LM tests are more powerful than the AR test. </p>
 <p>Here is an implementation of the KLM and CLR statistics. The names of
-variables roughly follows the notation of @andrews2017.
-```julia; cache=true
-using ForwardDiff, Plots, Optim</p>
-<p>function statparts(θ,gi)
+variables roughly follows the notation of [^9].</p>
+<pre><code class="julia">using ForwardDiff, Plots, Optim
+
+function statparts(θ,gi)
   # compute common components of klm, rk, &amp; clr stats
   # follows notation of Andrews &amp; Guggenberger 2017, section 3.1
   function P(A::AbstractMatrix) # projection matrix
-    A<em>pinv(A&rsquo;</em>A)<em>A&rsquo;
+    A*pinv(A'*A)*A'
   end
   giθ = gi(θ)
-  p = length(θ)  <br />
+  p = length(θ)    
   (n, k) = size(giθ)
-  Ω = cov(giθ)<br />
-  gn=mean(gi(θ), dims=1)&rsquo;
+  Ω = cov(giθ)  
+  gn=mean(gi(θ), dims=1)'
   #G = ForwardDiff.jacobian(θ-&gt;mean(gi(θ),dims=1),θ)
   Gi= ForwardDiff.jacobian(gi,θ)
   Gi = reshape(Gi, n , k, p)
@@ -740,41 +1147,48 @@ using ForwardDiff, Plots, Optim</p>
   D = zeros(eltype(G),k, p)
   for j in 1:p
     for i in 1:n
-      Γ[j,:,:] += (Gi[i,:,j] .- G[1,:,j]) * giθ[i,:]&rsquo;
+      Γ[j,:,:] += (Gi[i,:,j] .- G[1,:,j]) * giθ[i,:]'
     end
     Γ[j,:,:] ./= n
-    D[:,j] = G[1,:,j] - Γ[j,:,:]</em>inv(Ω)*gn
+    D[:,j] = G[1,:,j] - Γ[j,:,:]*inv(Ω)*gn
   end
   return(n,k,p,gn, Ω, D, P)
-end</p>
-<p>function klm(θ,gi)
+end
+
+function klm(θ,gi)
   (n,k,p,gn, Ω, D, P) = statparts(θ,gi)
-  lm = n<em>(gn&rsquo;</em>Ω^(-1/2)<em>P(Ω^(-1/2)</em>D)<em>Ω^(-1/2)</em>gn)[1]
-end</p>
-<p>function clr(θ,gi)
-  (n,k,p,gn, Ω, D, P) = statparts(θ,gi)</p>
-<p>rk = eigmin(n<em>D&rsquo;</em>inv(Ω)<em>D)
-  AR  = (n</em>gn&rsquo;<em>inv(Ω)</em>gn)[1]
-  lm = (n<em>(gn&rsquo;</em>Ω^(-1/2)<em>P(Ω^(-1/2)</em>D)<em>Ω^(-1/2)</em>gn))[1]<br />
-  lr = 1/2<em>(AR - rk + sqrt( (AR-rk)^2 + 4</em>lm*rk))</p>
-<p># simulate to find p-value
+  lm = n*(gn'*Ω^(-1/2)*P(Ω^(-1/2)*D)*Ω^(-1/2)*gn)[1]
+end
+
+function clr(θ,gi)
+  (n,k,p,gn, Ω, D, P) = statparts(θ,gi)
+
+  rk = eigmin(n*D'*inv(Ω)*D)
+  AR  = (n*gn'*inv(Ω)*gn)[1]
+  lm = (n*(gn'*Ω^(-1/2)*P(Ω^(-1/2)*D)*Ω^(-1/2)*gn))[1]  
+  lr = 1/2*(AR - rk + sqrt( (AR-rk)^2 + 4*lm*rk))
+
+  # simulate to find p-value
   S = 5000
   function randc(k,p,r,S)
     χp = rand(Chisq(p),S)
     χkp = rand(Chisq(k-p),S)
-    0.5.<em>(χp .+ χkp .- r .+
-          sqrt.((χp .+ χkp .- r).^2 .+ 4 .</em> χp.*r))
+    0.5.*(χp .+ χkp .- r .+
+          sqrt.((χp .+ χkp .- r).^2 .+ 4 .* χp.*r))
   end
   csim = randc(k,p,rk,S)
   pval = mean(csim.&lt;=lr)
-end</p>
-<pre><code>
-```julia; cache=false
-function plot_cr(β,V, tests::AbstractArray{Function}, labels; ngrid=30)
+end
+</code></pre>
+
+<pre><code>clr (generic function with 1 method)
+</code></pre>
+
+<pre><code class="julia">function plot_cr(β,V, tests::AbstractArray{Function}, labels; ngrid=30)
   lb = β - sqrt.(diag(V))*5
   ub = β + sqrt.(diag(V))*5
   fig=scatter([β0[1]], [β0[2]], markersize=8, legend=false,
-              xlabel=&quot;β1&quot;, ylabel=&quot;β2&quot;)
+              xlabel=&quot;β₁&quot;, ylabel=&quot;β₂&quot;)
   ntest = 1000
   βtest = [rand(2).*(ub-lb) .+ lb for i in 1:ntest]
   pval = tests[1].(βtest)
@@ -797,31 +1211,36 @@ function plot_cr(β,V, tests::AbstractArray{Function}, labels; ngrid=30)
 end
 </code></pre>
 
+<pre><code>plot_cr (generic function with 2 methods)
+</code></pre>
+
 <p>Here&rsquo;s what the confidence regions look like when identification is
 fairly weak. The green lines are the Wald confidence region, blue is
-AR, red is KLM, and black is CLR. 
-```julia; cache=false
-n = 50
+AR, red is KLM, and black is CLR. </p>
+<pre><code class="julia">n = 50
 k = 2
 iv =3 
 π0 = vcat(diagm(0=&gt;ones(k)),0.2*ones(iv-k,k)) 
-ρ = 0.5<br />
+ρ = 0.5  
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
                 β0, BFGS(), autodiff =:forward)
 β1 = opt1.minimizer
-V1 = gmmVar(β1,β-&gt;gi_ivshare(β,y,x,z),I)</p>
-<p>pklm = θ-&gt;cdf(Chisq(length(βcue)),klm(θ, β-&gt;gi_ivshare(β,y,x,z)))
+V1 = gmmVar(β1,β-&gt;gi_ivshare(β,y,x,z),I)
+
+
+pklm = θ-&gt;cdf(Chisq(length(βcue)),klm(θ, β-&gt;gi_ivshare(β,y,x,z)))
 par  = θ-&gt;cdf(Chisq(size(z)[2]), ar(θ, β-&gt;gi_ivshare(β,y,x,z)))
 pclr  = θ-&gt;clr(θ, β-&gt;gi_ivshare(β,y,x,z))
-pwald = θ -&gt; cdf(Chisq(length(β1)),(θ-β1)&rsquo;<em>inv(V1)</em>(θ-β1))
+pwald = θ -&gt; cdf(Chisq(length(β1)),(θ-β1)'*inv(V1)*(θ-β1))
 plot_cr(β1,V1, [pclr, pklm, par, pwald],
-        [&ldquo;CLR&rdquo;,&rdquo;KLM&rdquo;,&rdquo;AR&rdquo;,&rdquo;Wald&rdquo;], ngrid=40)</p>
-<pre><code>
-Here's what the confidence regions look like when identification is
-stronger.
-```julia; cache=false
-n = 50
+        [&quot;CLR&quot;,&quot;KLM&quot;,&quot;AR&quot;,&quot;Wald&quot;], ngrid=40)
+</code></pre>
+
+<p><img alt="" src="../figures/extremumEstimation_17_1.png" /></p>
+<p>Here&rsquo;s what the confidence regions look like when identification is
+stronger.</p>
+<pre><code class="julia">n = 50
 k = 2
 iv =3 
 π0 = vcat(diagm(0=&gt;ones(k)),ones(iv-k,k)) 
@@ -841,9 +1260,9 @@ plot_cr(β1,V1, [pclr, pklm, par, pwald],
         [&quot;CLR&quot;,&quot;KLM&quot;,&quot;AR&quot;,&quot;Wald&quot;], ngrid=40)
 </code></pre>
 
-<p>Check the size
-```julia; cache=false
-S = 300
+<p><img alt="" src="../figures/extremumEstimation_18_1.png" /></p>
+<p>Check the size</p>
+<pre><code class="julia">S = 300
 n = 100
 function sim_p(π0)
   (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
@@ -854,40 +1273,43 @@ function sim_p(π0)
                     β0, NewtonTrustRegion(), autodiff =:forward)
   end
   β1 = opt1.minimizer
-  V1 = gmmVar(β1,β-&gt;gi_ivshare(β,y,x,z),I)</p>
-<p>pklm = θ-&gt;cdf(Chisq(length(β1)),klm(θ, β-&gt;gi_ivshare(β,y,x,z)))
+  V1 = gmmVar(β1,β-&gt;gi_ivshare(β,y,x,z),I)
+
+  pklm = θ-&gt;cdf(Chisq(length(β1)),klm(θ, β-&gt;gi_ivshare(β,y,x,z)))
   par  = θ-&gt;cdf(Chisq(size(z)[2]), ar(θ, β-&gt;gi_ivshare(β,y,x,z)))
   pclr  = θ-&gt;clr(θ, β-&gt;gi_ivshare(β,y,x,z))
-  pwald = θ -&gt; cdf(Chisq(length(β1)),(θ-β1)&rsquo;<em>inv(V1)</em>(θ-β1))<br />
+  pwald = θ -&gt; cdf(Chisq(length(β1)),(θ-β1)'*inv(V1)*(θ-β1))  
   [par(β0) pwald(β0) pclr(β0) pklm(β0)]
 end
-πweak = ones(iv,k) .+ vcat(diagm(0=&gt;fill(0.1,k)),zeros(iv-k,k))<br />
+πweak = ones(iv,k) .+ vcat(diagm(0=&gt;fill(0.1,k)),zeros(iv-k,k))  
 πstrong = vcat(diagm(0=&gt;ones(k)),ones(iv-k,k)) 
-pweak=vcat([sim_p(πweak ) for s in 1:S]&hellip;)
-pstrong=vcat([sim_p(πstrong) for s in 1:S]&hellip;)</p>
-<p>pgrid = 0:0.01:1
-plot(pgrid, p-&gt;mean( pstrong[:,1] .&lt;= p), legend=:topleft,
-     label=&rdquo;AR, strong ID&rdquo;, style=:dash, color=:blue,
-     xlabel=&rdquo;p&rdquo;, ylabel=&rdquo;P(p value &lt; p)&rdquo;,
-     title=&rdquo;Simulated CDF of p-values&rdquo;) 
-plot!(pgrid, p-&gt;mean( pstrong[:,2] .&lt;= p),
-      label=&rdquo;Wald I, strong ID&rdquo;, style=:dash, color=:green)
-plot!(pgrid, p-&gt;mean( pstrong[:,3] .&lt;= p),
-      label=&rdquo;CLR, strong ID&rdquo;, style=:dash, color=:black)
-plot!(pgrid, p-&gt;mean( pstrong[:,4] .&lt;= p),
-      label=&rdquo;KLM, strong ID&rdquo;, style=:dash, color=:red)</p>
-<p>plot!(pgrid, p-&gt;mean( pweak[:,1] .&lt;= p),
-      label=&rdquo;AR, weak ID&rdquo;, style=:solid, color=:blue)
-plot!(pgrid, p-&gt;mean( pweak[:,2] .&lt;= p),
-      label=&rdquo;Wald I, weak ID&rdquo;, style=:solid, color=:green)
-plot!(pgrid, p-&gt;mean( pweak[:,3] .&lt;= p),
-      label=&rdquo;CLR, weak ID&rdquo;, style=:solid, color=:black)
-plot!(pgrid, p-&gt;mean( pweak[:,4] .&lt;= p),
-      label=&rdquo;KLM, weak ID&rdquo;, style=:solid, color=:red)
-plot!(pgrid,pgrid,alpha=0.1, label=&rdquo;&ldquo;)</p>
-<p>```</p>
-<!--- Add details and example code for KLM & CLR tests--->
+pweak=vcat([sim_p(πweak ) for s in 1:S]...)
+pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 
+pgrid = 0:0.01:1
+plot(pgrid, p-&gt;mean( pstrong[:,1] .&lt;= p), legend=:topleft,
+     label=&quot;AR, strong ID&quot;, style=:dash, color=:blue,
+     xlabel=&quot;p&quot;, ylabel=&quot;P(p value &lt; p)&quot;,
+     title=&quot;Simulated CDF of p-values&quot;) 
+plot!(pgrid, p-&gt;mean( pstrong[:,2] .&lt;= p),
+      label=&quot;Wald I, strong ID&quot;, style=:dash, color=:green)
+plot!(pgrid, p-&gt;mean( pstrong[:,3] .&lt;= p),
+      label=&quot;CLR, strong ID&quot;, style=:dash, color=:black)
+plot!(pgrid, p-&gt;mean( pstrong[:,4] .&lt;= p),
+      label=&quot;KLM, strong ID&quot;, style=:dash, color=:red)
+
+plot!(pgrid, p-&gt;mean( pweak[:,1] .&lt;= p),
+      label=&quot;AR, weak ID&quot;, style=:solid, color=:blue)
+plot!(pgrid, p-&gt;mean( pweak[:,2] .&lt;= p),
+      label=&quot;Wald I, weak ID&quot;, style=:solid, color=:green)
+plot!(pgrid, p-&gt;mean( pweak[:,3] .&lt;= p),
+      label=&quot;CLR, weak ID&quot;, style=:solid, color=:black)
+plot!(pgrid, p-&gt;mean( pweak[:,4] .&lt;= p),
+      label=&quot;KLM, weak ID&quot;, style=:solid, color=:red)
+plot!(pgrid,pgrid,alpha=0.1, label=&quot;&quot;)
+</code></pre>
+
+<p><img alt="" src="../figures/extremumEstimation_19_1.png" /></p>
 <h2 id="bootstrap">Bootstrap<a class="headerlink" href="#bootstrap" title="Permanent link">&para;</a></h2>
 <p>The bootstrap and related simulation methods can also be used for
 inference. We will look at these in more detail in the next set of notes.</p>
