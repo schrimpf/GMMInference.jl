@@ -1,6 +1,6 @@
 using Documenter, GMMInference, DocumenterMarkdown
 
-runweave=true
+runweave=true 
 runnotebook=false
 if runweave
   using Weave
@@ -9,10 +9,10 @@ if runweave
     builddir=joinpath(dirname(Base.pathof(GMMInference)),"..","docs","build")
     mkpath(builddir)
     cd(builddir)
-    jmdfiles = filter(x->occursin(".jmd",x), readdir(joinpath("..","jmd")))
+    jmdfiles = filter(x->occursin(r".jmd$",x), readdir(joinpath("..","jmd")))
     for f in jmdfiles 
       weave(joinpath("..","jmd",f),out_path=joinpath("..","build"),
-            cache=:user,
+            cache=:refresh,
             cache_path=joinpath("..","weavecache"),
             doctype="github", mod=Main,
             args=Dict("md" => true))
@@ -21,7 +21,7 @@ if runweave
                  nbconvert_options="--allow-errors")
       end
     end
-  finally 
+  finally  
     cd(wd)
   end
   if (isfile("build/temp.md"))

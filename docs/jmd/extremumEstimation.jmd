@@ -39,9 +39,9 @@ markdown = try
 catch
   false
 end
-if markdown
-  ENV["GKSwstype"]="nul"
-end
+#if markdown
+#  ENV["GKSwstype"]="nul"
+#end
 ```
 
 # Introduction
@@ -76,7 +76,7 @@ $$
 \frac{1}{n} \sum_{i=1}^n (y_i - h(x_i,\theta))^2.  
 $$ 
 
-See @newey1994 for more details and examples.
+See [@newey1994] for more details and examples.
 
 ## Example: logit
 
@@ -84,7 +84,8 @@ As a simple example, let's look look at some code for estimating a
 logit.
 
 ```julia
-using Distributions, Optim, ForwardDiff, BenchmarkTools
+using Distributions, Optim, BenchmarkTools
+import ForwardDiff
 function simulate_logit(observations, β)
   x = randn(observations, length(β))
   y = (x*β + rand(Logistic(), observations)) .>= 0.0
@@ -114,9 +115,9 @@ Now we maximize the likelihood using a few different algorithms from [Optim.jl](
 
 ### Aside: Reverse mode automatic differentiation
 
-For functions $f:\R^n \to \R^m$, the work for forward
-automatic differentiation increases linearly with $n$. This is because
-forward automatic differentiation applies the chain rule to each of the $n$
+For functions $f:\R^n \to \R^m$, the work for forward automatic
+differentiation increases linearly with $n$. This is because forward
+automatic differentiation applies the chain rule to each of the $n$
 inputs. An alternative, is reverse automatic differentiation. Reverse
 automatic differentiation is also based on the chain rule, but it
 works backward from $f$ through intermediate steps back to $x$. The
@@ -125,73 +126,75 @@ have $m=1$, reverse automatic differentiation can often work well. The
 downsides of reverse automatic differentiation are that: (1) it can
 require a large amount of memory and (2) it is more difficult to
 implement. There are handful of Julia packages that provide reverse
-automatic differentiation, but they all have some limitations in terms
-of what functions thay can differentiate. Flux.jl and JuMP.jl, which were included
-as examples in the Solvers, Optimizers, and Automatic Differentiation
-notebook, uses reverse automatic differentiation. ReverseDiff.jl is
-another package for reverse automatic differentiation. ReverseDiff.jl
-places fewer restrictions on the functions that it can differentiate,
-but its creators no longer plan to update it.
+automatic differentiation, but they have some limitations in terms of
+what functions thay can differentiate. Flux.jl and Zygote.jl are two such packages.
+
 
 ```julia; cache=true
-using ReverseDiff, Optim, BenchmarkTools
-dQr = β->ReverseDiff.gradient(Q,β)
+using Optim, BenchmarkTools
+import Zygote
+dQr = β->Zygote.gradient(Q,β)[1]
 dQf = β->ForwardDiff.gradient(Q,β)
 
-hcat(dQr(β0) , dQf(β0))
+@show dQr(β0) ≈ dQf(β0)
 
-@btime optimize(Q, dQf, zeros(k), BFGS(); inplace=false)
-@btime optimize(Q, dQr, zeros(k), BFGS(); inplace=false)
+@btime dQf(β0)
+@btime dQr(β0)
 
-k = 100
+n = 500
+k = 200
 β0 = ones(k)
 (y,x) = simulate_logit(n,β0)
 Q = β -> -logit_likelihood(β,y,x)
-dQr = β->ReverseDiff.gradient(Q,β)
+dQr = β->Zygote.gradient(Q,β)[1]
 dQf = β->ForwardDiff.gradient(Q,β)
-hcat(dQr(β0) , dQf(β0))
-@btime optimize(Q, dQf, zeros(k), BFGS(); inplace=false)
-@btime optimize(Q, dQr, zeros(k), BFGS(); inplace=false)
+@show dQr(β0) ≈dQf(β0)
+@btime dQf(β0);
+@btime dQr(β0);
 ```
 
 # Review of extremum estimator theory
 
-This is based on @newey1994. You should already be familiar with this
+This is based on [@newey1994]. You should already be familiar with this
 from 627, so we will just state some basic "high-level" conditions for
 consistency and asymptotic normality. 
 
 ## Consistency
 
-<div class="theorem">
-**Consistency for extremum estimators**: assume
 
-1. $\hat{Q}_n(\theta)$ converges uniformly in probability to
-   $Q_0(\theta)$
+!!! tip "**Theorem:** consistency for extremum estimators"
+    Assume
 
-2. $Q_0(\theta)$ is uniquely maximized at $\theta_0$.
+    1. $\hat{Q}_n(\theta)$ converges uniformly in probability to
+    $Q_0(\theta)$
 
-3. $\Theta$ is compact and $Q_0(\theta)$ is continuous.
+    2. $Q_0(\theta)$ is uniquely maximized at $\theta_0$.
 
-Then $\hat{\theta} \inprob \theta_0$
-</div>
+    3. $\Theta$ is compact and $Q_0(\theta)$ is continuous.
 
+    Then $\hat{\theta} \inprob \theta_0$
+    
 
 ## Asymptotic normality
 
 
-!!! tipe "Asymptotic normality for extremum estimators"
+!!! tip "**Theorem:** asymptotic normality for extremum estimators"
     Assume
-        1. $\hat{\theta} \inprob \theta_0$
-        2. $\theta_0 \in interior(\Theta)$
-        3. $\hat{Q}_n(\theta)$ is twice continuously differentiable in
-        open $N$ containing $\theta$, and 
-        $\sup_{\theta \in N} \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$ 
-        with $H(\theta_0)$ nonsingular
-        4. $\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
+    
+    1. $\hat{\theta} \inprob \theta_0$
+        
+    2. $\theta_0 \in interior(\Theta)$
+        
+    3. $\hat{Q}_n(\theta)$ is twice continuously differentiable in
+    open $N$ containing $\theta$ , and 
+    $\sup_{\theta \in N} \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$ 
+    with $H(\theta_0)$ nonsingular
+        
+    4. $\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
+       
     Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma H^{-1} \right)$
 
-Implementing this in Julia using automatic differentiation is pretty
-straightforward. 
+Implementing this in Julia using automatic differentiation is straightforward. 
 
 ```julia
 function logit_likei(β,y,x)
@@ -256,13 +259,14 @@ parameters than in the parameters themselves. The delta method is one
 convenient way to approximate the distribution of transformations of 
 the model parameters. 
 
-<div class="theorem">
-**Delta method** assume:
-1. $\sqrt{n} (\hat{\theta} - \theta_0) \indist N(0,\Omega)$
-2. $g: \R^k \to \R^m$ is continuously differentiable
-Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, \nabla
-      g(\theta_0)^T \Omega \nabla g(\theta_0)$
-</div>
+!!! tip "**Theorem:** Delta method"
+    Assume:
+    
+    1. $\sqrt{n} (\hat{\theta} - \theta_0) \indist N(0,\Omega)$
+    
+    2. $g: \R^k \to \R^m$ is continuously differentiable
+    
+    Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, \nabla g(\theta_0)^T \Omega \nabla g(\theta_0)$
 
 The following code uses the delta method to plot a 90% pointwise
 confidence band around the estimate marginal effect of one of the
@@ -287,10 +291,10 @@ mfx = logit_mfx(βhat,xmfx)
 vmfx = delta_method(β->logit_mfx(β,xmfx)[:,1], βhat, avar.variance/n)
 sdfx = sqrt.(diag(vmfx))
 
-using Plots
-Plots.pyplot()
+using Plots, LaTeXStrings
+Plots.gr()
 plot(xmfx[:,1],mfx[:,1],ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,
-     xlabel="x[1]", ylabel="dP(y=1|x)/dx[1]", legend=false,
+     xlabel=L"x_1", ylabel=L"\frac{\partial}{\partial x_1}P(y=1|x)", legend=false,
          title="Marginal effect of x[1] when x[2:k]=0")
 
 ```
@@ -319,7 +323,7 @@ ForwardDiff.gradient(β->counterfactual_sim(β,x,10),βhat)
 
 Here, the gradient is 0 because the simulation function is a
 step-function. In this situation, an alternative to the delta method
-is the simulation based approach of @krinsky1986. The procedure is
+is the simulation based approach of [@krinsky1986]. The procedure is
 quite simple. Suppose 
 $\sqrt{n}(\hat{\theta} - \theta_0) \indist N(0,\Omega)$,
 and you want to an estimate of the distribution of $g(\theta)$. 
@@ -356,19 +360,19 @@ ghat = counterfactual_calc(βhat,x)
 
 ## Identification robust inference
 
-As discussed in section 9 of @newey1994, there are three classic types
+As discussed in section 9 of [@newey1994], there are three classic types
 of statistics for testing restrictions on parameters. Suppose you want
 to test $H_0: a(\theta) = 0$. Let $\hat{\theta}$ denote the
 unrestricted estimate, and let $\hat{\theta}^r$ denote the
 estimate of $\theta$ subject to the restriction. Wald test-statistics
 are based on $\hat{\theta}-\hat{\theta}^r$. Lagrange multiplier tests
 look at the distribution of the estimated Lagrange
-multiplier. Likelihood ratio (aka distance metric in @newey1994) tests
+multiplier. Likelihood ratio (aka distance metric in [@newey1994]) tests
 look at $Q_n(\hat{\theta}) - Q_n(\hat{\theta}^r)$. If we consider
 testing $H_0: \theta = \vartheta$ for some fixed $\vartheta$, then the
 usual approach based on the asymptotic normality of $\hat{\theta}$
 discussed above is exactly the same as the Wald test of this
-restriction. As discussed by @newey1994, under standard assumptions,
+restriction. As discussed by [@newey1994], under standard assumptions,
 all three testing approaches are asymptotically equivalent. However,
 the tests can and will differ in finite samples. More importantly, in
 the face of identification problems, Wald tests tend to break down,
@@ -428,9 +432,9 @@ where $m$ is the number of moments (dimension of $g_i(\theta)$). This
 is called the Anderson-Rubin test. Note that this result holds without
 any explicit nonsingular assumption about a Hessian. Hence, there is
 hope that this result would be true even with identification
-problems. Indeed, it is. @stock2000 first proposed using this test
-statistic for weakly identified GMM estimators. @stock2002 gives an
-overview of this test and related tests with a focus on linear IV. @caner2009
+problems. Indeed, it is. [@stock2000] first proposed using this test
+statistic for weakly identified GMM estimators. [@stock2002] gives an
+overview of this test and related tests with a focus on linear IV. [@caner2009]
 
 Typical usage of the AR test is to invert the test to construct a
 confidence region for $\theta$. For each $\theta \in \Theta$, 
@@ -480,11 +484,11 @@ This is the moment condition we will use to estimate $\beta$.
 First, we will simulate the model, then estimate it. This code looks
 at three variants of GMM. First, it computes an estimate with 
 $W_n = I$. Second, it computes an effeciently weighted estimated with 
-$W_n = \widehat{Var}( \nabla g_i(\hat{\theta}_{(1)}) )$, where
+$W_n = \widehat{Var}( \nabla g_i(\hat{\theta}_{(1)}) )$ , where
 $\hat{\theta}_{(1)}$ is the first estimate. Third, it computes the
 continuous updating estimator, which uses $AR(\theta)$ as the
-objective function ($W$ is "continuously updated" to be 
-$\widehat{Var}( \nabla g_i(\theta))$). 
+objective function ( $W$ is "continuously updated" to be 
+$\widehat{Var}( \nabla g_i(\theta))$ ). 
 
 ```julia
 using Optim, ForwardDiff, LinearAlgebra, Distributions
@@ -500,7 +504,7 @@ n = 100
 k = 2
 iv = 3
 β0 = ones(k)
-π0 = vcat(diagm(0=>ones(k)),ones(iv-k,k)) 
+π0 = vcat(5*I,ones(iv-k,k)) 
 ρ = 0.5  
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 
@@ -555,22 +559,24 @@ function plot_cr(β,V, AR)
   lb = β - sqrt.(diag(V))*5
   ub = β + sqrt.(diag(V))*5
   ntest = 1000
-  βtest = [rand().*(ub-lb) .+ lb for i in 1:ntest]
+  βtest = [rand(length(β)).*(ub-lb) .+ lb for i in 1:ntest]
   arstat = AR.(βtest)
   βtest = vcat(βtest'...)
   crit = quantile(Chisq(size(z)[2]), 0.9)
   scatter(βtest[:,1],βtest[:,2], group=(arstat.<crit), legend=false,
           markersize=4, markerstrokewidth=0.0, seriesalpha=0.8,
-          xlabel="\\beta_1", ylabel="\\beta_2")
+          xlabel=L"\beta_1", ylabel=L"\beta_2")
   scatter!([β0[1]], [β0[2]], markersize=8)
   b1 = lb[1]:(ub[1]-lb[1])/100:ub[1]
   b2 = lb[2]:(ub[2]-lb[2])/100:ub[2]
   arf = (a,b) -> cdf(Chisq(size(z)[2]),AR([a,b]))
-  contour!(b1,b2,arf, levels = [0.75,0.9, 0.95, 0.99],
-           contour_labels=true, legend=false, c=cgrad([:black,:black],[0.0,1.0]))
+  contour!(b1,b2,arf, levels = [0.9, 0.95],
+           contour_labels=false, legend=false,
+           label="AR CI",
+           c=cgrad([:black,:black],[0.0,1.0]))
   waldf = (a,b) -> cdf(Chisq(length(βcue)),([a,b]-βcue)'*inv(Vcue)*([a,b]-βcue))
-  contour!(b1,b2,waldf, levels = [0.9, 0.95, 0.99],
-           contour_labels=true,
+  contour!(b1,b2,waldf, levels = [0.9, 0.95],
+           contour_labels=false,
            label="Wald CI", c=cgrad([:red,:red], [0.0,1.0]),
            legend=false)
 end
@@ -584,7 +590,7 @@ change the simulation to have weaker identification.
 
 ```julia
 # make π0 nearly rank-deficient
-π0 = ones(iv,k) .+ vcat(diagm(0=>fill(0.1,k)),zeros(iv-k,k))  
+π0 = ones(iv,k) .+ vcat(I*0.05,zeros(iv-k,k))  
 ρ = 0.5  
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 ar_ivshare = θ->ar(θ,β->gi_ivshare(β,y,x,z))
@@ -601,7 +607,7 @@ Now the confidence regions are dramatically different. Does either one
 have correct coverage? Let's simulate to find the size of the AR and
 Wald tests of $H_0 : \beta = \beta_0$
 
-```julia
+```julia; cache=true
 S = 500
 n = 100
 function sim_p(π0)
@@ -635,8 +641,8 @@ function sim_p(π0)
   waldp1 = θ->(1.0-cdf(Chisq(length(β1)),(θ-β1)'*inv(V1)*(θ-β1)))
   [arp(β0) waldp(β0) waldp1(β0)]
 end
-πweak = ones(iv,k) .+ vcat(diagm(0=>fill(0.1,k)),zeros(iv-k,k))  
-πstrong = vcat(diagm(0=>ones(k)),ones(iv-k,k)) 
+πweak = ones(iv,k) .+ vcat(diagm(0=>fill(0.01,k)),zeros(iv-k,k))  
+πstrong = vcat(5*diagm(0=>ones(k)),ones(iv-k,k)) 
 @time pweak=vcat([sim_p(πweak) for s in 1:S]...)
 @time pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 
@@ -668,11 +674,11 @@ for both the weakly and strongly identified DGP.
 ### Other identification robust tests
 
 There are also identification robust versions of likelihood ratio and
-lagrange multiplier test. @moreira2003 proposed a conditional
+lagrange multiplier test. [@moreira2003] proposed a conditional
 likelihood ratio (CLR) test for weakly identified linear IV
-models. @kleibergen2005 developed a Lagrange multiplier (often called
+models. [@kleibergen2005] developed a Lagrange multiplier (often called
 the KLM) test and extended Moreira's CLR test to weakly identified GMM
-models.  More recently, @andrews2015 and @andrews2017 showed the
+models.  More recently, [@andrews2015] and [@andrews2017] showed the
 validity of these tests under more general conditions. These tests are
 somewhat more complicated than the AR test, but they have the
 advantage that they are often more powerful. The AR test statistic has
@@ -684,8 +690,8 @@ and LM tests are more powerful than the AR test.
 
 
 Here is an implementation of the KLM and CLR statistics. The names of
-variables roughly follows the notation of @andrews2017.
-```julia; cache=true
+variables roughly follows the notation of [@andrews2017].
+```julia; cache=false
 using ForwardDiff, Plots, Optim
 
 function statparts(θ,gi)
@@ -746,7 +752,7 @@ function plot_cr(β,V, tests::AbstractArray{Function}, labels; ngrid=30)
   lb = β - sqrt.(diag(V))*5
   ub = β + sqrt.(diag(V))*5
   fig=scatter([β0[1]], [β0[2]], markersize=8, legend=false,
-              xlabel="β1", ylabel="β2")
+              xlabel=L"\beta_1", ylabel=L"\beta_2")
   ntest = 1000
   βtest = [rand(2).*(ub-lb) .+ lb for i in 1:ntest]
   pval = tests[1].(βtest)
@@ -761,7 +767,7 @@ function plot_cr(β,V, tests::AbstractArray{Function}, labels; ngrid=30)
   for t in 1:length(tests)
     fig=contour!(b1,b2,(a,b)->tests[t]([a,b]),
              levels = [0.9, 0.95],
-             contour_labels=true, legend=false,
+             contour_labels=false, legend=false,
              label = labels[t],
              c=cgrad([colors[t],colors[t]],[0.0,1.0]))
   end
@@ -772,11 +778,11 @@ end
 Here's what the confidence regions look like when identification is
 fairly weak. The green lines are the Wald confidence region, blue is
 AR, red is KLM, and black is CLR. 
-```julia; cache=false
+```julia; cache=true
 n = 50
 k = 2
 iv =3 
-π0 = vcat(diagm(0=>ones(k)),0.2*ones(iv-k,k)) 
+π0 = vcat(0.1*diagm(0=>ones(k)),0.2*ones(iv-k,k)) 
 ρ = 0.5  
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
@@ -795,11 +801,11 @@ plot_cr(β1,V1, [pclr, pklm, par, pwald],
 
 Here's what the confidence regions look like when identification is
 stronger.
-```julia; cache=false
+```julia; cache=true
 n = 50
 k = 2
 iv =3 
-π0 = vcat(diagm(0=>ones(k)),ones(iv-k,k)) 
+π0 = vcat(3*diagm(0=>ones(k)),ones(iv-k,k)) 
 ρ = 0.5  
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
@@ -819,7 +825,7 @@ plot_cr(β1,V1, [pclr, pklm, par, pwald],
 
 
 Check the size
-```julia; cache=false
+```julia; cache=true
 S = 300
 n = 100
 function sim_p(π0)
@@ -839,8 +845,8 @@ function sim_p(π0)
   pwald = θ -> cdf(Chisq(length(β1)),(θ-β1)'*inv(V1)*(θ-β1))  
   [par(β0) pwald(β0) pclr(β0) pklm(β0)]
 end
-πweak = ones(iv,k) .+ vcat(diagm(0=>fill(0.1,k)),zeros(iv-k,k))  
-πstrong = vcat(diagm(0=>ones(k)),ones(iv-k,k)) 
+πweak = ones(iv,k) .+ vcat(diagm(0=>fill(0.01,k)),zeros(iv-k,k))  
+πstrong = vcat(3*diagm(0=>ones(k)),ones(iv-k,k)) 
 pweak=vcat([sim_p(πweak ) for s in 1:S]...)
 pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 
@@ -868,9 +874,6 @@ plot!(pgrid,pgrid,alpha=0.1, label="")
 
 ```
 
-
-
-<!--- Add details and example code for KLM & CLR tests--->
 
 ## Bootstrap
 
