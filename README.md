@@ -1,6 +1,8 @@
 # GMMInference
 
-Methods for inference for generalized method of moments and other extremum estimators. 
+Methods for inference for generalized method of moments and other
+extremum estimators. This "package" is only the notes in the docs. It
+might or might not be changed into a proper package someday.
 
 See [the docs for examples](https://schrimpf.github.io/GMMInference.jl).
 
