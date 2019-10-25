@@ -53,6 +53,9 @@
                             <li >
                                 <a href="../extremumEstimation/">Extremum Estimation</a>
                             </li>
+                            <li >
+                                <a href="../identificationRobustInference/">Identification Robust Inference</a>
+                            </li>
                             <li class="active">
                                 <a href="./">Empirical Likelihood</a>
                             </li>
@@ -60,7 +63,7 @@
 
                     <ul class="nav navbar-nav navbar-right">
                             <li >
-                                <a rel="next" href="../extremumEstimation/">
+                                <a rel="next" href="../identificationRobustInference/">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
@@ -83,6 +86,7 @@
         <li class="main active"><a href="#about-this-document">About this document</a></li>
         <li class="main "><a href="#empirical-likelihood">Empirical likelihood</a></li>
             <li><a href="#bootstrap-for-el">Bootstrap for EL</a></li>
+        <li class="main "><a href="#references">References</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -94,7 +98,7 @@ License</a> </p>
 <h3 -="-" id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
 <p>This document was created using Weave.jl. The code is available in
 <a href="https://github.com/schrimpf/GMMInference.jl">on github</a>. The same
-document generates both static webpages and associated <a href="empiricalLikelihood.ipynb">jupyter
+document generates both static webpages and associated <a href="../empiricalLikelihood.ipynb">jupyter
 notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
@@ -128,7 +132,7 @@ very feasible. </p>
 <p>As in the extremum estimation notes, suppose we have moment conditions
 such that
 <script type="math/tex; mode=display">
-    \Er[g_i(\theta)] = 0
+\Er[g_i(\theta)] = 0
 </script>
 where $g_i:\R^p \to \R^k$ are some data dependent moment
 conditions. The empirical likelihood estimator solves
@@ -158,7 +162,7 @@ looking at the dual problem
 <script type="math/tex; mode=display">
 \hat{\theta}^{GEL}  = \argmin_{\theta}\sup_\lambda \sum_i \rho(\lambda'g_i(\theta))
 </script>
-where $\rho$ is some function related to $h$. See @newey2004 for
+where $\rho$ is some function related to $h$. See Newey and Smith (2004)[@newey2004] for
 details. There can be some analytic advantages to doing so, but
 computationally, the original statement of the problem has some
 advantages. First, there is more existing software for solving
@@ -325,7 +329,8 @@ hypothesis holds in the bootstrapped data. In GMM we did this by
 substracting the sample averages of the moments. In GEL, an
 alternative way to impose the null, is to sample the data with
 probabilities $\hat{\pi}_i$ instead of with equal proability. See
-@brown2002 for more information. </p></div>
+Brown and Newey (2002)[@brown2002] for more information. </p>
+<h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
         </div>
 
         <footer class="col-md-12">
