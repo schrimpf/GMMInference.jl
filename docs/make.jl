@@ -1,7 +1,7 @@
 using Documenter, GMMInference, DocumenterMarkdown
 
 runweave=true 
-runnotebook=false
+runnotebook=true
 if runweave
   using Weave
   wd = pwd()
@@ -10,15 +10,20 @@ if runweave
     mkpath(builddir)
     cd(builddir)
     jmdfiles = filter(x->occursin(r".jmd$",x), readdir(joinpath("..","jmd")))
-    for f in jmdfiles 
-      weave(joinpath("..","jmd",f),out_path=joinpath("..","build"),
-            cache=:refresh,
-            cache_path=joinpath("..","weavecache"),
-            doctype="github", mod=Main,
-            args=Dict("md" => true))
-      if (runnotebook)
-        notebook(joinpath("..","jmd",f),out_path=joinpath("..","build"),
-                 nbconvert_options="--allow-errors")
+    for f in jmdfiles
+      src = joinpath("..","jmd",f)
+      target = joinpath("..","build",replace(f, r"jmd$"=>s"md"))
+      if stat(src).mtime > stat(target).mtime
+        weave(src,out_path=joinpath("..","build"),
+              cache=:user,
+              cache_path=joinpath("..","weavecache"),
+              doctype="github", mod=Main,
+              args=Dict("md" => true))
+      end
+      target = joinpath("..","build",replace(f, r"jmd$"=>s"ipynb"))      
+      if (runnotebook && stat(src).mtime > stat(target).mtime)
+          notebook(src,out_path=joinpath("..","build"),
+                   nbconvert_options="--allow-errors")
       end
     end
   finally  

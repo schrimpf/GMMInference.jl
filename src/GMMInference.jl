@@ -1,5 +1,12 @@
+"""
+    module GMMInference
+
+
+"""
 module GMMInference
 
-greet() = print("Hello World!")
-
+#export
+  
+include("testproblems.jl")
+  
 end # module

@@ -1,6 +1,6 @@
 site_name:        GMMInference.jl
 repo_url:         https://github.com/schrimpf/GMMInference.jl
-site_description: Optimization algorithms with animations.
+site_description: GMM estimation and inference.
 site_author:      schrimpf
 
 theme: journal
@@ -34,4 +34,6 @@ docs_dir: 'build'
 
 nav:
   - Package Documentation: index.md
-  - Notes on Usage: extremumEstimation.md
+  - Extremum Estimation: extremumEstimation.md
+  - Identification Robust Inference: identificationRobustInference.md
+  - Empirical Likelihood: empiricalLikelihood.md
