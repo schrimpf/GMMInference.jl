@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="schrimpf">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Empirical Likelihood - GMMInference.jl</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link href="../assets/Documenter.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">GMMInference.jl</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Package Documentation</a>
+                            </li>
+                            <li >
+                                <a href="../extremumEstimation/">Extremum Estimation</a>
+                            </li>
+                            <li class="active">
+                                <a href="./">Empirical Likelihood</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                            <li >
+                                <a rel="next" href="../extremumEstimation/">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="disabled">
+                                <a rel="prev" >
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/schrimpf/GMMInference.jl/edit/master/docs/empiricalLikelihood.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#about-this-document">About this document</a></li>
+        <li class="main "><a href="#empirical-likelihood">Empirical likelihood</a></li>
+            <li><a href="#bootstrap-for-el">Bootstrap for EL</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
+<p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+4.0 International
+License</a> </p>
+<h3 -="-" id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
+<p>This document was created using Weave.jl. The code is available in
+<a href="https://github.com/schrimpf/GMMInference.jl">on github</a>. The same
+document generates both static webpages and associated <a href="empiricalLikelihood.ipynb">jupyter
+notebook</a>.</p>
+<p>
+<script type="math/tex; mode=display">
+\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\def\inprob{\,{\buildrel p \over \rightarrow}\,} 
+\def\indist{\,{\buildrel d \over \rightarrow}\,} 
+</script>
+</p>
+<h1 id="empirical-likelihood">Empirical likelihood<a class="headerlink" href="#empirical-likelihood" title="Permanent link">&para;</a></h1>
+<p>An interesting alternative to GMM is (generalized) empirical
+likelihood (GEL). Empirical likelihood has some appealing higher-order
+statistical properties. In particular, it can be shown to have lower
+order asymptotic bias than GMM. See @newey2004. Relatedly, certain
+test statistics based on EL are robust to weak identification
+[@guggenberger2005]. In fact, the identification robust tests that we
+have discusses are all based on the CUE-GMM objective function. The
+CUE-GMM objetive is a special case of generalized empirical
+likelihood. </p>
+<p>A perceived downside of GEL is that it involves a more difficult
+looking optimization problem than GMM. However, given the ease with
+which Julia can solve high dimensional optimization problems, GEL is
+very feasible. </p>
+<p>As in the extremum estimation notes, suppose we have moment conditions
+such that
+<script type="math/tex; mode=display">
+    \Er[g_i(\theta)] = 0
+</script>
+where $g_i:\R^p \to \R^k$ are some data dependent moment
+conditions. The empirical likelihood estimator solves
+<script type="math/tex; mode=display">
+\begin{align*}
+    (\hat{\theta}, \hat{\pi}) = & \argmax_{\theta,\pi} \frac{1}{n} \sum_i
+    \log(\pi_i) \;\; s.t.  \\
+     & \frac{1}{n} \sum_i \pi_i = 1, \;\; 0\leq \pi \leq 1 \\
+     & \sum_i \pi_i g_i(\theta) = 0 
+\end{align*}
+</script>
+</p>
+<p>Generalized empirical likelihood replaces $\log(\pi)$ with some other
+convex function $h(\pi)$, 
+<script type="math/tex; mode=display">
+\begin{align*}
+    (\hat{\theta}^{GEL,h}, \hat{\pi}) = & \argmin_{\theta,\pi}
+                                          \frac{1}{n} \sum_i h(\pi_i) \;\; s.t.  \\
+     & \frac{1}{n} \sum_i \pi_i = 1, \;\; 0\leq \pi \leq 1 \\
+     & \sum_i \pi_i g_i(\theta) = 0 
+\end{align*}
+</script>
+setting $h(\pi) = \frac{1}{2}(\pi^2-(1/n)^2)$ results in an estimator
+identical to the CUE-GMM estimator.</p>
+<p>A common approach to computing GEL estimators is to eliminate $\pi$ by
+looking at the dual problem
+<script type="math/tex; mode=display">
+\hat{\theta}^{GEL}  = \argmin_{\theta}\sup_\lambda \sum_i \rho(\lambda'g_i(\theta))
+</script>
+where $\rho$ is some function related to $h$. See @newey2004 for
+details. There can be some analytic advantages to doing so, but
+computationally, the original statement of the problem has some
+advantages. First, there is more existing software for solving
+constrained minimization problems than for solving saddle point
+problems. Second, although $\pi$ is high dimensional, it enters the
+constraints linearly, and the objective function is concave. Many
+optimization algorithms will take good advantage of this. </p>
+<p>Let&rsquo;s look at some Julia code. Since the problem involves many
+variables with linear constraints, it is worthwhile to use JuMP for
+optimization. The code is very slightly more verbose, but the speed of
+JuMP (and the Ipopt solver) are worth it.</p>
+<pre><code class="julia">using JuMP, Ipopt, LinearAlgebra, Distributions, Plots
+Plots.gr()
+function simulate_ivshare(n,β,γ,ρ)
+  z = randn(n, size(γ)[1])
+  endo = randn(n, length(β))
+  x = z*γ .+ endo
+  ξ = rand(Normal(0,sqrt((1.0-ρ^2))),n).+endo[:,1]*ρ
+  y = cdf.(Logistic(), x*β .+ ξ)
+  return((y=y,x=x,z=z))
+end
+n = 1000
+k = 2
+iv = 3
+β0 = ones(k)
+π0 = vcat(diagm(0=&gt;ones(k)),ones(iv-k,k))
+ρ = 0.5
+(y,x,z) = simulate_ivshare(n,β0,π0,ρ)
+
+function gi_ivshare(β,y,x,z)
+  ξ = quantile.(Logistic(),y) .- x*β
+  ξ.*z
+end
+
+function gel_jump(y,x,z)
+  n,d = size(x)
+  n,k = size(z)
+  Ty = quantile.(Logistic(),y)   
+  m = Model(solver=IpoptSolver())
+  @variable(m, 0.0 &lt;= p[1:n] &lt;= 1.0)
+  @variable(m, θ[1:d])
+  @constraint(m, prob,sum(p)==1.0)
+  @constraint(m, momentcon[i=1:k], dot((Ty - x*θ).*z[:,i],p)==0.0)
+  @NLobjective(m,Max, sum(log(p[i]) for i in 1:n))
+  return(m)
+end
+
+m = gel_jump(y,x,z)
+</code></pre>
+
+<pre><code>Error: The solver= keyword is no longer available in JuMP 0.19 and later. S
+ee the JuMP documentation (http://www.juliaopt.org/JuMP.jl/latest/) for lat
+est syntax.
+</code></pre>
+
+<pre><code class="julia">@show m
+</code></pre>
+
+<pre><code>Error: UndefVarError: m not defined
+</code></pre>
+
+<pre><code class="julia">solve(m)
+</code></pre>
+
+<pre><code>Error: UndefVarError: m not defined
+</code></pre>
+
+<pre><code class="julia">@show getvalue(getindex(m,:θ) )
+</code></pre>
+
+<pre><code>Error: UndefVarError: m not defined
+</code></pre>
+
+<pre><code class="julia">@show getvalue(getindex(m,:p) )
+</code></pre>
+
+<pre><code>Error: UndefVarError: m not defined
+</code></pre>
+
+<pre><code class="julia">
+using BenchmarkTools
+m.solver=IpoptSolver(print_level=0)
+</code></pre>
+
+<pre><code>Error: UndefVarError: m not defined
+</code></pre>
+
+<pre><code class="julia">@btime (()-&gt;(setvalue(getindex(m,:θ),zeros(length(β0)));
+             setvalue(getindex(m,:p),fill(1/n,n));
+             solve(m)))()
+</code></pre>
+
+<pre><code>Error: UndefVarError: m not defined
+</code></pre>
+
+<pre><code class="julia">m.solver=IpoptSolver(print_level=5)
+</code></pre>
+
+<pre><code>Error: UndefVarError: m not defined
+</code></pre>
+
+<p>For comparison here is how long it takes JuMP + Ipopt to solve for the
+CUE-GMM estimator. </p>
+<pre><code class="julia">function gmmObj(θ,gi,W)
+  g = gi(θ)
+  m = mean(g,dims=1)
+  (size(g)[1]*( m*W*m')[1]) # return scalar, not 1x1 array
+end
+
+function cue_jump(y,x,z)
+  n,d = size(x)
+  n,k = size(z)
+  cueobj = (θ1,θ2)-&gt;gmmObj([θ1,θ2],β-&gt;gi_ivshare(β,y,x,z),
+                           inv(cov(gi_ivshare([θ1,θ2],y,x,z))))
+  m = Model(solver=IpoptSolver())
+  JuMP.register(m, :cueobj, 2, cueobj, autodiff=true)
+  @variable(m, θ[1:d])
+  @NLobjective(m,Min,cueobj(θ[1],θ[2])) 
+  return(m)
+end
+@show mcue = cue_jump(y,x,z)
+</code></pre>
+
+<pre><code>Error: The solver= keyword is no longer available in JuMP 0.19 and later. S
+ee the JuMP documentation (http://www.juliaopt.org/JuMP.jl/latest/) for lat
+est syntax.
+</code></pre>
+
+<pre><code class="julia">solve(mcue)
+</code></pre>
+
+<pre><code>Error: UndefVarError: mcue not defined
+</code></pre>
+
+<pre><code class="julia">@show getvalue(getindex(mcue,:θ) )
+</code></pre>
+
+<pre><code>Error: UndefVarError: mcue not defined
+</code></pre>
+
+<pre><code class="julia">
+mcue.solver=IpoptSolver(print_level=0)
+</code></pre>
+
+<pre><code>Error: UndefVarError: mcue not defined
+</code></pre>
+
+<pre><code class="julia">@btime (()-&gt;(setvalue(getindex(mcue,:θ),zeros(length(β0)));
+             solve(mcue)))()
+</code></pre>
+
+<pre><code>Error: UndefVarError: mcue not defined
+</code></pre>
+
+<pre><code class="julia">mcue.solver=IpoptSolver(print_level=5)
+</code></pre>
+
+<pre><code>Error: UndefVarError: mcue not defined
+</code></pre>
+
+<h2 id="bootstrap-for-el">Bootstrap for EL<a class="headerlink" href="#bootstrap-for-el" title="Permanent link">&para;</a></h2>
+<p>For bootstrapping GMM, we discussed how it is important that the null
+hypothesis holds in the bootstrapped data. In GMM we did this by
+substracting the sample averages of the moments. In GEL, an
+alternative way to impose the null, is to sample the data with
+probabilities $\hat{\pi}_i$ instead of with equal proability. See
+@brown2002 for more information. </p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
+        <script src="../assets/mathjaxhelper.js" defer></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

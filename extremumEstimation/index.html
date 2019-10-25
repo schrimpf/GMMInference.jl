@@ -8,7 +8,7 @@
         <meta name="author" content="schrimpf">
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Notes on Usage - GMMInference.jl</title>
+        <title>Extremum Estimation - GMMInference.jl</title>
         <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -51,7 +51,10 @@
                                 <a href="..">Package Documentation</a>
                             </li>
                             <li class="active">
-                                <a href="./">Notes on Usage</a>
+                                <a href="./">Extremum Estimation</a>
+                            </li>
+                            <li >
+                                <a href="../empiricalLikelihood/">Empirical Likelihood</a>
                             </li>
                         </ul>
 
@@ -61,8 +64,8 @@
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li class="disabled">
-                                <a rel="prev" >
+                            <li >
+                                <a rel="prev" href="../empiricalLikelihood/">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -172,7 +175,7 @@ Q = β -&gt; -logit_likelihood(β,y,x)
 Q(β0)
 </code></pre>
 
-<pre><code>248.3909270836687
+<pre><code>238.32838498629658
 </code></pre>
 
 <p>Now we maximize the likelihood using a few different algorithms from <a href="https://github.com/JuliaNLSolvers/Optim.jl">Optim.jl</a></p>
@@ -359,27 +362,27 @@ display( avar.variance/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00750534  0.00247556  0.00168701
- 0.00247556  0.00809588  0.00206969
- 0.00168701  0.00206969  0.00698917
+ 0.00842843  0.0022981   0.00234674
+ 0.0022981   0.00925976  0.00286368
+ 0.00234674  0.00286368  0.00825319
 </code></pre>
 
 <pre><code class="julia">display( -avar.invH/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00729341  0.00204155  0.00169905
- 0.00204155  0.00798637  0.00231022
- 0.00169905  0.00231022  0.00741732
+ 0.00884706  0.00288717  0.00295925
+ 0.00288717  0.00938416  0.00303999
+ 0.00295925  0.00303999  0.00913896
 </code></pre>
 
 <pre><code class="julia">display(inv(avar.Σ)/n)
 </code></pre>
 
 <pre><code>3×3 Array{Float64,2}:
- 0.00710858  0.00162523  0.00170701
- 0.00162523  0.00791952  0.00257094
- 0.00170701  0.00257094  0.00787568
+ 0.00933248  0.00350465  0.00364059
+ 0.00350465  0.00954995  0.00326126
+ 0.00364059  0.00326126  0.0101416
 </code></pre>
 
 <p>For maximum likelihood, the information equality says $-H = \Sigma$,
@@ -802,7 +805,9 @@ end
 plot_cr(βcue,Vcue, ar_ivshare)
 </code></pre>
 
-<p><img alt="" src="../figures/extremumEstimation_12_1.png" /></p>
+<pre><code>Error: UndefVarError: βcue not defined
+</code></pre>
+
 <p>The two confidence regions above are not too different because the
 simulated data was strongly identified. Let&rsquo;s see what happens when we
 change the simulation to have weaker identification.</p>
@@ -816,7 +821,7 @@ optcue = optimize(ar_ivshare,
 @show βcue = optcue.minimizer
 </code></pre>
 
-<pre><code>βcue = optcue.minimizer = [1.316095443727833, 0.6049672327222234]
+<pre><code>βcue = optcue.minimizer = [2.545555605219478, -0.6699321554697314]
 </code></pre>
 
 <pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
@@ -824,8 +829,8 @@ display(Vcue)
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  0.0987636  -0.103025
- -0.103025    0.110616
+  4.2804   -4.66691
+ -4.66691   5.10454
 </code></pre>
 
 <pre><code class="julia">plot_cr(βcue,Vcue, ar_ivshare)
