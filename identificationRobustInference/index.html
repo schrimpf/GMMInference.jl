@@ -299,15 +299,15 @@ end
 @show β1 = opt1.minimizer
 </code></pre>
 
-<pre><code>β1 = opt1.minimizer = [0.9995655734276016, 0.9725730258012968]
+<pre><code>β1 = opt1.minimizer = [1.0182986797223397, 1.0089485255913304]
 </code></pre>
 
 <pre><code class="julia">display(gmmVar(β1, β-&gt;gi_ivshare(β,y,x,z),I))
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  0.000454672  -5.07277e-5
- -5.07277e-5    0.00028577
+  0.000447813  -7.09023e-5 
+ -7.09023e-5    0.000394736
 </code></pre>
 
 <pre><code class="julia">opteff = optimize(θ-&gt;gmmObj(θ,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(β1,y,x,z)))),
@@ -315,15 +315,15 @@ end
 @show βeff = opteff.minimizer
 </code></pre>
 
-<pre><code>βeff = opteff.minimizer = [0.9997933128218437, 0.9721598341686374]
+<pre><code>βeff = opteff.minimizer = [1.0183281895476939, 1.008985471629651]
 </code></pre>
 
 <pre><code class="julia">display(gmmVar(βeff,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(β1,y,x,z)))))
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  0.00045457  -5.05457e-5 
- -5.05457e-5   0.000285652
+  0.000447421  -7.14111e-5
+ -7.14111e-5    0.00039407
 </code></pre>
 
 <pre><code class="julia">
@@ -333,7 +333,7 @@ optcue = optimize(ar_ivshare,
 @show βcue = optcue.minimizer
 </code></pre>
 
-<pre><code>βcue = optcue.minimizer = [0.9998276974490874, 0.9721078375390838]
+<pre><code>βcue = optcue.minimizer = [1.0183288153534862, 1.008984973441169]
 </code></pre>
 
 <pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
@@ -341,8 +341,8 @@ display(Vcue)
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  0.000454559  -5.05273e-5 
- -5.05273e-5    0.000285644
+  0.000447421  -7.14111e-5
+ -7.14111e-5    0.00039407
 </code></pre>
 
 <p>Now we compare confidence regions based on the Wald test, and from
@@ -391,7 +391,7 @@ optcue = optimize(ar_ivshare,
 @show βcue = optcue.minimizer
 </code></pre>
 
-<pre><code>βcue = optcue.minimizer = [1.1530818384403074, 0.8267418916242202]
+<pre><code>βcue = optcue.minimizer = [0.5961808788571339, 1.4817274296498473]
 </code></pre>
 
 <pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
@@ -399,8 +399,8 @@ display(Vcue)
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  0.138224  -0.123079
- -0.123079   0.112012
+  0.443472  -0.479362
+ -0.479362   0.524355
 </code></pre>
 
 <pre><code class="julia">plot_cr(βcue,Vcue, ar_ivshare)
@@ -452,58 +452,8 @@ end
 ed)
 
  * Candidate solution
-    Minimizer: [-5.20e+03, 4.50e+03]
-    Minimum:   1.699666e+00
-
- * Found with
-    Algorithm:     Newton's Method (Trust Region)
-    Initial Point: [1.00e+00, 1.00e+00]
-
- * Convergence measures
-    |x - x'|               = 1.77e+00 ≰ 0.0e+00
-    |x - x'|/|x'|          = 3.40e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 5.46e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 3.21e-08 ≰ 0.0e+00
-    |g(x)|                 = 1.77e-08 ≰ 1.0e-08
-
- * Work counters
-    Seconds run:   0  (vs limit Inf)
-    Iterations:    1000
-    f(x) calls:    1001
-    ∇f(x) calls:   1001
-    ∇²f(x) calls:  1001
-
- * Status: failure (reached maximum number of iterations) (line search fail
-ed)
-
- * Candidate solution
-    Minimizer: [-6.27e+03, 6.58e+03]
-    Minimum:   2.544953e-01
-
- * Found with
-    Algorithm:     Newton's Method (Trust Region)
-    Initial Point: [1.00e+00, 1.00e+00]
-
- * Convergence measures
-    |x - x'|               = 2.24e+00 ≰ 0.0e+00
-    |x - x'|/|x'|          = 3.41e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 9.60e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 3.77e-07 ≰ 0.0e+00
-    |g(x)|                 = 2.24e-08 ≰ 1.0e-08
-
- * Work counters
-    Seconds run:   0  (vs limit Inf)
-    Iterations:    1000
-    f(x) calls:    1001
-    ∇f(x) calls:   1001
-    ∇²f(x) calls:  1001
-
- * Status: failure (reached maximum number of iterations) (line search fail
-ed)
-
- * Candidate solution
-    Minimizer: [-6.00e+03, 6.05e+03]
-    Minimum:   2.136600e+00
+    Minimizer: [-5.38e+03, 6.07e+03]
+    Minimum:   9.538249e-01
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
@@ -512,12 +462,12 @@ ed)
  * Convergence measures
     |x - x'|               = 2.06e+00 ≰ 0.0e+00
     |x - x'|/|x'|          = 3.40e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 8.43e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 3.94e-08 ≰ 0.0e+00
+    |f(x) - f(x')|         = 7.61e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 7.98e-08 ≰ 0.0e+00
     |g(x)|                 = 2.06e-08 ≰ 1.0e-08
 
  * Work counters
-    Seconds run:   0  (vs limit Inf)
+    Seconds run:   1  (vs limit Inf)
     Iterations:    1000
     f(x) calls:    1001
     ∇f(x) calls:   1001
@@ -527,19 +477,19 @@ ed)
 ed)
 
  * Candidate solution
-    Minimizer: [-4.36e+03, 5.04e+03]
-    Minimum:   9.628305e-01
+    Minimizer: [-4.83e+03, 4.53e+03]
+    Minimum:   2.466659e-01
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
     Initial Point: [1.00e+00, 1.00e+00]
 
  * Convergence measures
-    |x - x'|               = 1.71e+00 ≰ 0.0e+00
+    |x - x'|               = 1.64e+00 ≰ 0.0e+00
     |x - x'|/|x'|          = 3.39e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 5.11e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 5.31e-08 ≰ 0.0e+00
-    |g(x)|                 = 1.71e-08 ≰ 1.0e-08
+    |f(x) - f(x')|         = 5.05e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 2.05e-07 ≰ 0.0e+00
+    |g(x)|                 = 1.64e-08 ≰ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
@@ -552,19 +502,19 @@ ed)
 ed)
 
  * Candidate solution
-    Minimizer: [-3.61e+03, 3.91e+03]
-    Minimum:   8.704548e-02
+    Minimizer: [-6.62e+03, 5.83e+03]
+    Minimum:   1.156521e+00
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
     Initial Point: [1.00e+00, 1.00e+00]
 
  * Convergence measures
-    |x - x'|               = 1.32e+00 ≰ 0.0e+00
-    |x - x'|/|x'|          = 3.39e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 3.25e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 3.73e-07 ≰ 0.0e+00
-    |g(x)|                 = 1.32e-08 ≰ 1.0e-08
+    |x - x'|               = 2.26e+00 ≰ 0.0e+00
+    |x - x'|/|x'|          = 3.41e-04 ≰ 0.0e+00
+    |f(x) - f(x')|         = 9.03e-08 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 7.81e-08 ≰ 0.0e+00
+    |g(x)|                 = 2.26e-08 ≰ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
@@ -577,44 +527,19 @@ ed)
 ed)
 
  * Candidate solution
-    Minimizer: [3.33e+03, -3.66e+03]
-    Minimum:   4.343826e+00
+    Minimizer: [-6.99e+03, 7.74e+03]
+    Minimum:   1.065352e+00
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
     Initial Point: [1.00e+00, 1.00e+00]
 
  * Convergence measures
-    |x - x'|               = 1.24e+00 ≰ 0.0e+00
-    |x - x'|/|x'|          = 3.39e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 2.82e-08 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 6.49e-09 ≰ 0.0e+00
-    |g(x)|                 = 1.24e-08 ≰ 1.0e-08
-
- * Work counters
-    Seconds run:   0  (vs limit Inf)
-    Iterations:    1000
-    f(x) calls:    1001
-    ∇f(x) calls:   1001
-    ∇²f(x) calls:  1000
-
- * Status: failure (reached maximum number of iterations) (line search fail
-ed)
-
- * Candidate solution
-    Minimizer: [-8.31e+03, 7.33e+03]
-    Minimum:   1.627933e+00
-
- * Found with
-    Algorithm:     Newton's Method (Trust Region)
-    Initial Point: [1.00e+00, 1.00e+00]
-
- * Convergence measures
-    |x - x'|               = 2.84e+00 ≰ 0.0e+00
+    |x - x'|               = 2.64e+00 ≰ 0.0e+00
     |x - x'|/|x'|          = 3.42e-04 ≰ 0.0e+00
-    |f(x) - f(x')|         = 1.44e-07 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 8.82e-08 ≰ 0.0e+00
-    |g(x)|                 = 2.84e-08 ≰ 1.0e-08
+    |f(x) - f(x')|         = 1.27e-07 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 1.19e-07 ≰ 0.0e+00
+    |g(x)|                 = 2.64e-08 ≰ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
@@ -623,13 +548,13 @@ ed)
     ∇f(x) calls:   1001
     ∇²f(x) calls:  1001
 
- 18.946827 seconds (37.24 M allocations: 3.836 GiB, 22.51% gc time)
+ 12.669214 seconds (22.73 M allocations: 2.407 GiB, 26.49% gc time)
 </code></pre>
 
 <pre><code class="julia">@time pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 </code></pre>
 
-<pre><code>1.215618 seconds (1.07 M allocations: 737.841 MiB, 38.59% gc time)
+<pre><code>1.235078 seconds (1.08 M allocations: 743.800 MiB, 40.82% gc time)
 </code></pre>
 
 <pre><code class="julia">
@@ -653,54 +578,7 @@ plot!(pgrid, p-&gt;mean( pweak[:,3] .&lt;= p),
 plot!(pgrid,pgrid,alpha=0.1, label=&quot;&quot;)
 </code></pre>
 
-<pre><code>Simulated CDF of p-values
-                        ┌──────────────────────────────────────────────────
-───────┐                    
-                   1.03 │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⢀⣤⠄⠀│ AR, strong ID      
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⢀⣠⢶⠋⠁⠀⠀│ Wald CUE, strong ID
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⣺⣟
-⡻⠓⠁⠀⠀⠀⠀│ Wald I, strong ID  
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⣖⡵⣟⠝⠀
-⠀⠀⠀⠀⠀⠀⠀│ AR, weak ID        
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⡾⢿⢞⢯⡺⠁⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│ Wald CUE, weak ID  
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⢴⣊⣵⠾⠝⢉⡥⠏⠁⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│ Wald I, weak ID    
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⣔⡵⣞⠝⠋⠀⣀⡴⠋⠁⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢔⡿⡻⠝⠉⠀⢀⣰⡞⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣼⣟⠟⠋⠀⠀⡠⢔⠷⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-   P(p value &lt; p)       │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡾⡻⠭⠋⠀⠀⣀⠴⠝⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣞⠝⠉⠀⠀⢀⡴⠝⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣶⣻⠟⠋⠀⢀⡠⠒⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⣶⡾⠞⠉⠀⢀⣤⡪⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⢶⠿⣞⠟⠋⠀⣀⠴⠛⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⢀⡤⡫⡳⠕⠉⠀⣀⠶⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                        │⠀⢸⠀⠀⠀⠀⢀⣠⣴⣟⠟⢉⣠⠴⠒⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                        │⠀⢸⠀⠀⣤⣖⡿⠖⠋⣠⡴⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                        │⠀⢸⣠⣾⣿⠭⠚⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                    
-                  -0.03 │⠒⢺⠛⠓⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒
-⠒⠒⠒⠒⠒⠒⠒│                    
-                        └──────────────────────────────────────────────────
-───────┘                    
-                        -0.03                                              
-    1.03
-                                                    p
-</code></pre>
-
+<p><img alt="" src="../figures/identificationRobustInference_6_1.png" /></p>
 <p>We see that the Wald test has fairly large size distortions, even when
 identification is strong. The AR test has approximately correct size
 for both the weakly and strongly identified DGP. </p>
@@ -834,9 +712,7 @@ plot_cr(β1,V1, [pclr, pklm, par, pwald],
         [&quot;CLR&quot;,&quot;KLM&quot;,&quot;AR&quot;,&quot;Wald&quot;], ngrid=40)
 </code></pre>
 
-<pre><code>Error: UndefVarError: plot_cr not defined
-</code></pre>
-
+<p><img alt="" src="../figures/identificationRobustInference_9_1.png" /></p>
 <p>Here&rsquo;s what the confidence regions look like when identification is
 stronger.</p>
 <pre><code class="julia">n = 50
@@ -859,9 +735,7 @@ plot_cr(β1,V1, [pclr, pklm, par, pwald],
         [&quot;CLR&quot;,&quot;KLM&quot;,&quot;AR&quot;,&quot;Wald&quot;], ngrid=40)
 </code></pre>
 
-<pre><code>Error: UndefVarError: plot_cr not defined
-</code></pre>
-
+<p><img alt="" src="../figures/identificationRobustInference_10_1.png" /></p>
 <p>Check the size</p>
 <pre><code class="julia">S = 300
 n = 100
@@ -910,54 +784,7 @@ plot!(pgrid, p-&gt;mean( pweak[:,4] .&lt;= p),
 plot!(pgrid,pgrid,alpha=0.5, label=&quot;&quot;)
 </code></pre>
 
-<pre><code>Simulated CDF of p-values
-                        ┌──────────────────────────────────────────────────
-───────┐                  
-                   1.03 │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⣀⣤⠄⠀│ AR, strong ID    
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤
-⠔⣪⣿⠟⠁⠀⠀│ Wald I, strong ID
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡤⠔⣪⣵⡿
-⠟⠛⠀⠀⠀⠀⠀│ CLR, strong ID   
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠒⠊⠉⢀⣠⣾⠿⠋⠀
-⠀⠀⠀⠀⠀⠀⠀│ KLM, strong ID   
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠉⠀⢀⣴⣾⢯⠊⠁⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│ AR, weak ID      
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠔⠉⠉⠀⢀⣴⣶⠟⡝⠓⠁⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│ Wald I, weak ID  
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠃⠀⠀⠀⣀⣴⡿⠭⠒⠉⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│ CLR, weak ID     
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠒⠊⠁⠀⠀⣠⣾⡿⠯⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│ KLM, weak ID     
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠃⠀⠀⠀⣀⣴⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                  
-   P(p value &lt; p)       │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠤⠒⠉⠀⠀⠀⣠⣴⡾⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                  
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⠊⠀⠀⠀⣀⣤⣶⠯⠟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                  
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠁⠀⠀⣀⣤⡾⠟⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                  
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠔⠉⠀⠀⣠⣶⢿⠝⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                  
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠊⠀⣀⣤⣾⠟⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                  
-                        │⠀⢸⠀⠀⠀⠀⠀⠀⢠⠜⠁⢀⣤⣞⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                  
-                        │⠀⢸⠀⠀⠀⠀⢀⠴⢉⣤⣶⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                  
-                        │⠀⢸⠀⠀⠀⣔⣥⣶⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                  
-                        │⠀⢸⢀⣤⣾⠟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀│                  
-                  -0.03 │⠒⢺⠛⠓⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒
-⠒⠒⠒⠒⠒⠒⠒│                  
-                        └──────────────────────────────────────────────────
-───────┘                  
-                        -0.03                                              
-    1.03
-                                                    p
-</code></pre>
-
+<p><img alt="" src="../figures/identificationRobustInference_11_1.png" /></p>
 <!-- ## Bootstrap -->
 
 <!-- The bootstrap and related simulation methods can also be used for -->
