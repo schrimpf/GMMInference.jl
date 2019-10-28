@@ -51,13 +51,13 @@
                                 <a href=".">Package Documentation</a>
                             </li>
                             <li >
-                                <a href="extremumEstimation/">Extremum Estimation</a>
+                                <a href="extremumEstimation/">Estimation</a>
                             </li>
                             <li >
-                                <a href="identificationRobustInference/">Identification Robust Inference</a>
+                                <a href="identificationRobustInference/">Inference</a>
                             </li>
                             <li >
-                                <a href="empiricalLikelihood/">Empirical Likelihood</a>
+                                <a href="empiricalLikelihood/">EL</a>
                             </li>
                         </ul>
 
@@ -246,8 +246,8 @@
 <p>The moment conditions used to estimate <code>p</code>, <code>β</code> and <code>σ</code> are</p>
 <p>$E[ \sum_{j} x(y - xβ[:,j])p[j]] = 0$</p>
 <p>and </p>
-<p>$E[ y[i,t]*y[i,s] - \sum_j p<a href="x[i,t,:]β[:,j] x[i,s,:]β[:,j]">j</a> - 1(t==s)σ²] = 0$</p>
-<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/models/mixturepanel.jl#LL1-L19' class='documenter-source'>source</a><br></p>
+<p>$E[ y[i,t]*y[i,s] - \sum_j p<a href="x[i,t,:]β[:,j] x[i,s,:]β[:,j]">j</a> -1(t=s)σ²] = 0$</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/models/mixturepanel.jl#LL1-L20' class='documenter-source'>source</a><br></p>
 <p><a id='GMMInference.MixturePanel' href='#GMMInference.MixturePanel'>#</a>
 <strong><code>GMMInference.MixturePanel</code></strong> &mdash; <em>Type</em>.</p>
 <pre><code class="julia">MixturePanel(n::Integer, t::Integer,
@@ -408,5 +408,5 @@
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-10-28 03:19:00
+Build Date UTC : 2019-10-28 03:42:22
 -->
