@@ -369,10 +369,18 @@ function plot_cr(β,V, AR)
            label=&quot;Wald CI&quot;, c=cgrad([:red,:red], [0.0,1.0]),
            legend=false)
 end
-plot_cr(βcue,Vcue, ar_ivshare)
 </code></pre>
 
-<p><img alt="" src="../figures/identificationRobustInference_4_1.png" /></p>
+<pre><code>Error: LoadError: UndefVarError: @L_str not defined
+in expression starting at none:11
+</code></pre>
+
+<pre><code class="julia">plot_cr(βcue,Vcue, ar_ivshare)
+</code></pre>
+
+<pre><code>Error: UndefVarError: plot_cr not defined
+</code></pre>
+
 <p>The two confidence regions above are not too different because the
 simulated data was strongly identified. Let&rsquo;s see what happens when we
 change the simulation to have weaker identification.</p>
@@ -386,7 +394,7 @@ optcue = optimize(ar_ivshare,
 @show βcue = optcue.minimizer
 </code></pre>
 
-<pre><code>βcue = optcue.minimizer = [0.8371285728716904, 1.2381438232321826]
+<pre><code>βcue = optcue.minimizer = [1.0770245804870777, 0.9324127422568733]
 </code></pre>
 
 <pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
@@ -394,14 +402,16 @@ display(Vcue)
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  1.14204  -1.18745
- -1.18745   1.23741
+  0.392862  -0.328613
+ -0.328613   0.278647
 </code></pre>
 
 <pre><code class="julia">plot_cr(βcue,Vcue, ar_ivshare)
 </code></pre>
 
-<p><img alt="" src="../figures/identificationRobustInference_5_1.png" /></p>
+<pre><code>Error: UndefVarError: plot_cr not defined
+</code></pre>
+
 <p>Now the confidence regions are dramatically different. Does either one
 have correct coverage? Let&rsquo;s simulate to find the size of the AR and
 Wald tests of $H_0 : \beta = \beta_0$</p>
@@ -631,7 +641,8 @@ end
 end
 </code></pre>
 
-<pre><code>plot_cr (generic function with 2 methods)
+<pre><code>Error: LoadError: UndefVarError: @L_str not defined
+in expression starting at none:5
 </code></pre>
 
 <p>Here&rsquo;s what the confidence regions look like when identification is

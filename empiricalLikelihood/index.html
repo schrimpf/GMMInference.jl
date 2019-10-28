@@ -85,6 +85,10 @@
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#about-this-document">About this document</a></li>
         <li class="main "><a href="#empirical-likelihood">Empirical likelihood</a></li>
+            <li><a href="#gel-with-other-optimization-packages">GEL with other optimization packages</a></li>
+        <li class="main "><a href="#inference-for-el">Inference for EL</a></li>
+            <li><a href="#implementation">Implementation</a></li>
+            <li><a href="#subvector-inference">Subvector inference</a></li>
             <li><a href="#bootstrap-for-el">Bootstrap for EL</a></li>
         <li class="main "><a href="#references">References</a></li>
     </ul>
@@ -119,12 +123,13 @@ notebook</a>.</p>
 <p>An interesting alternative to GMM is (generalized) empirical
 likelihood (GEL). Empirical likelihood has some appealing higher-order
 statistical properties. In particular, it can be shown to have lower
-order asymptotic bias than GMM. See @newey2004. Relatedly, certain
-test statistics based on EL are robust to weak identification
-[@guggenberger2005]. In fact, the identification robust tests that we
-have discusses are all based on the CUE-GMM objective function. The
-CUE-GMM objetive is a special case of generalized empirical
-likelihood. </p>
+higher order asymptotic bias than GMM. See Newey and Smith
+(2004)[@newey2004]. Relatedly, certain test statistics based on EL are
+robust to weak identification (Guggenberger and Smith
+2005)[@guggenberger2005]. In fact, the identification robust tests
+that we have discusses are all based on the CUE-GMM objective
+function. The CUE-GMM objetive is a special case of generalized
+empirical likelihood.</p>
 <p>A perceived downside of GEL is that it involves a more difficult
 looking optimization problem than GMM. However, given the ease with
 which Julia can solve high dimensional optimization problems, GEL is
@@ -134,28 +139,28 @@ such that
 <script type="math/tex; mode=display">
 \Er[g_i(\theta)] = 0
 </script>
-where $g_i:\R^p \to \R^k$ are some data dependent moment
+where $g_i:\R^d \to \R^k$ are some data dependent moment
 conditions. The empirical likelihood estimator solves
 <script type="math/tex; mode=display">
 \begin{align*}
-    (\hat{\theta}, \hat{\pi}) = & \argmax_{\theta,\pi} \frac{1}{n} \sum_i
-    \log(\pi_i) \;\; s.t.  \\
-     & \frac{1}{n} \sum_i \pi_i = 1, \;\; 0\leq \pi \leq 1 \\
-     & \sum_i \pi_i g_i(\theta) = 0 
+    (\hat{\theta}, \hat{p}) = & \argmax_{\theta,p} \frac{1}{n} \sum_i
+    \log(p_i) \;\; s.t.  \\
+     & \sum_i p_i = 1, \;\; 0\leq p_i \leq 1 \\
+     & \sum_i p_i g_i(\theta) = 0 
 \end{align*}
 </script>
 </p>
-<p>Generalized empirical likelihood replaces $\log(\pi)$ with some other
-convex function $h(\pi)$, 
+<p>Generalized empirical likelihood replaces $\log(p)$ with some other
+convex function $h(p)$, 
 <script type="math/tex; mode=display">
 \begin{align*}
-    (\hat{\theta}^{GEL,h}, \hat{\pi}) = & \argmin_{\theta,\pi}
-                                          \frac{1}{n} \sum_i h(\pi_i) \;\; s.t.  \\
-     & \frac{1}{n} \sum_i \pi_i = 1, \;\; 0\leq \pi \leq 1 \\
-     & \sum_i \pi_i g_i(\theta) = 0 
+    (\hat{\theta}^{GEL,h}, \hat{p}) = & \argmin_{\theta,p}
+    \frac{1}{n}\sum_i h(p_i) \;\; s.t.  \\
+     & \sum_i p_i = 1, \;\; 0\leq p \leq 1 \\
+     & \sum_i p_i g_i(\theta) = 0 
 \end{align*}
 </script>
-setting $h(\pi) = \frac{1}{2}(\pi^2-(1/n)^2)$ results in an estimator
+setting $h(p) = \frac{1}{2}(p^2-(1/n)^2)$ results in an estimator
 identical to the CUE-GMM estimator.</p>
 <p>A common approach to computing GEL estimators is to eliminate $\pi$ by
 looking at the dual problem
@@ -167,168 +172,162 @@ details. There can be some analytic advantages to doing so, but
 computationally, the original statement of the problem has some
 advantages. First, there is more existing software for solving
 constrained minimization problems than for solving saddle point
-problems. Second, although $\pi$ is high dimensional, it enters the
+problems. Second, although $p$ is high dimensional, it enters the
 constraints linearly, and the objective function is concave. Many
 optimization algorithms will take good advantage of this. </p>
 <p>Let&rsquo;s look at some Julia code. Since the problem involves many
 variables with linear constraints, it is worthwhile to use JuMP for
-optimization. The code is very slightly more verbose, but the speed of
-JuMP (and the Ipopt solver) are worth it.</p>
-<pre><code class="julia">using JuMP, Ipopt, LinearAlgebra, Distributions, Plots
-Plots.gr()
-function simulate_ivshare(n,β,γ,ρ)
-  z = randn(n, size(γ)[1])
-  endo = randn(n, length(β))
-  x = z*γ .+ endo
-  ξ = rand(Normal(0,sqrt((1.0-ρ^2))),n).+endo[:,1]*ρ
-  y = cdf.(Logistic(), x*β .+ ξ)
-  return((y=y,x=x,z=z))
-end
-n = 1000
-k = 2
-iv = 3
-β0 = ones(k)
-π0 = vcat(diagm(0=&gt;ones(k)),ones(iv-k,k))
+optimization. The code is slightly more verbose, but the speed of
+JuMP (and the Ipopt solver) are often worth it.</p>
+<pre><code class="julia">using GMMInference, JuMP, Ipopt, LinearAlgebra, Distributions #, KNITRO 
+
+n = 300
+d = 4
+k = 2*d
+β0 = ones(d)
+π0 = vcat(I,ones(k-d,d))
 ρ = 0.5
-(y,x,z) = simulate_ivshare(n,β0,π0,ρ)
-
-function gi_ivshare(β,y,x,z)
-  ξ = quantile.(Logistic(),y) .- x*β
-  ξ.*z
-end
-
-function gel_jump(y,x,z)
-  n,d = size(x)
-  n,k = size(z)
-  Ty = quantile.(Logistic(),y)   
-  m = Model(solver=IpoptSolver())
-  @variable(m, 0.0 &lt;= p[1:n] &lt;= 1.0)
-  @variable(m, θ[1:d])
-  @constraint(m, prob,sum(p)==1.0)
-  @constraint(m, momentcon[i=1:k], dot((Ty - x*θ).*z[:,i],p)==0.0)
-  @NLobjective(m,Max, sum(log(p[i]) for i in 1:n))
-  return(m)
-end
-
-m = gel_jump(y,x,z)
+data = IVLogitShare(n, β0, π0, ρ);
 </code></pre>
 
-<pre><code>Error: The solver= keyword is no longer available in JuMP 0.19 and later. S
-ee the JuMP documentation (http://www.juliaopt.org/JuMP.jl/latest/) for lat
-est syntax.
+<pre><code class="julia"># set up JuMP problem
+Ty = quantile.(Logistic(),data.y)   
+m = Model()
+@variable(m, 0.0 &lt;= p[1:n] &lt;= 1.0)
+@variable(m, θ[1:d])
+@constraint(m, prob,sum(p)==1.0)
+@constraint(m, momentcon[i=1:k], dot((Ty - data.x*θ).*data.z[:,i],p)==0.0)
+@NLobjective(m,Max, sum(log(p[i]) for i in 1:n))
+@show m
 </code></pre>
 
-<pre><code class="julia">@show m
+<pre><code>m = A JuMP Model
+Maximization problem with:
+Variables: 304
+Objective function type: Nonlinear
+`GenericAffExpr{Float64,VariableRef}`-in-`MathOptInterface.EqualTo{Float64}
+`: 1 constraint
+`GenericQuadExpr{Float64,VariableRef}`-in-`MathOptInterface.EqualTo{Float64
+}`: 8 constraints
+`VariableRef`-in-`MathOptInterface.GreaterThan{Float64}`: 300 constraints
+`VariableRef`-in-`MathOptInterface.LessThan{Float64}`: 300 constraints
+Model mode: AUTOMATIC
+CachingOptimizer state: NO_OPTIMIZER
+Solver name: No optimizer attached.
+Names registered in the model: momentcon, p, prob, θ
+A JuMP Model
+Maximization problem with:
+Variables: 304
+Objective function type: Nonlinear
+`GenericAffExpr{Float64,VariableRef}`-in-`MathOptInterface.EqualTo{Float64}
+`: 1 constraint
+`GenericQuadExpr{Float64,VariableRef}`-in-`MathOptInterface.EqualTo{Float64
+}`: 8 constraints
+`VariableRef`-in-`MathOptInterface.GreaterThan{Float64}`: 300 constraints
+`VariableRef`-in-`MathOptInterface.LessThan{Float64}`: 300 constraints
+Model mode: AUTOMATIC
+CachingOptimizer state: NO_OPTIMIZER
+Solver name: No optimizer attached.
+Names registered in the model: momentcon, p, prob, θ
 </code></pre>
 
-<pre><code>Error: UndefVarError: m not defined
-</code></pre>
-
-<pre><code class="julia">solve(m)
-</code></pre>
-
-<pre><code>Error: UndefVarError: m not defined
-</code></pre>
-
-<pre><code class="julia">@show getvalue(getindex(m,:θ) )
-</code></pre>
-
-<pre><code>Error: UndefVarError: m not defined
-</code></pre>
-
-<pre><code class="julia">@show getvalue(getindex(m,:p) )
-</code></pre>
-
-<pre><code>Error: UndefVarError: m not defined
-</code></pre>
-
-<pre><code class="julia">
-using BenchmarkTools
-m.solver=IpoptSolver(print_level=0)
-</code></pre>
-
-<pre><code>Error: UndefVarError: m not defined
-</code></pre>
-
-<pre><code class="julia">@btime (()-&gt;(setvalue(getindex(m,:θ),zeros(length(β0)));
-             setvalue(getindex(m,:p),fill(1/n,n));
-             solve(m)))()
-</code></pre>
-
-<pre><code>Error: UndefVarError: m not defined
-</code></pre>
-
-<pre><code class="julia">m.solver=IpoptSolver(print_level=5)
-</code></pre>
-
-<pre><code>Error: UndefVarError: m not defined
-</code></pre>
-
+<p>The <code>gel_jump_problem</code> function from <code>GMMInference.jl</code> does the same
+thing as the above code cell. </p>
+<p>Let&rsquo;s solve the optimization problem.</p>
 <p>For comparison here is how long it takes JuMP + Ipopt to solve for the
 CUE-GMM estimator. </p>
-<pre><code class="julia">function gmmObj(θ,gi,W)
-  g = gi(θ)
-  m = mean(g,dims=1)
-  (size(g)[1]*( m*W*m')[1]) # return scalar, not 1x1 array
-end
-
-function cue_jump(y,x,z)
-  n,d = size(x)
-  n,k = size(z)
-  cueobj = (θ1,θ2)-&gt;gmmObj([θ1,θ2],β-&gt;gi_ivshare(β,y,x,z),
-                           inv(cov(gi_ivshare([θ1,θ2],y,x,z))))
-  m = Model(solver=IpoptSolver())
-  JuMP.register(m, :cueobj, 2, cueobj, autodiff=true)
-  @variable(m, θ[1:d])
-  @NLobjective(m,Min,cueobj(θ[1],θ[2])) 
-  return(m)
-end
-@show mcue = cue_jump(y,x,z)
-</code></pre>
-
-<pre><code>Error: The solver= keyword is no longer available in JuMP 0.19 and later. S
-ee the JuMP documentation (http://www.juliaopt.org/JuMP.jl/latest/) for lat
-est syntax.
-</code></pre>
-
-<pre><code class="julia">solve(mcue)
-</code></pre>
-
-<pre><code>Error: UndefVarError: mcue not defined
-</code></pre>
-
-<pre><code class="julia">@show getvalue(getindex(mcue,:θ) )
-</code></pre>
-
-<pre><code>Error: UndefVarError: mcue not defined
-</code></pre>
-
-<pre><code class="julia">
-mcue.solver=IpoptSolver(print_level=0)
-</code></pre>
-
-<pre><code>Error: UndefVarError: mcue not defined
-</code></pre>
-
-<pre><code class="julia">@btime (()-&gt;(setvalue(getindex(mcue,:θ),zeros(length(β0)));
-             solve(mcue)))()
-</code></pre>
-
-<pre><code>Error: UndefVarError: mcue not defined
-</code></pre>
-
-<pre><code class="julia">mcue.solver=IpoptSolver(print_level=5)
-</code></pre>
-
-<pre><code>Error: UndefVarError: mcue not defined
-</code></pre>
-
+<p>In this comparison, EL is both faster and more robust to initial
+values than CUE-GMM. GMM with a fixed weighting matrix will likely be
+faster than either.</p>
+<h2 id="gel-with-other-optimization-packages">GEL with other optimization packages<a class="headerlink" href="#gel-with-other-optimization-packages" title="Permanent link">&para;</a></h2>
+<p>We can also estimate GEL models with other optimization
+packages. Relative to JuMP, other optimization packages have the
+advantage that the problem does not have to be written in any special
+syntax. However, other packages have the downside that they will not
+recognize any special structure in the constraints (linear, quadratic,
+sparse, etc) unless we explicitly provide it. Let&rsquo;s see how much, if
+any difference this makes to performance. </p>
+<p>Here we will use the <code>NLPModels.jl</code> interface to
+Ipopt. Essentially, all this does is call <code>ForwardDiff</code> on the
+objective function and constraints, and then give the resulting
+gradient and hessian functions to Ipopt.</p>
+<p>As you see, this approach is far slower than with JuMP. Notice that
+the number of iterations and function evaluations are identical. The
+big difference is that JuMP evaluates the function (and its
+derivatives) very quickly, while NLP takes much much longer. I would
+guess that this is largely because it is using ForwardDiff to
+calculate a gradients and hessians for 304 variables.</p>
+<p>Let&rsquo;s also estimate the model using <code>Optim.jl</code>. </p>
+<p>The <code>IPNewton()</code> optimizer from <code>Optim.jl</code> appears to be much less
+efficient than <code>Ipopt</code>. <code>IPNewton</code> takes more than 4 times as many
+iterations. </p>
+<h1 id="inference-for-el">Inference for EL<a class="headerlink" href="#inference-for-el" title="Permanent link">&para;</a></h1>
+<p>Guggenberger and Smith (2005)[@guggenberger2005] show that GEL
+versions of the AR and LM statistics are robust to weak
+identification. The GEL version of the AR statistic is the generalized
+empirical likelihood ratio. Guggenberger and Smith (2005) show that</p>
+<p>
+<script type="math/tex; mode=display">
+GELR(\theta_0) = 2\sum_{i=1}^n\left(h(p_i(\theta_0))  -
+   h(1/n)\right) \indist \chi^2_k 
+</script>
+</p>
+<p>where $p_i(\theta_0)$ are given by</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{align*}
+    p(\theta)  =  \argmax_{0 \leq p \leq 1} \sum h(p_i) \text{ s.t. } & \sum_i p_i
+    = 1 \\
+& \sum_i p_i g_i(\theta) = 0
+\end{align*}
+</script>
+</p>
+<p>The GELR statistic shares the downsides of the AR statistic &mdash; the
+degrees of freedom is the number of moments instead of the number of
+parameters, which tends to lead to lower power in overidentified
+models; and it combines a test of misspecification with a location
+test for $\theta$. </p>
+<p>Consequently, it can be useful to instead look at a Lagrange
+multiplier style statistic. The true $\theta$ maximizes the
+empirical likelihood, so </p>
+<p>
+<script type="math/tex; mode=display">
+0 = \sum_{i=1}^n \nabla_\theta h(p_i(\theta_0)) = \lambda(\theta_0)' \sum_{i=1}^n
+p_i(\theta_0) \nabla_\theta g_i(\theta_0) \equiv \lambda(\theta_0) D(\theta_0)
+</script>
+</p>
+<p>where $p_i(\theta_0)$ is as defined above, and $\lambda(\theta_0)$ are
+the mulitpliers on the empirical moment condition constraint. Andrews
+and Guggenberger show that a quadratic form in the above score
+equation is asymptotically $\chi^2_d$. To be specific, let
+$\Delta(\theta) = E[(1/n\sum_i g_i(\theta) - E[g(\theta)])(1/n \sum_i
+ g_i(\theta) - E[g(\theta)])&rsquo;]$  and define</p>
+<p>
+<script type="math/tex; mode=display">
+S(\theta) = \lambda(\theta)' D(\theta) \left( D(\theta)
+\Delta(\theta)^{-1} D(\theta) \right)^{-1} D(\theta)'\lambda(\theta)
+</script>
+</p>
+<p>then $S(\theta_0) \indist \chi^2_d$. This result holds whether or not
+$\theta$ is strongly identified. </p>
+<h3 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h3>
+<p>Computing the $GELR$ and $S$ statistics requires solving a linear
+program for each $\theta$ we want to test. Fortunately, linear
+programs can be solved very quickly. See <code>gel_pλ</code> in <code>GMMInference.jl</code>
+for the relevant code. </p>
+<p>Let&rsquo;s do a simulation to check that these tests have correct coverage.</p>
+<h3 id="subvector-inference">Subvector inference<a class="headerlink" href="#subvector-inference" title="Permanent link">&para;</a></h3>
+<p>Guggenberger and Smith (2005)[@guggenberger2005] also give results for
+subvector inference. Let $(\alpha, \beta) =\theta$. Assume $\beta$ is
+strongly identified. Guggenberger and Smith show that analogs of
+$GELR$ and $S$ with $\beta$ concentrated out lead to valid tests for
+$\alpha$, whether $\alpha$ is weakly or strongly identified. </p>
 <h2 id="bootstrap-for-el">Bootstrap for EL<a class="headerlink" href="#bootstrap-for-el" title="Permanent link">&para;</a></h2>
 <p>For bootstrapping GMM, we discussed how it is important that the null
 hypothesis holds in the bootstrapped data. In GMM we did this by
 substracting the sample averages of the moments. In GEL, an
 alternative way to impose the null, is to sample the data with
-probabilities $\hat{\pi}_i$ instead of with equal proability. See
+probabilities $\hat{p}_i$ instead of with equal proability. See
 Brown and Newey (2002)[@brown2002] for more information. </p>
 <h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1></div>
         </div>

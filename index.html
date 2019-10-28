@@ -84,12 +84,270 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#gmminferencejl">GMMInference.jl</a></li>
+            <li><a href="#gmmmodel">GMMModel</a></li>
+            <li><a href="#inference">Inference</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
 <p><a id='GMMInference.jl-1'></a></p>
-<h1 id="gmminferencejl">GMMInference.jl<a class="headerlink" href="#gmminferencejl" title="Permanent link">&para;</a></h1></div>
+<h1 id="gmminferencejl">GMMInference.jl<a class="headerlink" href="#gmminferencejl" title="Permanent link">&para;</a></h1>
+<p><a id='GMMModel-1'></a></p>
+<h2 id="gmmmodel">GMMModel<a class="headerlink" href="#gmmmodel" title="Permanent link">&para;</a></h2>
+<p>The abstract type <code>GMMModel</code> is used to define methods for generic method of moments problems. To use this interface, define a concrete  subtype of <code>GMMModel</code> and at least a specialized <code>get_gi</code> method. See <code>src/models</code> for a few examples. </p>
+<p><a id='GMMInference.GMMModel' href='#GMMInference.GMMModel'>#</a>
+<strong><code>GMMInference.GMMModel</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code class="julia">GMMModel
+</code></pre>
+
+<p>Abstract type for GMM models.</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL1-L5' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.cue_objective-Tuple{Function}' href='#GMMInference.cue_objective-Tuple{Function}'>#</a>
+<strong><code>GMMInference.cue_objective</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia"> cue_objective(gi::Function)
+</code></pre>
+
+<p>Returns the CUE objective function for moment functions gi. </p>
+<p>$Q(θ) = n (1/n \sum_i g_i(θ)) \widehat{cov}(g_i(θ))^{-1} (1/n \sum_i g_i(θ))&rsquo;$</p>
+<p>Calculates cov(gi(θ)) assuming observations are independent.</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL75-L83' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.cue_objective-Tuple{GMMModel}' href='#GMMInference.cue_objective-Tuple{GMMModel}'>#</a>
+<strong><code>GMMInference.cue_objective</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia">cue_objective(model::GMMModel)
+</code></pre>
+
+<p>Returns the CUE objective function for <code>model</code>. </p>
+<p>Calculated weighting matrix assuming observations are independent.</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL103-L110' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gel_jump_problem' href='#GMMInference.gel_jump_problem'>#</a>
+<strong><code>GMMInference.gel_jump_problem</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code class="julia">gel_jump_problem(model::GMMModel, h::Function=log)
+</code></pre>
+
+<p>Returns JuMP problem for generalized empirical likelihood estimation of <code>model</code>.  <code>h</code> is a generalized likelihood function. </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL114-L119' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gel_nlp_problem' href='#GMMInference.gel_nlp_problem'>#</a>
+<strong><code>GMMInference.gel_nlp_problem</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code class="julia">gel_nlp_problem(model::GMMModel, h::Function=log)
+</code></pre>
+
+<p>Returns NLPModel problem for generalized empirical likelihood estimation of <code>model</code>.  <code>h</code> is a generalized likelihood function. </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL124-L129' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gel_optim_args' href='#GMMInference.gel_optim_args'>#</a>
+<strong><code>GMMInference.gel_optim_args</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code class="julia">gel_optim_args(model::GMMModel, h::Function=log)
+</code></pre>
+
+<p>Return tuple, <code>out</code> for calling <code>optimize(out..., IPNewton())</code> afterward. </p>
+<p>It seems that IPNewton() works better if the constraint on p is 0 ≤ sum(p) ≤ 1 instead of sum(p)=1, and you begin the optimizer from a point with sum(p) &lt; 1. </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL197-L205' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.get_gi-Tuple{GMMModel}' href='#GMMInference.get_gi-Tuple{GMMModel}'>#</a>
+<strong><code>GMMInference.get_gi</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia">get_gi(model::GMMModel)
+</code></pre>
+
+<p>Returns a function <code>gi(θ)</code> where the moment condition for a GMM model is</p>
+<p>$E[g_i(\theta)] = 0$</p>
+<p><code>gi(θ)</code> should be a number of observations by number of moment conditions matrix. </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL8-L16' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gmm_jump_problem' href='#GMMInference.gmm_jump_problem'>#</a>
+<strong><code>GMMInference.gmm_jump_problem</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code class="julia">gmm_jump_problem(model::GMMModel, obj=gmm_objective)
+</code></pre>
+
+<p>Constructs JuMP problem for GMMModel. </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL177-L181' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gmm_nlp_problem' href='#GMMInference.gmm_nlp_problem'>#</a>
+<strong><code>GMMInference.gmm_nlp_problem</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code class="julia">gmm_nlp_problem(model::GMMModel, obj=gmm_objective)
+</code></pre>
+
+<p>Constructs NLPModel for GMMModel. </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL158-L162' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gmm_objective' href='#GMMInference.gmm_objective'>#</a>
+<strong><code>GMMInference.gmm_objective</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code class="julia">gmm_objective(model::GMMModel, W=I)
+</code></pre>
+
+<p>Returns the GMM objective function with weighting matrix <code>W</code> for <code>model</code>.</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL94-L99' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gmm_objective' href='#GMMInference.gmm_objective'>#</a>
+<strong><code>GMMInference.gmm_objective</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code class="julia"> gmm_objective(gi::Function, W=I)
+</code></pre>
+
+<p>Returns $Q(θ) = n (1/n \sum_i g_i(θ)) W (1/n \sum_i g_i(θ))&rsquo;$</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL62-L66' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.number_moments-Tuple{GMMModel}' href='#GMMInference.number_moments-Tuple{GMMModel}'>#</a>
+<strong><code>GMMInference.number_moments</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia">number_moments(model::GMModel)
+</code></pre>
+
+<p>Number of moments (columns of gi(θ)) for a GMMModel</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL41-L45' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.number_observations-Tuple{GMMModel}' href='#GMMInference.number_observations-Tuple{GMMModel}'>#</a>
+<strong><code>GMMInference.number_observations</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia"> number_observations(model::GMMModel)
+</code></pre>
+
+<p>Number of observations (rows of gi(θ)) for a GMMModel</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL30-L34' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.number_parameters-Tuple{GMMModel}' href='#GMMInference.number_parameters-Tuple{GMMModel}'>#</a>
+<strong><code>GMMInference.number_parameters</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia"> number_parameters(model::GMMModel)
+</code></pre>
+
+<p>Number of parameters (dimension of θ) for a GMMModel.</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL21-L26' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gmm_constraints-Tuple{GMMModel}' href='#GMMInference.gmm_constraints-Tuple{GMMModel}'>#</a>
+<strong><code>GMMInference.gmm_constraints</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia">gmm_constraints(model::GMMModel)
+</code></pre>
+
+<p>Returns constraint as function or parameters, <code>θ</code>, where <code>c(θ) = 0</code>.</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/gmmmodel.jl#LL53-L58' class='documenter-source'>source</a><br></p>
+<p><a id='IV-Logit-1'></a></p>
+<h3 id="iv-logit">IV Logit<a class="headerlink" href="#iv-logit" title="Permanent link">&para;</a></h3>
+<p><a id='GMMInference.IVLogitShare' href='#GMMInference.IVLogitShare'>#</a>
+<strong><code>GMMInference.IVLogitShare</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code class="julia">IVLogitShare &lt;: GMMModel
+</code></pre>
+
+<p>An <code>IVLogitShare</code> model consists of outcomes, <code>y</code> ∈ (0,1),  regressors <code>x</code> and instruments <code>z</code>.  The moment condition is</p>
+<p>$E[ (\log(y/(1-y)) - xβ)z ] = 0$</p>
+<p>The dimensions of <code>x</code>, <code>y</code>, and <code>z</code> must be such that <code>length(y) == size(x,1) == size(z,1)</code> and  <code>size(x,2) ≤ size(z,2)</code>.</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/models/ivlogitshare.jl#LL1-L13' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.IVLogitShare-Tuple{Integer,AbstractArray{T,1} where T,AbstractArray{T,2} where T,Any}' href='#GMMInference.IVLogitShare-Tuple{Integer,AbstractArray{T,1} where T,AbstractArray{T,2} where T,Any}'>#</a>
+<strong><code>GMMInference.IVLogitShare</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia">IVLogitShare(n::Integer, β::AbstractVector,
+                  π::AbstractMatrix, ρ)
+</code></pre>
+
+<p>Simulate an IVLogitShare model. </p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><code>n</code> number of observations</li>
+<li><code>β</code> coefficients on <code>x</code></li>
+<li><code>π</code> first stage coefficients <code>x = z*π + v</code></li>
+<li><code>ρ</code> correlation between x[:,1] and structural error.</li>
+</ul>
+<p>Returns an IVLogitShare GMMModel.</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/models/ivlogitshare.jl#LL20-L34' class='documenter-source'>source</a><br></p>
+<p><a id='Panel-Mixture-1'></a></p>
+<h3 id="panel-mixture">Panel Mixture<a class="headerlink" href="#panel-mixture" title="Permanent link">&para;</a></h3>
+<p><a id='GMMInference.MixturePanel' href='#GMMInference.MixturePanel'>#</a>
+<strong><code>GMMInference.MixturePanel</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code class="julia">MixturePanel &lt;: GMMModel
+</code></pre>
+
+<p>A <code>MixturePanel</code> model consists of outcomes, <code>y</code>, regressors, <code>x</code>, and a number of types, <code>ntypes</code>. Each observation <code>i</code> is one of <code>ntypes</code> types with probability <code>p[i]</code>.  Conditional on type,<code>y</code> is given by</p>
+<p><code>y[i,t] = x[i,t,:]*β[:,type[i]] + ϵ[i,t]</code></p>
+<p>It is assumed that <code>ϵ</code> is uncorrelated accross <code>i</code> and <code>t</code> and E[ϵ²]= σ².</p>
+<p>The moment conditions used to estimate <code>p</code>, <code>β</code> and <code>σ</code> are</p>
+<p>$E[ \sum_{j} x(y - xβ[:,j])p[j]] = 0$</p>
+<p>and </p>
+<p>$E[ y[i,t]*y[i,s] - \sum_j p<a href="x[i,t,:]β[:,j] x[i,s,:]β[:,j]">j</a> - 1(t==s)σ²] = 0$</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/models/mixturepanel.jl#LL1-L19' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.MixturePanel' href='#GMMInference.MixturePanel'>#</a>
+<strong><code>GMMInference.MixturePanel</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code class="julia">MixturePanel(n::Integer, t::Integer,
+                  k::Integer, type_prob::AbstractVector,
+                  β::AbstractMatrix, σ = 1.0)
+</code></pre>
+
+<p>Simulate a MixturePanel model.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><code>n</code> individuals</li>
+<li><code>t</code> time periods</li>
+<li><code>k</code> regressors</li>
+<li><code>type_prob</code> probability of each type</li>
+<li><code>β</code> matrix <code>(k × lenght(type_prob))</code> coefficients</li>
+<li><code>σ</code> standard deviation of <code>ϵ</code></li>
+</ul>
+<p>Returns a MixturePanel GMMModel.</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/models/mixturepanel.jl#LL26-L43' class='documenter-source'>source</a><br></p>
+<p><a id='Random-Coefficients-Logit-1'></a></p>
+<h3 id="random-coefficients-logit">Random Coefficients Logit<a class="headerlink" href="#random-coefficients-logit" title="Permanent link">&para;</a></h3>
+<p><a id='GMMInference.RCLogit' href='#GMMInference.RCLogit'>#</a>
+<strong><code>GMMInference.RCLogit</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code class="julia">RCLogit &lt;: GMMModel
+</code></pre>
+
+<p>A random coefficients logit model with endogeneity.  An <code>RCLogit</code> model consists of outcomes, <code>y</code> ∈ (0,1),  regressors <code>x</code>, instruments <code>z</code>, and random draws <code>ν ∼ N(0,I)</code>.  The moment condition is</p>
+<p>$E[ξz] = 0$</p>
+<p>where </p>
+<p>$y = ∫ exp(x(β + ν) + ξ)/(1 + exp(x(β + ν) + ξ)) dΦ(ν;Σ)$</p>
+<p>where Φ(ν;Σ) is the normal distribution with variance Σ.</p>
+<p>The dimensions of <code>x</code>, <code>y</code>, <code>z</code>, and <code>ν</code> must be such that <code>length(y) == size(x,1) == size(z,1) == size(ν,2)</code> and <code>size(ν,3) == size(x,2) ≤ size(z,2)</code>. </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/models/rclogit.jl#LL1-L20' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.RCLogit' href='#GMMInference.RCLogit'>#</a>
+<strong><code>GMMInference.RCLogit</code></strong> &mdash; <em>Type</em>.</p>
+<pre><code class="julia">RCLogit(n::Integer, β::AbstractVector,
+        π::AbstractMatrix, Σ::AbstractMatrix,
+        ρ, nsim=100)
+</code></pre>
+
+<p>Simulates a RCLogit model.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><code>n</code> number of observations</li>
+<li><code>β</code> mean coefficients on <code>x</code></li>
+<li><code>π</code> first stage coefficients <code>x = z*π + e</code></li>
+<li><code>Σ</code> variance of random coefficients</li>
+<li><code>ρ</code> correlation between x[:,1] and structural error.</li>
+<li><code>nsim</code> number of draws of <code>ν</code> for monte-carlo integration</li>
+</ul>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/models/rclogit.jl#LL28-L43' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gmm_constraints-Tuple{RCLogit}' href='#GMMInference.gmm_constraints-Tuple{RCLogit}'>#</a>
+<strong><code>GMMInference.gmm_constraints</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia">gmm_constraints(model::RCLogit)
+</code></pre>
+
+<p>Returns </p>
+<p>$c(θ) = ∫ exp(x(β + ν) + ξ)/(1 + exp(x(β + ν) + ξ)) dΦ(ν;Σ) - y$</p>
+<p>where <code>θ = [β, uvec, ξ]</code> with <code>uvec = vector(cholesky(Σ).U)</code>.</p>
+<p>The integral is computed by monte-carlo integration. </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/models/rclogit.jl#LL75-L85' class='documenter-source'>source</a><br></p>
+<p><a id='Inference-1'></a></p>
+<h2 id="inference">Inference<a class="headerlink" href="#inference" title="Permanent link">&para;</a></h2>
+<p>Inference methods for GMM problems. Currently only contains GEL based tests. See <a href="https://schrimpf.github.io/GMMInference.jl/empiricalLikelihood/">empirical likelihood</a> for usage, background, and references.</p>
+<p><a id='GMMInference.gel_pλ' href='#GMMInference.gel_pλ'>#</a>
+<strong><code>GMMInference.gel_pλ</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code class="julia">gel_pλ(model::GMMModel, h::Function=log)
+</code></pre>
+
+<p>Return a function that given parameters θ solves</p>
+<p>$max_p sum h(p) s.t. sum(p) = 1, sum(p*gi(θ)) = 0$</p>
+<p>The returned function gives (p(θ),λ(θ))</p>
+<p>The returned function is not thread-safe.  </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/inference.jl#LL9-L19' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gel_pλ-Tuple{GMMModel,Function}' href='#GMMInference.gel_pλ-Tuple{GMMModel,Function}'>#</a>
+<strong><code>GMMInference.gel_pλ</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia">gel_pλ(model::GMMModel)
+</code></pre>
+
+<p>Return a function that given parameters θ solves</p>
+<p>max_p sum h(p) s.t. sum(p) = 1, sum(p*gi(θ)) = 0</p>
+<p>The returned function gives p(θ) and λ(θ). </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/inference.jl#LL3-L11' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gel_pλ-Tuple{GMMModel}' href='#GMMInference.gel_pλ-Tuple{GMMModel}'>#</a>
+<strong><code>GMMInference.gel_pλ</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code class="julia">gel_pλ(model::GMMModel)
+</code></pre>
+
+<p>Return a function that given parameters θ solves</p>
+<p>max_p sum h(p) s.t. sum(p) = 1, sum(p*gi(θ)) = 0</p>
+<p>The returned function gives p(θ) and λ(θ). </p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/inference.jl#LL3-L11' class='documenter-source'>source</a><br></p>
+<p><a id='GMMInference.gel_tests' href='#GMMInference.gel_tests'>#</a>
+<strong><code>GMMInference.gel_tests</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code class="julia">gel_tests(θ, model::GMMModel, h::Function=log)
+</code></pre>
+
+<p>Computes GEL test statistics for H₀ : θ = θ₀. Returns a tuple containing statistics and p-values.</p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/addd250c4d8dda3510f61405e5c97f586493e20f/src/inference.jl#LL39-L45' class='documenter-source'>source</a><br></p>
+<p>We plan to also add AR, KLM, and CLR methods for GMM. See <a href="https://schrimpf.github.io/GMMInference.jl/identificationRobustInference/">identification robust inference</a>. </p></div>
         </div>
 
         <footer class="col-md-12">
@@ -150,5 +408,5 @@
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-10-25 22:14:48
+Build Date UTC : 2019-10-28 03:19:00
 -->
