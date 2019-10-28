@@ -171,13 +171,17 @@ $$ \Er[ (F^{-1}_{-\epsilon}(y_j) - x_j\beta) z_j ] = 0 $$
 This is the moment condition we will use to estimate $\beta$.
 
 First, we will simulate the model, then estimate it. This code looks
-at three variants of GMM. First, it computes an estimate with 
-$W_n = I$. Second, it computes an effeciently weighted estimated with 
-$W_n = \widehat{Var}( \nabla g_i(\hat{\theta}_{(1)}) )$ , where
-$\hat{\theta}_{(1)}$ is the first estimate. Third, it computes the
-continuous updating estimator, which uses $AR(\theta)$ as the
-objective function ( $W$ is "continuously updated" to be 
-$\widehat{Var}( \nabla g_i(\theta))$ ). 
+at three variants of GMM. 
+
+First, it computes an estimate with $W_n = I$. 
+
+Second, it computes an effeciently weighted estimated with 
+$W_n = \widehat{Var}( \nabla g_i(\hat{\theta}_{(1)}))$ , where
+$\hat{\theta}_{(1)}$ is the first estimate. 
+
+Third, it computes the continuous updating estimator, which uses
+$AR(\theta)$ as the objective function ( $W$ is "continuously updated"
+to be $\widehat{Var}( \nabla g_i(\theta))$ ).
 
 ```julia
 using Optim, ForwardDiff, LinearAlgebra, Distributions
@@ -561,7 +565,7 @@ plot!(pgrid, p->mean( pweak[:,3] .<= p),
       label="CLR, weak ID", style=:solid, color=:black)
 plot!(pgrid, p->mean( pweak[:,4] .<= p),
       label="KLM, weak ID", style=:solid, color=:red)
-plot!(pgrid,pgrid,alpha=0.1, label="")
+plot!(pgrid,pgrid,alpha=0.5, label="")
 
 ```
 

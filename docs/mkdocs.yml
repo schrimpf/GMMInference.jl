@@ -34,6 +34,6 @@ docs_dir: 'build'
 
 nav:
   - Package Documentation: index.md
-  - Extremum Estimation: extremumEstimation.md
-  - Identification Robust Inference: identificationRobustInference.md
-  - Empirical Likelihood: empiricalLikelihood.md
+  - Estimation: extremumEstimation.md
+  - Inference: identificationRobustInference.md
+  - EL: empiricalLikelihood.md

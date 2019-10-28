@@ -1,7 +1,7 @@
 using Documenter, GMMInference, DocumenterMarkdown
 
 runweave=true 
-runnotebook=true
+runnotebook=false
 if runweave
   using Weave
   wd = pwd()
