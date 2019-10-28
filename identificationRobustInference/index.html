@@ -241,9 +241,12 @@ This is the moment condition we will use to estimate $\beta$.</p>
 <p>First, we will simulate the model, then estimate it. This code looks
 at three variants of GMM. </p>
 <p>First, it computes an estimate with $W_n = I$. </p>
-<p>Second, it computes an effeciently weighted estimated with 
-$W_n = \widehat{Var}( \nabla g_i(\hat{\theta}<em _1_="(1)">{(1)}))$ , where
-$\hat{\theta}</em>$ is the first estimate. </p>
+<p>Second, it computes an efficiently weighted estimated with 
+<script type="math/tex; mode=display">
+W_n = \widehat{Var}(g_i(\hat{\theta}_{(1)}))
+</script>
+where
+$\hat{\theta}_{(1)}$ is the first estimate. </p>
 <p>Third, it computes the continuous updating estimator, which uses
 $AR(\theta)$ as the objective function ( $W$ is &ldquo;continuously updated&rdquo;
 to be $\widehat{Var}( \nabla g_i(\theta))$ ).</p>
@@ -395,7 +398,7 @@ optcue = optimize(ar_ivshare,
 @show βcue = optcue.minimizer
 </code></pre>
 
-<pre><code>βcue = optcue.minimizer = [-12.201994151426963, 15.068622879810992]
+<pre><code>βcue = optcue.minimizer = [1.761971616736012, 0.20175551308470746]
 </code></pre>
 
 <pre><code class="julia">Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
@@ -403,8 +406,8 @@ display(Vcue)
 </code></pre>
 
 <pre><code>2×2 Array{Float64,2}:
-  265.975  -280.949
- -280.949   297.782
+  0.241376  -0.255958
+ -0.255958   0.276024
 </code></pre>
 
 <pre><code class="julia">plot_cr(βcue,Vcue, ar_ivshare)
