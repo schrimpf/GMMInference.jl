@@ -175,13 +175,16 @@ at three variants of GMM.
 
 First, it computes an estimate with $W_n = I$. 
 
-Second, it computes an effeciently weighted estimated with 
-$W_n = \widehat{Var}( \nabla g_i(\hat{\theta}_{(1)}))$ , where
+Second, it computes an efficiently weighted estimated with 
+$$
+W_n = \widehat{Var}(g_i(\hat{\theta}_{(1)}))
+$$
+where
 $\hat{\theta}_{(1)}$ is the first estimate. 
 
 Third, it computes the continuous updating estimator, which uses
 $AR(\theta)$ as the objective function ( $W$ is "continuously updated"
-to be $\widehat{Var}( \nabla g_i(\theta))$ ).
+to be $\widehat{Var}( g_i(\theta))$ ).
 
 ```julia
 using Optim, ForwardDiff, LinearAlgebra, Distributions
@@ -247,7 +250,8 @@ Now we compare confidence regions based on the Wald test, and from
 inverting the AR statistic.
 
 ```julia
-using Plots
+using Plots, LaTeXStrings
+Plots.gr()
 function plot_cr(β,V, AR)
   lb = β - sqrt.(diag(V))*5
   ub = β + sqrt.(diag(V))*5
@@ -388,7 +392,7 @@ variables roughly follows the notation of Andrews and
 Guggenberge(2017) [@andrews2017].
 ```julia; cache=false
 using ForwardDiff, Plots, Optim
-
+Plots.gr()
 function statparts(θ,gi)
   # compute common components of klm, rk, & clr stats
   # follows notation of Andrews & Guggenberger 2017, section 3.1

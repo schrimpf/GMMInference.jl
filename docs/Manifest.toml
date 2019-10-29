@@ -24,6 +24,12 @@ git-tree-sha1 = "981354dab938901c2b607a213e62d9defa50b698"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
 version = "1.2.1"
 
+[[AxisAlgorithms]]
+deps = ["LinearAlgebra", "Random", "SparseArrays", "WoodburyMatrices"]
+git-tree-sha1 = "a4d07a1c313392a77042855df46c5f534076fab9"
+uuid = "13072b0f-2c55-5437-9ae7-d433b7a33950"
+version = "1.0.0"
+
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
@@ -68,6 +74,12 @@ deps = ["BinaryProvider", "Libdl", "MathOptInterface", "MathProgBase", "SparseAr
 git-tree-sha1 = "82371d0e0f28f1608b9f668c5f9b7c255e9f8f6b"
 uuid = "9961bab8-2fa3-5c5a-9d89-47fab24efd76"
 version = "0.6.5"
+
+[[Clustering]]
+deps = ["Distances", "LinearAlgebra", "NearestNeighbors", "Printf", "SparseArrays", "Statistics", "StatsBase"]
+git-tree-sha1 = "f387d5937d0c9d0191c711d7d204bce15bd23b45"
+uuid = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
+version = "0.13.3"
 
 [[Codecs]]
 deps = ["Test"]
@@ -136,14 +148,20 @@ version = "0.19.4"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "2103e504f427e54ffa19af9ada225733a21f951f"
+git-tree-sha1 = "1fe8fad5fc84686dcbc674aa255bc867a64f8132"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.17.3"
+version = "0.17.5"
 
 [[DataValueInterfaces]]
 git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
 uuid = "e2d170a0-9d28-54be-80f0-106bbe20a464"
 version = "1.0.0"
+
+[[DataValues]]
+deps = ["DataValueInterfaces", "Dates"]
+git-tree-sha1 = "b65fd071ca17aa265eb8c5ab0e522faa03a50d34"
+uuid = "e7dc6d0d-1eca-5fa6-8ad6-5aecde8b7ea5"
+version = "0.4.12"
 
 [[Dates]]
 deps = ["Printf"]
@@ -170,6 +188,12 @@ deps = ["Random", "Test"]
 git-tree-sha1 = "dc0869fb2f5b23466b32ea799bd82c76480167f7"
 uuid = "b552c78f-8df3-52c6-915a-8e097449b14b"
 version = "0.0.10"
+
+[[Distances]]
+deps = ["LinearAlgebra", "Statistics"]
+git-tree-sha1 = "23717536c81b63e250f682b0e0933769eecd1411"
+uuid = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+version = "0.8.2"
 
 [[Distributed]]
 deps = ["Random", "Serialization", "Sockets"]
@@ -277,6 +301,12 @@ version = "0.2.3"
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
+[[Interpolations]]
+deps = ["AxisAlgorithms", "LinearAlgebra", "OffsetArrays", "Random", "Ratios", "SharedArrays", "SparseArrays", "StaticArrays", "WoodburyMatrices"]
+git-tree-sha1 = "02bc6d52471df58d4bbd0edf11a18b264ab86b88"
+uuid = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
+version = "0.12.3"
+
 [[InvertedIndices]]
 deps = ["Test"]
 git-tree-sha1 = "15732c475062348b0165684ffe28e85ea8396afc"
@@ -313,9 +343,15 @@ version = "0.20.1"
 
 [[KNITRO]]
 deps = ["Libdl", "MathOptInterface", "MathProgBase", "SparseArrays"]
-git-tree-sha1 = "2c3bcc0d84346bb201296495407dbb8c5ca33b8c"
+git-tree-sha1 = "141c80f567a21c6dfb284422ed174fd68431a41f"
 uuid = "67920dd8-b58e-52a8-8622-53c4cffbe346"
-version = "0.7.2"
+version = "0.7.3"
+
+[[KernelDensity]]
+deps = ["Distributions", "FFTW", "Interpolations", "Optim", "StatsBase", "Test"]
+git-tree-sha1 = "c1048817fe5711f699abc8fabd47b1ac6ba4db04"
+uuid = "5ab0869b-81aa-558d-bb23-cbf5423bbe9b"
+version = "0.5.1"
 
 [[LaTeXStrings]]
 deps = ["Compat"]
@@ -427,6 +463,23 @@ git-tree-sha1 = "ce3b85e484a5d4c71dd5316215069311135fa9f2"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 version = "0.3.2"
 
+[[NearestNeighbors]]
+deps = ["Distances", "LinearAlgebra", "Mmap", "StaticArrays", "Test"]
+git-tree-sha1 = "f47c5d97cf9a8caefa47e9fa9d99d8fda1a65154"
+uuid = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
+version = "0.4.3"
+
+[[Observables]]
+deps = ["Test"]
+git-tree-sha1 = "dc02cec22747d1d10d9f70d8a1c03432b5bfbcd0"
+uuid = "510215fc-4207-5dde-b226-833fc4488ee2"
+version = "0.2.3"
+
+[[OffsetArrays]]
+git-tree-sha1 = "1af2f79c7eaac3e019a0de41ef63335ff26a0a57"
+uuid = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
+version = "0.11.1"
+
 [[Optim]]
 deps = ["Calculus", "DiffEqDiffTools", "FillArrays", "ForwardDiff", "LineSearches", "LinearAlgebra", "NLSolversBase", "NaNMath", "Parameters", "PositiveFactorizations", "Printf", "Random", "SparseArrays", "StatsBase"]
 git-tree-sha1 = "2bda07c4b28036258d76729f06ef845a7d1d9daf"
@@ -486,9 +539,9 @@ version = "0.5.2"
 
 [[PositiveFactorizations]]
 deps = ["LinearAlgebra", "Test"]
-git-tree-sha1 = "957c3dd7c33895469760ce873082fbb6b3620641"
+git-tree-sha1 = "127c47b91990c101ee3752291c4f45640eeb03d1"
 uuid = "85a6dd25-e78a-55b7-8502-1745935b8125"
-version = "0.2.2"
+version = "0.2.3"
 
 [[Printf]]
 deps = ["Unicode"]
@@ -519,6 +572,12 @@ uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 [[Random]]
 deps = ["Serialization"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+
+[[Ratios]]
+deps = ["Compat"]
+git-tree-sha1 = "cdbbe0f350581296f3a2e3e7a91b214121934407"
+uuid = "c84ed2f1-dad5-54f0-aa8e-dbefe2724439"
+version = "0.3.1"
 
 [[RecipesBase]]
 git-tree-sha1 = "7bdce29bc9b2f5660a6e5e64d64d91ec941f6aa2"
@@ -617,6 +676,12 @@ git-tree-sha1 = "0d0e21a1c3e8043cbc1c4dd4b4e4189b0449e8cf"
 uuid = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
 version = "0.6.6"
 
+[[StatsPlots]]
+deps = ["Clustering", "DataStructures", "DataValues", "Distributions", "Interpolations", "KernelDensity", "Observables", "Plots", "RecipesBase", "Reexport", "StatsBase", "Tables", "Widgets"]
+git-tree-sha1 = "9f3f096a310f25debaca9dbe6b4e0df7bb428fd0"
+uuid = "f3b207a7-027a-5e70-b257-86293d7955fd"
+version = "0.12.0"
+
 [[SuiteSparse]]
 deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
 uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
@@ -678,6 +743,18 @@ deps = ["Base64", "Compat", "Dates", "Highlights", "JSON", "Markdown", "Mustache
 git-tree-sha1 = "a1698569cb25ddefb4bf538f39e77afdc7aa720e"
 uuid = "44d3d7a6-8a23-5bf8-98c5-b353f8df5ec9"
 version = "0.9.1"
+
+[[Widgets]]
+deps = ["Colors", "Dates", "Observables", "OrderedCollections"]
+git-tree-sha1 = "fc0feda91b3fef7fe6948ee09bb628f882b49ca4"
+uuid = "cc8bc4a8-27d6-5769-a93b-9d913e69aa62"
+version = "0.6.2"
+
+[[WoodburyMatrices]]
+deps = ["LinearAlgebra", "Random", "SparseArrays", "Test"]
+git-tree-sha1 = "21772c33b447757ec7d3e61fcdfb9ea5c47eedcf"
+uuid = "efce3f68-66dc-5838-9240-27a6d6f5f9b6"
+version = "0.4.1"
 
 [[YAML]]
 deps = ["Codecs", "Compat"]

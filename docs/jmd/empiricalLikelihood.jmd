@@ -12,7 +12,7 @@ This work is licensed under a [Creative Commons Attribution-ShareAlike
 4.0 International
 License](http://creativecommons.org/licenses/by-sa/4.0/) 
 
-### About this document {-}
+### About this document 
 
 This document was created using Weave.jl. The code is available in
 [on github](https://github.com/schrimpf/GMMInference.jl). The same
@@ -133,7 +133,7 @@ m = Model()
 @constraint(m, prob,sum(p)==1.0)
 @constraint(m, momentcon[i=1:k], dot((Ty - data.x*θ).*data.z[:,i],p)==0.0)
 @NLobjective(m,Max, sum(log(p[i]) for i in 1:n))
-@show m
+m
 ```
 The `gel_jump_problem` function from `GMMInference.jl` does the same
 thing as the above code cell. 
@@ -255,7 +255,7 @@ $\Delta(\theta) = E[(1/n\sum_i g_i(\theta) - E[g(\theta)])(1/n \sum_i
  g_i(\theta) - E[g(\theta)])']$  and define
 
 $$
-S(\theta) = \lambda(\theta)' D(\theta) \left( D(\theta)
+S(\theta) = n\lambda(\theta)' D(\theta) \left( D(\theta)
 \Delta(\theta)^{-1} D(\theta) \right)^{-1} D(\theta)'\lambda(\theta)
 $$
 
@@ -273,6 +273,7 @@ Let's do a simulation to check that these tests have correct coverage.
 
 ```julia; cache=true
 using Plots
+Plots.gr()
 S = 500
 n = 200
 d = 2

@@ -1,7 +1,8 @@
 site_name:        GMMInference.jl
 repo_url:         https://github.com/schrimpf/GMMInference.jl
 site_description: GMM estimation and inference.
-site_author:      schrimpf
+site_author:      Paul Schrimpf
+copyright:        Paul Schrimpf
 
 theme: journal
 
@@ -34,6 +35,11 @@ docs_dir: 'build'
 
 nav:
   - Package Documentation: index.md
-  - Estimation: extremumEstimation.md
-  - Inference: identificationRobustInference.md
-  - EL: empiricalLikelihood.md
+  - Notes and Examples:
+    - Estimation: extremumEstimation.md
+    - Inference: identificationRobustInference.md
+    - Empirical Likelihood: empiricalLikelihood.md
+    - Bootstrap: bootstrap.md
+  - About:
+    - License: license.md
+    
