@@ -65,6 +65,10 @@
 <li >
     <a href="empiricalLikelihood/">Empirical Likelihood</a>
 </li>
+                                    
+<li >
+    <a href="bootstrap/">Bootstrap</a>
+</li>
                                 </ul>
                             </li>
                             <li class="dropdown">
@@ -283,7 +287,7 @@
 <li><code>σ</code> standard deviation of <code>ϵ</code></li>
 </ul>
 <p>Returns a MixturePanel GMMModel.</p>
-<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/683b70d2308559db19c7708b14c3bc918816bff9/src/models/mixturepanel.jl#LL26-L43' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/683b70d2308559db19c7708b14c3bc918816bff9/src/models/mixturepanel.jl#LL27-L44' class='documenter-source'>source</a><br></p>
 <p><a id='Random-Coefficients-Logit-1'></a></p>
 <h3 id="random-coefficients-logit">Random Coefficients Logit<a class="headerlink" href="#random-coefficients-logit" title="Permanent link">&para;</a></h3>
 <p><a id='GMMInference.RCLogit' href='#GMMInference.RCLogit'>#</a>
@@ -339,31 +343,13 @@
 <p>The returned function gives (p(θ),λ(θ))</p>
 <p>The returned function is not thread-safe.  </p>
 <p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/683b70d2308559db19c7708b14c3bc918816bff9/src/inference.jl#LL9-L19' class='documenter-source'>source</a><br></p>
-<p><a id='GMMInference.gel_pλ-Tuple{GMMModel,Function}' href='#GMMInference.gel_pλ-Tuple{GMMModel,Function}'>#</a>
-<strong><code>GMMInference.gel_pλ</code></strong> &mdash; <em>Method</em>.</p>
-<pre><code class="julia">gel_pλ(model::GMMModel)
-</code></pre>
-
-<p>Return a function that given parameters θ solves</p>
-<p>max_p sum h(p) s.t. sum(p) = 1, sum(p*gi(θ)) = 0</p>
-<p>The returned function gives p(θ) and λ(θ). </p>
-<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/683b70d2308559db19c7708b14c3bc918816bff9/src/inference.jl#LL3-L11' class='documenter-source'>source</a><br></p>
-<p><a id='GMMInference.gel_pλ-Tuple{GMMModel}' href='#GMMInference.gel_pλ-Tuple{GMMModel}'>#</a>
-<strong><code>GMMInference.gel_pλ</code></strong> &mdash; <em>Method</em>.</p>
-<pre><code class="julia">gel_pλ(model::GMMModel)
-</code></pre>
-
-<p>Return a function that given parameters θ solves</p>
-<p>max_p sum h(p) s.t. sum(p) = 1, sum(p*gi(θ)) = 0</p>
-<p>The returned function gives p(θ) and λ(θ). </p>
-<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/683b70d2308559db19c7708b14c3bc918816bff9/src/inference.jl#LL3-L11' class='documenter-source'>source</a><br></p>
 <p><a id='GMMInference.gel_tests' href='#GMMInference.gel_tests'>#</a>
 <strong><code>GMMInference.gel_tests</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code class="julia">gel_tests(θ, model::GMMModel, h::Function=log)
 </code></pre>
 
 <p>Computes GEL test statistics for H₀ : θ = θ₀. Returns a tuple containing statistics and p-values.</p>
-<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/683b70d2308559db19c7708b14c3bc918816bff9/src/inference.jl#LL39-L45' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/schrimpf/GMMInference.jl/blob/683b70d2308559db19c7708b14c3bc918816bff9/src/inference.jl#LL38-L44' class='documenter-source'>source</a><br></p>
 <p>We plan to also add AR, KLM, and CLR methods for GMM. See <a href="https://schrimpf.github.io/GMMInference.jl/identificationRobustInference/">identification robust inference</a>. </p></div>
         </div>
 
@@ -426,5 +412,5 @@
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-10-29 16:48:59
+Build Date UTC : 2019-10-29 20:31:26
 -->

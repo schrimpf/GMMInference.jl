@@ -65,6 +65,10 @@
 <li class="active">
     <a href="./">Empirical Likelihood</a>
 </li>
+                                    
+<li >
+    <a href="../bootstrap/">Bootstrap</a>
+</li>
                                 </ul>
                             </li>
                             <li class="dropdown">
@@ -85,7 +89,7 @@
                                 </a>
                             </li>
                             <li >
-                                <a rel="prev" href="../license/">
+                                <a rel="prev" href="../bootstrap/">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -116,7 +120,7 @@
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
 4.0 International
 License</a> </p>
-<h3 -="-" id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
+<h3 id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
 <p>This document was created using Weave.jl. The code is available in
 <a href="https://github.com/schrimpf/GMMInference.jl">on github</a>. The same
 document generates both static webpages and associated <a href="../empiricalLikelihood.ipynb">jupyter
@@ -871,7 +875,7 @@ $\Delta(\theta) = E[(1/n\sum_i g_i(\theta) - E[g(\theta)])(1/n \sum_i
  g_i(\theta) - E[g(\theta)])&rsquo;]$  and define</p>
 <p>
 <script type="math/tex; mode=display">
-S(\theta) = \lambda(\theta)' D(\theta) \left( D(\theta)
+S(\theta) = n\lambda(\theta)' D(\theta) \left( D(\theta)
 \Delta(\theta)^{-1} D(\theta) \right)^{-1} D(\theta)'\lambda(\theta)
 </script>
 </p>
