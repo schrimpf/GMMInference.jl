@@ -175,12 +175,12 @@ median minus its true value.</p>
 Plots.gr();
 </code></pre>
 
-<pre><code class="julia">dgp(n) = rand(n).^2
+<pre><code class="julia">dgp(n) = rand(n)
 estimator(x) = median(x)
 # simulating T ~ G_n(τ,F_0)
-n = 300
-S = 1000
-T = [estimator(dgp(n)) for s in 1:S] .- 0.25
+n = 1000
+S = 999
+T = [estimator(dgp(n)) for s in 1:S] .- 0.5
 function bootstrap(data, estimator, S)
   n = length(data)
   θhat = estimator(data)
