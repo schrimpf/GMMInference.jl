@@ -163,11 +163,11 @@ the formal justification for the bootstrap still relies on
 asymptotics). The bootstrap approximates $G_n(\tau, F_0)$ by replacing
 $F_0$ with an estimate, $\hat{F}_n$. One common estimate of
 $\hat{F}_n$ is simply the empirical CDF. When observations are
-independent, we can randomly draw $T^<em>_n$ from 
+independent, we can randomly draw $T^\ast_n$ from 
 $G_n(\tau, \hat{F}_n)$ by randomly drawing with replacement a sample
 of size $n$ from the orgininal observations, and then computing
-$T^</em>_n$ for this sample. We can do this repeatedly, and use
-the distribution of the resulting $\hat{\theta}^*_n$&rsquo;s to calculate
+$T^\ast_n$ for this sample. We can do this repeatedly, and use
+the distribution of the resulting $\hat{\theta}^\ast_n$&rsquo;s to calculate
 $G_n(\tau,\hat{F}_n)$. </p>
 <p>As a quick example, here&rsquo;s some code where the statistic is the sample
 median minus its true value.</p>
@@ -212,7 +212,7 @@ models.</p>
 <h1 id="theory">Theory<a class="headerlink" href="#theory" title="Permanent link">&para;</a></h1>
 <p>This section follows the approach Van der Vaart (2000)<sup id="fnref:12"><a class="footnote-ref" href="#fn:12">12</a></sup>. We focus on the case where
 $T_n = \frac{\hat{\theta}_n - \theta_0}{\hat{\sigma}_n}$ is a
-t-statistic. A simple and useful result is that if $T_n$ and $T^*_n$
+t-statistic. A simple and useful result is that if $T_n$ and $T^\ast_n$
 both converge to the same distribution, then the bootstrap is
 consistent. </p>
 <div class="admonition tip">
@@ -223,7 +223,7 @@ T_n = \frac{\hat{\theta}_n - \theta_0}{\hat{\sigma}_n} \leadsto T
 </script>
 and 
 <script type="math/tex; mode=display">
-T_n^* =  \frac{\hat{\theta}^*_n - \hat{\theta}_n}{\hat{\sigma}^*_n} \leadsto T
+T_n^\ast =  \frac{\hat{\theta}^\ast_n - \hat{\theta}_n}{\hat{\sigma}^\ast_n} \leadsto T
 </script>
 conditional on the data, for some random variable $T$ with a
 continuous distribution function. Then 
@@ -240,8 +240,8 @@ and in particular,
 </div>
 <p><em>Proof sketch:</em> $T_n$ and $T_n^\ast$ both $\leadsto T$ immediately
 implies $G_n(\tau, F_0) \inprob G_\infty(\tau)$ and
-$G_n(\tau,\hat{F}<em>n) \inprob G</em>\infty(\tau)$, where $G_\infty(\tau)$
-is the CDF of $T$. This implies that 
+$G_n(\tau,\hat{F}<em>n) \inprob G</em>\infty(\tau)$ , where $G_\infty(\tau)$
+is the CDF of $T$ . This implies that 
 $G^{-1}<em>n(\tau,\hat{F}_n) \inprob G^{-1}</em>\infty(\tau)$ for all $\tau$
 where $G_\infty$ is continuous. Then we have
 <script type="math/tex; mode=display">
@@ -263,7 +263,7 @@ draws of $x_i$ from it.</p>
 <p>Let $x_1, x_2, &hellip;$ be i.i.d. with mean $\mu$ and variance
 $\sigma^2$. Then conditional on $x_1, &hellip;$ for almost every sequence
 <script type="math/tex; mode=display">
-\sqrt{n} (\bar{x}_n^* - \bar{x}_n) \indist N(0,\sigma^2)
+\sqrt{n} (\bar{x}_n^\ast - \bar{x}_n) \indist N(0,\sigma^2)
 </script>
 </p>
 </div>
@@ -384,23 +384,23 @@ AR(\theta) = n [1/n \sum g_i(\theta)]' \widehat{Var}(g_i(\theta))^{-1}
 bootstrap by computing</p>
 <p>
 <script type="math/tex; mode=display">
-AR(\theta)^* = n [1/n \sum g_i^*(\theta)]' \widehat{Var}(g_i^*(\theta))^{-1}
-[1/n \sum g_i^*(\theta)] 
+AR(\theta)^\ast = n [1/n \sum g_i^\ast(\theta)]' \widehat{Var}(g_i^\ast(\theta))^{-1}
+[1/n \sum g_i^\ast(\theta)] 
 </script>
 </p>
 <p>we will get incorrect inference. The problem is that we want to test
 $H_0: \Er[g_i(\theta)] = 0$, but in the bootstrap sample, </p>
 <p>
 <script type="math/tex; mode=display">
-\Er[g^*(\theta)|data] = 1/n \sum g_i(\theta) \neq 0.
+\Er[g^\ast(\theta)|data] = 1/n \sum g_i(\theta) \neq 0.
 </script>
 </p>
 <p>For the bootstrap to work, we must ensure that the null hypothesis is
 true in the bootstrap sample, we can do this by taking</p>
 <p>
 <script type="math/tex; mode=display">
-AR(\theta)^* = n [1/n \sum g_i^*(\theta) - \bar{g}_n(\theta)]' \widehat{Var}(g_i^*(\theta))^{-1}
-[1/n \sum g_i^*(\theta) - \bar{g}_n(\theta)] 
+AR(\theta)^\ast = n [1/n \sum g_i^\ast(\theta) - \bar{g}_n(\theta)]' \widehat{Var}(g_i^\ast(\theta))^{-1}
+[1/n \sum g_i^\ast(\theta) - \bar{g}_n(\theta)] 
 </script>
 </p>
 <p>where $\bar{g}_n(\theta) = 1/n \sum g_i(\theta)$. </p>
@@ -469,19 +469,19 @@ from the bootstrapped moments. Thus, one way to bootstrap is
 $\sqrt{n} (\hat{\theta} - \theta_0)$ is to</p>
 <ul>
 <li>Compute $\hat{\theta}$, $\bar{g}_n(\theta) = 1/n\sum_i g_i(\hat{\theta})$</li>
-<li>Draw with replacement $g_i^*(\theta)$ from ${g_i(\theta) -
+<li>Draw with replacement $g_i^\ast(\theta)$ from ${g_i(\theta) -
   \bar{g}<em i="1">n(\theta)}</em>^n$. </li>
 <li>Compute </li>
 </ul>
 <p>
-<script type="math/tex; mode=display">\hat{\theta}^* = \argmin [1/n \sum_i g_i^*(\theta)] W_n^*(\theta)
-  [1/n \sum g_i^*(\theta]</script>
+<script type="math/tex; mode=display">\hat{\theta}^\ast = \argmin [1/n \sum_i g_i^\ast(\theta)] W_n^\ast(\theta)
+  [1/n \sum g_i^\ast(\theta]</script>
 </p>
 <ul>
-<li>Use distribution of $\sqrt{n} (\hat{\theta}^* - \hat{\theta})$ to
+<li>Use distribution of $\sqrt{n} (\hat{\theta}^\ast - \hat{\theta})$ to
   approximate $\sqrt{n} (\hat{\theta} - \theta_0)$</li>
 </ul>
-<p>For some models, the minimazation needed to compute $\hat{\theta}^*$
+<p>For some models, the minimazation needed to compute $\hat{\theta}^\ast$
 can be very time consuming. Fortunately, it can be avoided. A key step
 in showing that $\hat{\theta}$ is asymptotically normal is a
 linearization</p>
@@ -495,15 +495,15 @@ linearization</p>
 on the data involves a similar linearization</p>
 <p>
 <script type="math/tex; mode=display">
-\sqrt{n}(\hat{\theta}^* - \hat{\theta}) = -(\hat{D}'\hat{W}\hat{D})^{-1} (\hat{D}' \hat{W})
-\frac{1}{\sqrt{n}} \sum_i g_i^*(\hat{\theta}) + o_p(1) 
+\sqrt{n}(\hat{\theta}^\ast - \hat{\theta}) = -(\hat{D}'\hat{W}\hat{D})^{-1} (\hat{D}' \hat{W})
+\frac{1}{\sqrt{n}} \sum_i g_i^\ast(\hat{\theta}) + o_p(1) 
 </script>
 </p>
 <p>This suggests taking </p>
 <p>
 <script type="math/tex; mode=display">
-\hat{\theta}^* = \hat{\theta} + (\hat{D}'\hat{W}\hat{D})^{-1} (\hat{D}' \hat{W})
-\frac{1}{\sqrt{n}} \sum_i g_i^*(\hat{\theta}) 
+\hat{\theta}^\ast = \hat{\theta} + (\hat{D}'\hat{W}\hat{D})^{-1} (\hat{D}' \hat{W})
+\frac{1}{\sqrt{n}} \sum_i g_i^\ast(\hat{\theta}) 
 </script>
 </p>
 <p>instead of re-minimizing. </p>
