@@ -150,12 +150,15 @@ statistic involving the estimator. The test
 statistic is a function of data, so the distribution of the estimator
 is a function of the distribution of data. Let $F_0$
 denote the exact, finite sample distribution of the data. Let 
-$G_n(\tau, F_0) = \Pr(\hat{\theta}<em>n \leq \tau$ denote the
-exact finite sample distribution of the statistic. To do inference, we
-would like to know $G_n(\tau, F_0)$. This is generally impossible
+<script type="math/tex; mode=display">
+G_n(\tau, F_0) = \Pr(\hat{\theta}_n \leq \tau)
+</script>
+denote the exact finite sample distribution of the statistic. 
+To do inference, we would like to know $G_n(\tau, F_0)$. 
+This is generally impossible
 without strong assumptions. Asymptotics get around this problem by
 approximating $G_n(\tau, F_0)$ with its asymptotic distribution,
-$G</em>\infty(\tau,F_0)$. The bootstrap is an alternative approach (but
+$G_\infty(\tau,F_0)$. The bootstrap is an alternative approach (but
 the formal justification for the bootstrap still relies on
 asymptotics). The bootstrap approximates $G_n(\tau, F_0)$ by replacing
 $F_0$ with an estimate, $\hat{F}_n$. One common estimate of
@@ -175,7 +178,7 @@ Plots.gr();
 <pre><code class="julia">dgp(n) = rand(n).^2
 estimator(x) = median(x)
 # simulating T ~ G_n(τ,F_0)
-n = 200
+n = 300
 S = 1000
 T = [estimator(dgp(n)) for s in 1:S] .- 0.25
 function bootstrap(data, estimator, S)
@@ -235,25 +238,25 @@ and in particular,
 </script>
 </p>
 </div>
-<p><em>Proof sketch:</em> $T_n$ and $T^*<em>n$ both $\leadsto T$ immediately
-implies $G_n(\tau, F_0) \inprob G</em>\infty(\tau)$ and
+<p><em>Proof sketch:</em> $T_n$ and $T_n^\ast$ both $\leadsto T$ immediately
+implies $G_n(\tau, F_0) \inprob G_\infty(\tau)$ and
 $G_n(\tau,\hat{F}<em>n) \inprob G</em>\infty(\tau)$, where $G_\infty(\tau)$
 is the CDF of $T$. This implies that 
 $G^{-1}<em>n(\tau,\hat{F}_n) \inprob G^{-1}</em>\infty(\tau)$ for all $\tau$
 where $G_\infty$ is continuous. Then we have
 <script type="math/tex; mode=display">
 \Pr(\theta_0 \geq \hat{\theta}_n - G_n^{-1}(\tau, \hat{F}_n)
- \hat{\sigma}_n) = \Pr(\frac{\theta_0 -
- \hat{\theta}_n}{\hat{\sigma}_n} \leq G_n^{-1}(\tau, \hat{F}_n) \to
+ \hat{\sigma}_n) = \Pr\left(\frac{\theta_0 -
+ \hat{\theta}_n}{\hat{\sigma}_n} \leq G_n^{-1}(\tau, \hat{F}_n)\right) \to
  \Pr(T \leq G^{-1}_\infty(\tau)) = \tau.
 </script>
 </p>
 <p>This theorem is very simple, but it is useful because it suggest a
 simple path to showing the consistency of the bootstrap: simply show
-that $T_n^<em>$ has the same asymptotic distribution as $T_n$. Here is a
-simple result for when $T_n^</em>$ is constructed by sampling with
+that $T_n^\ast$ has the same asymptotic distribution as $T_n$. Here is a
+simple result for when $T_n^\ast$ is constructed by sampling with
 replacement from the empirical distribution. We will let
-$\mathbb{P}_n$ denote the empirical distribution, and $x_i^*$ denote
+$\mathbb{P}_n$ denote the empirical distribution, and $x_i^\ast$ denote
 draws of $x_i$ from it.</p>
 <div class="admonition tip">
 <p class="admonition-title"><strong>Lemma</strong></p>
@@ -264,8 +267,8 @@ $\sigma^2$. Then conditional on $x_1, &hellip;$ for almost every sequence
 </script>
 </p>
 </div>
-<p><strong>Proof sketch</strong> it is straightforward to show that $\Er[x_i^<em> |
-\mathbb{P}_n] = \bar{x}_n$ and $Var(x_i^</em>|\mathbb{P}_n) = \bar{x^2}_n
+<p><strong>Proof sketch</strong> it is straightforward to show that $\Er[x_i^\ast |
+\mathbb{P}_n] = \bar{x}_n$ and $Var(x_i^\ast|\mathbb{P}_n) = \bar{x^2}_n
 - \bar{x}_n^2 \to \sigma^2$. Applying the Lindeberg CLT then gives the
 result.</p>
 <h2 id="pivotal-statistics">Pivotal statistics<a class="headerlink" href="#pivotal-statistics" title="Permanent link">&para;</a></h2>
@@ -320,7 +323,7 @@ fig
 <p>This figure shows the simulated CDF of p-values minus p. For a
 perfectly sized test, the line would be identically 0. The blue lines
 are for the usual t-test. Green is from bootstrapping the non-pivotal
-statistic $\sqrt{n}(\bar{x}^* - \bar{x})$. Red is from bootstrapping a
+statistic $\sqrt{n}(\bar{x}^\ast - \bar{x})$. Red is from bootstrapping a
 pivotal t-statistic. As expected, the red line is closer to 0,
 illustrating the advantage of bootstrapping a pivotal statistic. </p>
 <h2 id="bootstrap-does-not-always-work">Bootstrap does not always work<a class="headerlink" href="#bootstrap-does-not-always-work" title="Permanent link">&para;</a></h2>
@@ -334,7 +337,7 @@ will be $\hat{\theta} = \bar{x}^2$.  The delta method and CLT imply
 </script>
 similarly conditional on the data,
 $$
-    \sqrt{n}(\bar{x^*}^2 - \bar{x}^2) \indist 2 \mu N(0,\sigma^2)$
+    \sqrt{n}(\bar{x^\ast}^2 - \bar{x}^2) \indist 2 \mu N(0,\sigma^2)$
 $$
 A problem occurs when $\mu=0$. The limiting distributions become point
 masses at 0. The CDF is no longer continuous, so the theorem above
