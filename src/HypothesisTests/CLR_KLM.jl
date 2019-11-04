@@ -9,9 +9,9 @@ and Andrews and Guggenberge (2017) [@andrews2017] showed the
 validity of these tests under more general conditions. These tests are
 somewhat more complicated than the AR test, but they have the
 advantage that they are often more powerful. The AR test statistic has
-a $\chi^2_{m}$ distribution, where $m$ is the number of moments. The
-CLR and KLM statistics under strong identification have $\chi^2_k$
-distributions (as does the Wald statistic), where $k$ is the number of
+a \\chi^2_{m} distribution, where m is the number of moments. The
+CLR and KLM statistics under strong identification have \\chi^2_k
+distributions (as does the Wald statistic), where k is the number of
 parameters. Consequently, when the model is overidentified, the CLR
 and LM tests are more powerful than the AR test. 
 
