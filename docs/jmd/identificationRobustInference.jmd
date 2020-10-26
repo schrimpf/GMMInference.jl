@@ -371,12 +371,12 @@ for both the weakly and strongly identified DGP.
 ### Other identification robust tests
 
 There are also identification robust versions of likelihood ratio and
-lagrange multiplier test. Moreire (2003)[@moreira2003] proposed a conditional
+lagrange multiplier test. Moreira (2003)[@moreira2003] proposed a conditional
 likelihood ratio (CLR) test for weakly identified linear IV
 models. Kleibergen (2005)[@kleibergen2005] developed a Lagrange multiplier (often called
 the KLM) test and extended Moreira's CLR test to weakly identified GMM
-models.  More recently, Andrews and Guggenberge (2015) [@andrews2015]
-and Andrews and Guggenberge (2017) [@andrews2017] showed the
+models.  More recently, Andrews and Guggenberger (2015) [@andrews2015]
+and Andrews and Guggenberger (2017) [@andrews2017] showed the
 validity of these tests under more general conditions. These tests are
 somewhat more complicated than the AR test, but they have the
 advantage that they are often more powerful. The AR test statistic has

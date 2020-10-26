@@ -153,11 +153,17 @@ consistent.
 
 
 *Proof sketch:* $T_n$ and $T_n^\ast$ both $\leadsto T$ immediately
-implies $G_n(\tau, F_0) \inprob G_\infty(\tau)$ and
-$G_n(\tau,\hat{F}_n) \inprob G_\infty(\tau)$ , where $G_\infty(\tau)$
-is the CDF of $T$ . This implies that 
-$G^{-1}_n(\tau,\hat{F}_n) \inprob G^{-1}_\infty(\tau)$ for all $\tau$
-where $G_\infty$ is continuous. Then we have
+implies 
+$G_n(\tau, F_0) \inprob G_\infty(\tau)$ 
+and
+$G_n(\tau,\hat{F}_n) \inprob G_\infty(\tau)$ ,
+where 
+$G_\infty(\tau)$
+is the CDF of 
+$T$ .
+This implies that 
+$G^{-1}_n(\tau,\hat{F}_n) \inprob G^{-1}_\infty(\tau)$
+for all $\tau$ where $G_\infty$ is continuous. Then we have
 $$
 \Pr(\theta_0 \geq \hat{\theta}_n - G_n^{-1}(\tau, \hat{F}_n)
  \hat{\sigma}_n) = \Pr\left(\frac{\theta_0 -
@@ -394,9 +400,9 @@ as above, we can do this by subtracting $1/n\sum_i g_i(\hat{\theta})$
 from the bootstrapped moments. Thus, one way to bootstrap is 
 $\sqrt{n} (\hat{\theta} - \theta_0)$ is to
 
-- Compute $\hat{\theta}$, $\bar{g}_n(\theta) = 1/n\sum_i g_i(\hat{\theta})$
-- Draw with replacement $g_i^\ast(\theta)$ from $\{g_i(\theta) -
-  \bar{g}_n(\theta)\}_{i=1}^n$. 
+- Compute $\hat{\theta}$, $\bar{g}_n(\hat{\theta}) = 1/n\sum_i g_i(\hat{\theta})$
+- Draw with replacement 
+  $g_i^\ast(\theta)$ from $\{g_i(\theta) - \bar{g}_n(\hat{\theta})\}_{i=1}^n$. 
 - Compute 
 
 $$\hat{\theta}^\ast = \argmin [1/n \sum_i g_i^\ast(\theta)] W_n^\ast(\theta)
