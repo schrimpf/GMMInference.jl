@@ -9,92 +9,79 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Bootstrap - GMMInference.jl</title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="..">GMMInference.jl</a>
-                </div>
+                <a class="navbar-brand" href="..">GMMInference.jl</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">Package Documentation</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Documentation</a>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Notes and Examples <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Notes and Examples <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../extremumEstimation/">Estimation</a>
+<li>
+    <a href="../extremumEstimation/" class="dropdown-item">Estimation</a>
 </li>
                                     
-<li >
-    <a href="../identificationRobustInference/">Inference</a>
+<li>
+    <a href="../identificationRobustInference/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li >
-    <a href="../empiricalLikelihood/">Empirical Likelihood</a>
+<li>
+    <a href="../empiricalLikelihood/" class="dropdown-item">Empirical Likelihood</a>
 </li>
                                     
-<li class="active">
-    <a href="./">Bootstrap</a>
+<li>
+    <a href="./" class="dropdown-item active">Bootstrap</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../license/">License</a>
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                            <li >
-                                <a rel="next" href="../empiricalLikelihood/">
+                    <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a rel="prev" href="../empiricalLikelihood/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../license/">
+                            <li class="nav-item">
+                                <a rel="next" href="../license/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/GMMInference.jl/edit/master/docs/bootstrap.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/GMMInference.jl/edit/master/docs/bootstrap.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -102,21 +89,62 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#about-this-document">About this document</a></li>
-        <li class="main "><a href="#introduction">Introduction</a></li>
-            <li><a href="#references">References</a></li>
-        <li class="main "><a href="#theory">Theory</a></li>
-            <li><a href="#pivotal-statistics">Pivotal statistics</a></li>
-            <li><a href="#bootstrap-does-not-always-work">Bootstrap does not always work</a></li>
-        <li class="main "><a href="#bootstrap-for-gmm">Bootstrap for GMM</a></li>
-            <li><a href="#joint-hypotheses">Joint hypotheses</a></li>
-            <li><a href="#single-coefficients">Single coefficients</a></li>
-        <li class="main "><a href="#references_1">References</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#references" class="nav-link">References</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#theory" class="nav-link">Theory</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#pivotal-statistics" class="nav-link">Pivotal statistics</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#bootstrap-does-not-always-work" class="nav-link">Bootstrap does not always work</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#bootstrap-for-gmm" class="nav-link">Bootstrap for GMM</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#joint-hypotheses" class="nav-link">Joint hypotheses</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#single-coefficients" class="nav-link">Single coefficients</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#references_1" class="nav-link">References</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
@@ -126,7 +154,7 @@ License</a> </p>
 <p>This document was created using Weave.jl. The code is available in
 <a href="https://github.com/schrimpf/GMMInference.jl">on github</a>. The same
 document generates both static webpages and associated jupyter
-notebooks <a href="../bootstrap.ipynb">jupyter notebook</a>.</p>
+notebooks <a href="bootstrap.ipynb">jupyter notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
 \def\indep{\perp\!\!\!\perp}
@@ -171,11 +199,10 @@ the distribution of the resulting $\hat{\theta}^\ast_n$&rsquo;s to calculate
 $G_n(\tau,\hat{F}_n)$. </p>
 <p>As a quick example, here&rsquo;s some code where the statistic is the sample
 median minus its true value.</p>
-<pre><code class="julia">using Plots, StatsPlots, Distributions, Optim, ForwardDiff, LinearAlgebra, GMMInference
+<pre><code class="language-julia">using Plots, StatsPlots, Distributions, Optim, ForwardDiff, LinearAlgebra, GMMInference
 Plots.gr();
 </code></pre>
-
-<pre><code class="julia">dgp(n) = rand(n)
+<pre><code class="language-julia">dgp(n) = rand(n)
 estimator(x) = median(x)
 # simulating T ~ G_n(τ,F_0)
 n = 1000
@@ -190,7 +217,6 @@ Tboot = bootstrap(dgp(n),estimator, S)
 density(T, label=&quot;true distribution&quot;)
 density!(Tboot, label=&quot;bootstrap distribution&quot;)
 </code></pre>
-
 <p><img alt="" src="../figures/bootstrap_3_1.png" /></p>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <p>Mackinnon (2006)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> and MacKinnon (2009)<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> are good practical introductions to
@@ -239,11 +265,23 @@ and in particular,
 </p>
 </div>
 <p><em>Proof sketch:</em> $T_n$ and $T_n^\ast$ both $\leadsto T$ immediately
-implies $G_n(\tau, F_0) \inprob G_\infty(\tau)$ and
-$G_n(\tau,\hat{F}<em>n) \inprob G</em>\infty(\tau)$ , where $G_\infty(\tau)$
-is the CDF of $T$ . This implies that 
-$G^{-1}<em>n(\tau,\hat{F}_n) \inprob G^{-1}</em>\infty(\tau)$ for all $\tau$
-where $G_\infty$ is continuous. Then we have
+implies 
+<script type="math/tex; mode=display">
+G_n(\tau, F_0) \inprob G_\infty(\tau)
+</script> 
+and
+<script type="math/tex; mode=display">
+G_n(\tau,\hat{F}_n) \inprob G_\infty(\tau),,
+</script> 
+where 
+$G_\infty(\tau)$
+is the CDF of 
+$T$ .
+This implies that 
+<script type="math/tex; mode=display">
+G^{-1}_n(\tau,\hat{F}_n) \inprob G^{-1}_\infty(\tau)
+</script>
+for all $\tau$ where $G_\infty$ is continuous. Then we have
 <script type="math/tex; mode=display">
 \Pr(\theta_0 \geq \hat{\theta}_n - G_n^{-1}(\tau, \hat{F}_n)
  \hat{\sigma}_n) = \Pr\left(\frac{\theta_0 -
@@ -261,7 +299,7 @@ draws of $x_i$ from it.</p>
 <div class="admonition tip">
 <p class="admonition-title"><strong>Lemma</strong></p>
 <p>Let $x_1, x_2, &hellip;$ be i.i.d. with mean $\mu$ and variance
-$\sigma^2$. Then conditional on $x_1, &hellip;$ for almost every sequence
+$\sigma^2$. Then conditional on $x_1, &hellip;, x_n$ for almost every sequence
 <script type="math/tex; mode=display">
 \sqrt{n} (\bar{x}_n^\ast - \bar{x}_n) \indist N(0,\sigma^2)
 </script>
@@ -287,7 +325,7 @@ distribution of asymptotically pivotal statistics converge faster than
 either the usual asymptotic approximation or the bootstrap distribution of
 non-pivotal statistics. See Hall (1994)<sup id="fnref2:10"><a class="footnote-ref" href="#fn:10">10</a></sup> for details. </p>
 <p>Here is a simulation to illustrate. </p>
-<pre><code class="julia">dgp(n) = rand(Exponential(),n)
+<pre><code class="language-julia">dgp(n) = rand(Exponential(),n)
 estimator(x) = mean(x)
 θ0 = 1.0
 N = [5 10 20 100]
@@ -318,7 +356,6 @@ for i=1:4
 end
 fig
 </code></pre>
-
 <p><img alt="" src="../figures/bootstrap_4_1.png" /></p>
 <p>This figure shows the simulated CDF of p-values minus p. For a
 perfectly sized test, the line would be identically 0. The blue lines
@@ -343,7 +380,7 @@ A problem occurs when $\mu=0$. The limiting distributions become point
 masses at 0. The CDF is no longer continuous, so the theorem above
 does not apply. </p>
 <p>Here&rsquo;s an illustration </p>
-<pre><code class="julia">function bootmeansquared(μ0, n)
+<pre><code class="language-julia">function bootmeansquared(μ0, n)
   dgp(n) = rand(n) .- 0.5 .+ μ0
   estimator(x) = mean(x)^2  
   S = 1000
@@ -359,11 +396,9 @@ does not apply. </p>
 end
 bootmeansquared(0.5,100)
 </code></pre>
-
 <p><img alt="" src="../figures/bootstrap_5_1.png" /></p>
-<pre><code class="julia">bootmeansquared(0.0,500)
+<pre><code class="language-julia">bootmeansquared(0.0,500)
 </code></pre>
-
 <p><img alt="" src="../figures/bootstrap_6_1.png" /></p>
 <p>Depending on the random numbers drawn (in particular, whether the simulated
 sample mean is very close to 0 or not), the above picture may look
@@ -406,7 +441,7 @@ AR(\theta)^\ast = n [1/n \sum g_i^\ast(\theta) - \bar{g}_n(\theta)]' \widehat{Va
 <p>where $\bar{g}_n(\theta) = 1/n \sum g_i(\theta)$. </p>
 <p>Here is a simulation to illustrate. It uses the same IV-logit share
 example as in the extremum estimation notes.</p>
-<pre><code class="julia">n = 100
+<pre><code class="language-julia">n = 100
 k = 2
 iv = 3
 β0 = ones(k)
@@ -443,17 +478,14 @@ function simulatetests()
   bsp=bootstrapAR(β0, get_gi(data))
 end
 </code></pre>
-
 <pre><code>simulatetests (generic function with 2 methods)
 </code></pre>
-
-<pre><code class="julia">pvals = vcat([simulatetests() for s in 1:500]...)
+<pre><code class="language-julia">pvals = vcat([simulatetests() for s in 1:500]...)
 p = 0:0.01:1.0
 plot(p, p-&gt;(mean(pvals[:,1].&lt;p)-p),  label=&quot;asymptotic&quot;, legend=:bottomleft)
 plot!(p, p-&gt;(mean(pvals[:,2].&lt;p)-p),  label=&quot;incorrect bootstrap&quot;)
 plot!(p, p-&gt;(mean(pvals[:,3].&lt;p)-p),  label=&quot;correct bootstrap&quot;)
 </code></pre>
-
 <p><img alt="" src="../figures/bootstrap_8_1.png" /></p>
 <p>With the same sort of modification the KLM and CLR statistics can also
 be bootstrapped. All three statistics remain identification robust
@@ -468,9 +500,9 @@ as above, we can do this by subtracting $1/n\sum_i g_i(\hat{\theta})$
 from the bootstrapped moments. Thus, one way to bootstrap is 
 $\sqrt{n} (\hat{\theta} - \theta_0)$ is to</p>
 <ul>
-<li>Compute $\hat{\theta}$, $\bar{g}_n(\theta) = 1/n\sum_i g_i(\hat{\theta})$</li>
-<li>Draw with replacement $g_i^\ast(\theta)$ from ${g_i(\theta) -
-  \bar{g}<em i="1">n(\theta)}</em>^n$. </li>
+<li>Compute $\hat{\theta}$, $\bar{g}_n(\hat{\theta}) = 1/n\sum_i g_i(\hat{\theta})$</li>
+<li>Draw with replacement 
+  $g_i^\ast(\theta)$ from ${g_i(\theta) - \bar{g}<em i="1">n(\hat{\theta})}</em>^n$. </li>
 <li>Compute </li>
 </ul>
 <p>
@@ -507,7 +539,7 @@ on the data involves a similar linearization</p>
 </script>
 </p>
 <p>instead of re-minimizing. </p>
-<pre><code class="julia">function gmmVar(θ,gi,W)
+<pre><code class="language-julia">function gmmVar(θ,gi,W)
   g = gi(θ)
   n = size(g)[1]
   D = ForwardDiff.jacobian(θ-&gt;mean(gi(θ),dims=1),θ)
@@ -541,11 +573,9 @@ function bootstrapt(θ,gi, W)
   vcat([bootonce(θ,gi) for s in 1:S]...)
 end
 </code></pre>
-
 <pre><code>bootstrapt (generic function with 1 method)
 </code></pre>
-
-<pre><code class="julia">n = 50
+<pre><code class="language-julia">n = 50
 k = 2
 iv = 3
 β0 = ones(k)
@@ -561,9 +591,8 @@ optres = optimize(gmm_objective(data,W), β0, BFGS(),
 density(θs[:,1], label=&quot;minimization bootstrap&quot;)
 density!(θs[:,2], label=&quot;score bootstrap&quot;)
 </code></pre>
-
 <p><img alt="" src="../figures/bootstrap_10_1.png" /></p>
-<pre><code class="julia">function simulatetests()
+<pre><code class="language-julia">function simulatetests()
   data = IVLogitShare(n,β0,π0,ρ)
   gi = get_gi(data)
   W = I
@@ -580,7 +609,6 @@ fig=plot(p, p-&gt;(mean(pvals[:,1].&lt;p)-p),
 plot!(fig,p, p-&gt;(mean(pvals[:,2].&lt;p)-p),  label=&quot;score bootstrap&quot;)
 fig
 </code></pre>
-
 <p><img alt="" src="../figures/bootstrap_11_1.png" /></p>
 <p>Both versions of the bootstrap appear to work well enough here. Note
 that neither one is robust to identification problems. Inference on a
@@ -635,6 +663,7 @@ vs weakly identified. </p>
 </li>
 </ol>
 </div></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -650,12 +679,12 @@ vs weakly identified. </p>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
         <script src="../assets/mathjaxhelper.js" defer></script>
 
-        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

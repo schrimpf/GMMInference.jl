@@ -9,92 +9,79 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Estimation - GMMInference.jl</title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="..">GMMInference.jl</a>
-                </div>
+                <a class="navbar-brand" href="..">GMMInference.jl</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">Package Documentation</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Package Documentation</a>
                             </li>
                             <li class="dropdown active">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Notes and Examples <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Notes and Examples <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li class="active">
-    <a href="./">Estimation</a>
+<li>
+    <a href="./" class="dropdown-item active">Estimation</a>
 </li>
                                     
-<li >
-    <a href="../identificationRobustInference/">Inference</a>
+<li>
+    <a href="../identificationRobustInference/" class="dropdown-item">Inference</a>
 </li>
                                     
-<li >
-    <a href="../empiricalLikelihood/">Empirical Likelihood</a>
+<li>
+    <a href="../empiricalLikelihood/" class="dropdown-item">Empirical Likelihood</a>
 </li>
                                     
-<li >
-    <a href="../bootstrap/">Bootstrap</a>
+<li>
+    <a href="../bootstrap/" class="dropdown-item">Bootstrap</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../license/">License</a>
+<li>
+    <a href="../license/" class="dropdown-item">License</a>
 </li>
                                 </ul>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                            <li >
-                                <a rel="next" href="..">
+                    <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a rel="prev" href=".." class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../identificationRobustInference/">
+                            <li class="nav-item">
+                                <a rel="next" href="../identificationRobustInference/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/schrimpf/GMMInference.jl/edit/master/docs/extremumEstimation.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            <li class="nav-item">
+                                <a href="https://github.com/schrimpf/GMMInference.jl/edit/master/docs/extremumEstimation.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -102,19 +89,53 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#about-this-document">About this document</a></li>
-        <li class="main "><a href="#extremum-estimation">Extremum Estimation</a></li>
-            <li><a href="#example-logit">Example: logit</a></li>
-        <li class="main "><a href="#review-of-extremum-estimator-theory">Review of extremum estimator theory</a></li>
-            <li><a href="#consistency">Consistency</a></li>
-            <li><a href="#asymptotic-normality">Asymptotic normality</a></li>
-            <li><a href="#delta-method">Delta method</a></li>
-        <li class="main "><a href="#references">References</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            
+            <li class="nav-item" data-level="1"><a href="#extremum-estimation" class="nav-link">Extremum Estimation</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#example-logit" class="nav-link">Example: logit</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#review-of-extremum-estimator-theory" class="nav-link">Review of extremum estimator theory</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#consistency" class="nav-link">Consistency</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#asymptotic-normality" class="nav-link">Asymptotic normality</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#delta-method" class="nav-link">Delta method</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#references" class="nav-link">References</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
@@ -123,7 +144,7 @@ License</a> </p>
 <h3 -="-" id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
 <p>This document was created using Weave.jl. The code is available in
 <a href="https://github.com/schrimpf/GMMInference.jl">on github</a>. The same
-document generates both static webpages and associated <a href="../extremumEstimation.ipynb">jupyter
+document generates both static webpages and associated <a href="extremumEstimation.ipynb">jupyter
 notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
@@ -132,10 +153,10 @@ notebook</a>.</p>
 \def\R{\mathbb{R}}
 \def\En{{\mathbb{E}_n}}
 \def\Pr{\mathrm{P}}
-\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
-\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\argmin}{arg\,min}
+\renewcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\renewcommand{\abs}[1]{\left\vert {#1} \right\vert}
+%\DeclareMathOperator*{\argmax}{arg\,max}
+%\DeclareMathOperator*{\argmin}{arg\,min}
 \def\inprob{\,{\buildrel p \over \rightarrow}\,} 
 \def\indist{\,{\buildrel d \over \rightarrow}\,} 
 </script>
@@ -145,7 +166,7 @@ notebook</a>.</p>
 estimators. That is, many estimators are defined by</p>
 <p>
 <script type="math/tex; mode=display">
-\hat{\theta} = \argmax_{\theta \in \Theta}
+\hat{\theta} = \argmax_{\theta ∈ \Theta}
 \hat{Q}_n(\theta) 
 </script>
 </p>
@@ -175,7 +196,7 @@ function that depends on data. Examples include maximum likelihood, </p>
 <h2 id="example-logit">Example: logit<a class="headerlink" href="#example-logit" title="Permanent link">&para;</a></h2>
 <p>As a simple example, let&rsquo;s look look at some code for estimating a
 logit.</p>
-<pre><code class="julia">using Distributions, Optim, BenchmarkTools
+<pre><code class="language-julia">using Distributions, Optim, BenchmarkTools
 import ForwardDiff
 function simulate_logit(observations, β)
   x = randn(observations, length(β))
@@ -195,54 +216,40 @@ k = 3
 Q = β -&gt; -logit_likelihood(β,y,x)
 Q(β0)
 </code></pre>
-
-<pre><code>234.9547958362917
+<pre><code>235.39402907467374
 </code></pre>
-
 <p>Now we maximize the likelihood using a few different algorithms from <a href="https://github.com/JuliaNLSolvers/Optim.jl">Optim.jl</a></p>
-<pre><code class="julia">@btime optimize(Q, zeros(k), NelderMead())
+<pre><code class="language-julia">@btime optimize(Q, zeros(k), NelderMead())
+@btime optimize(Q, zeros(k), BFGS(), autodiff = :forward)
+@btime optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
 </code></pre>
-
-<pre><code>2.030 ms (1510 allocations: 1.98 MiB)
-</code></pre>
-
-<pre><code class="julia">@btime optimize(Q, zeros(k), BFGS(), autodiff = :forward)
-</code></pre>
-
-<pre><code>693.795 μs (544 allocations: 1.26 MiB)
-</code></pre>
-
-<pre><code class="julia">@btime optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
-</code></pre>
-
-<pre><code>1.243 ms (414 allocations: 1.46 MiB)
+<pre><code>2.963 ms (1190 allocations: 1.98 MiB)
+  880.654 μs (421 allocations: 1.17 MiB)
+  8.166 ms (4484 allocations: 11.37 MiB)
  * Status: success
 
  * Candidate solution
-    Minimizer: [9.77e-01, 1.06e+00, 8.77e-01]
-    Minimum:   2.476225e+02
+    Final objective value:     2.325797e+02
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
-    Initial Point: [0.00e+00, 0.00e+00, 0.00e+00]
 
  * Convergence measures
-    |x - x'|               = 2.00e-09 ≰ 0.0e+00
-    |x - x'|/|x'|          = 1.88e-09 ≰ 0.0e+00
-    |f(x) - f(x')|         = 5.68e-14 ≰ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 2.30e-16 ≰ 0.0e+00
-    |g(x)|                 = 2.68e-15 ≤ 1.0e-08
+    |x - x'|               = 7.64e-11 ≰ 0.0e+00
+    |x - x'|/|x'|          = 6.03e-11 ≰ 0.0e+00
+    |f(x) - f(x')|         = 0.00e+00 ≤ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 0.00e+00 ≤ 0.0e+00
+    |g(x)|                 = 7.40e-07 ≰ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
-    Iterations:    6
-    f(x) calls:    7
-    ∇f(x) calls:   7
-    ∇²f(x) calls:  6
+    Iterations:    77
+    f(x) calls:    66
+    ∇f(x) calls:   66
+    ∇²f(x) calls:  43
 </code></pre>
-
 <h3 id="aside-reverse-mode-automatic-differentiation">Aside: Reverse mode automatic differentiation<a class="headerlink" href="#aside-reverse-mode-automatic-differentiation" title="Permanent link">&para;</a></h3>
-<p>For functions $f:\R^n \to \R^m$, the work for forward automatic
+<p>For functions $f:\R^n → \R^m$, the work for forward automatic
 differentiation increases linearly with $n$. This is because forward
 automatic differentiation applies the chain rule to each of the $n$
 inputs. An alternative, is reverse automatic differentiation. Reverse
@@ -255,31 +262,16 @@ require a large amount of memory and (2) it is more difficult to
 implement. There are handful of Julia packages that provide reverse
 automatic differentiation, but they have some limitations in terms of
 what functions thay can differentiate. Flux.jl and Zygote.jl are two such packages.</p>
-<pre><code class="julia">using Optim, BenchmarkTools
+<pre><code class="language-julia">using Optim, BenchmarkTools
 import Zygote
 dQr = β-&gt;Zygote.gradient(Q,β)[1]
 dQf = β-&gt;ForwardDiff.gradient(Q,β)
 
 @show dQr(β0) ≈ dQf(β0)
-</code></pre>
 
-<pre><code>dQr(β0) ≈ dQf(β0) = true
-</code></pre>
-
-<pre><code class="julia">
 @btime dQf(β0)
-</code></pre>
+@btime dQr(β0)
 
-<pre><code>24.646 μs (9 allocations: 47.73 KiB)
-</code></pre>
-
-<pre><code class="julia">@btime dQr(β0)
-</code></pre>
-
-<pre><code>295.366 μs (14720 allocations: 467.53 KiB)
-</code></pre>
-
-<pre><code class="julia">
 n = 500
 k = 200
 β0 = ones(k)
@@ -288,23 +280,16 @@ Q = β -&gt; -logit_likelihood(β,y,x)
 dQr = β-&gt;Zygote.gradient(Q,β)[1]
 dQf = β-&gt;ForwardDiff.gradient(Q,β)
 @show dQr(β0) ≈dQf(β0)
+@btime dQf(β0);
+@btime dQr(β0);
 </code></pre>
-
 <pre><code>dQr(β0) ≈ dQf(β0) = true
+  34.786 μs (9 allocations: 47.81 KiB)
+  190.970 μs (4658 allocations: 352.31 KiB)
+dQr(β0) ≈ dQf(β0) = true
+  8.255 ms (140 allocations: 2.56 MiB)
+  296.335 μs (4659 allocations: 1.10 MiB)
 </code></pre>
-
-<pre><code class="julia">@btime dQf(β0);
-</code></pre>
-
-<pre><code>6.393 ms (157 allocations: 2.56 MiB)
-</code></pre>
-
-<pre><code class="julia">@btime dQr(β0);
-</code></pre>
-
-<pre><code>720.332 μs (14721 allocations: 1.21 MiB)
-</code></pre>
-
 <h1 id="review-of-extremum-estimator-theory">Review of extremum estimator theory<a class="headerlink" href="#review-of-extremum-estimator-theory" title="Permanent link">&para;</a></h1>
 <p>This is based on Newey and McFadden (1994)<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. You should already be familiar with this
 from 627, so we will just state some basic &ldquo;high-level&rdquo; conditions for
@@ -336,22 +321,22 @@ $Q_0(\theta)$</p>
 <p>$\hat{\theta} \inprob \theta_0$</p>
 </li>
 <li>
-<p>$\theta_0 \in interior(\Theta)$</p>
+<p>$\theta_0 ∈ interior(\Theta)$</p>
 </li>
 <li>
-<p>$\hat{Q}<em N="N" _in="\in" _theta="\theta">n(\theta)$ is twice continuously differentiable in
+<p>$\hat{Q}<em N="N" _="∈" _theta="\theta">n(\theta)$ is twice continuously differentiable in
 open $N$ containing $\theta$ , and 
-$\sup</em> \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$ 
+$\sup</em> ‖ \nabla^2 \hat{Q}_n(\theta) - H(\theta) ‖ \inprob 0$ 
 with $H(\theta_0)$ nonsingular</p>
 </li>
 <li>
-<p>$\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$</p>
+<p>$\sqrt{n} ∇ \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$</p>
 </li>
 </ol>
-<p>Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma H^{-1} \right)$</p>
+<p>Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} Σ H^{-1} \right)$</p>
 </div>
 <p>Implementing this in Julia using automatic differentiation is straightforward. </p>
-<pre><code class="julia">function logit_likei(β,y,x)
+<pre><code class="language-julia">function logit_likei(β,y,x)
   p = map(xb -&gt; cdf(Logistic(),xb), x*β)
   log.(ifelse.(y, p, 1.0 .- p))
 end
@@ -380,45 +365,35 @@ end
 avar=asymptotic_variance(θ-&gt;logit_likelihood(θ,y,x),
                          θ-&gt;ForwardDiff.jacobian(β-&gt;logit_likei(β,y,x),θ),βhat)
 display( avar.variance/n)
+display( -avar.invH/n)
+display(inv(avar.Σ)/n)
 </code></pre>
-
 <pre><code>3×3 Array{Float64,2}:
- 0.00876843  0.00174999  0.00250444
- 0.00174999  0.00774477  0.00159746
- 0.00250444  0.00159746  0.0090655
+ 0.0102233   0.0033441   0.00407194
+ 0.0033441   0.00892501  0.00336759
+ 0.00407194  0.00336759  0.0098589
+3×3 Array{Float64,2}:
+ 0.00942456  0.00297845  0.00284374
+ 0.00297845  0.00950676  0.00242628
+ 0.00284374  0.00242628  0.00809877
+3×3 Array{Float64,2}:
+ 0.00879075  0.00274404  0.00184822
+ 0.00274404  0.0102885   0.00162404
+ 0.00184822  0.00162404  0.00668922
 </code></pre>
-
-<pre><code class="julia">display( -avar.invH/n)
-</code></pre>
-
-<pre><code>3×3 Array{Float64,2}:
- 0.00886227  0.00248097  0.00267075
- 0.00248097  0.00851037  0.00231259
- 0.00267075  0.00231259  0.00949688
-</code></pre>
-
-<pre><code class="julia">display(inv(avar.Σ)/n)
-</code></pre>
-
-<pre><code>3×3 Array{Float64,2}:
- 0.00902585  0.00328116  0.00290569
- 0.00328116  0.0094098   0.00311304
- 0.00290569  0.00311304  0.010004
-</code></pre>
-
 <p>For maximum likelihood, the information equality says $-H = \Sigma$,
 so the three expressions above have the same probability limit, and
 are each consistent estimates of the variance of $\hat{\theta}$.</p>
 <p>The code above is for demonstration and learning. If we really wanted
 to estimate a logit for research, it would be better to use a
 well-tested package. Here&rsquo;s how to estimate  a logit using GLM.jl. </p>
-<pre><code class="julia">using GLM, DataFrames
+<pre><code class="language-julia">using GLM, DataFrames
 df = DataFrame(x)
 df[:y] = y
 glmest=glm(@formula(y ~ -1 + x1+x2+x3), df, Binomial(),LogitLink())
 display( glmest)
+display( vcov(glmest))
 </code></pre>
-
 <pre><code>StatsModels.TableRegressionModel{GeneralizedLinearModel{GLM.GlmResp{Array{F
 loat64,1},Binomial{Float64},LogitLink},GLM.DensePredChol{Float64,Cholesky{F
 loat64,Array{Float64,2}}}},Array{Float64,2}}
@@ -426,24 +401,18 @@ loat64,Array{Float64,2}}}},Array{Float64,2}}
 y ~ 0 + x1 + x2 + x3
 
 Coefficients:
-──────────────────────────────────────────────────────────────────
-    Estimate  Std. Error   z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
-──────────────────────────────────────────────────────────────────
-x1  0.797399   0.0853968   9.33758    &lt;1e-20   0.630024   0.964773
-x2  1.03246    0.0893601  11.5539     &lt;1e-30   0.857319   1.2076  
-x3  0.894403   0.0861181  10.3858     &lt;1e-24   0.725614   1.06319 
-──────────────────────────────────────────────────────────────────
+──────────────────────────────────────────────────────────────
+      Coef.  Std. Error      z  Pr(&gt;|z|)  Lower 95%  Upper 95%
+──────────────────────────────────────────────────────────────
+x1  1.04483   0.0970224  10.77    &lt;1e-26   0.85467     1.23499
+x2  1.03537   0.0974497  10.62    &lt;1e-25   0.844369    1.22636
+x3  1.06199   0.0899414  11.81    &lt;1e-31   0.885703    1.23827
+──────────────────────────────────────────────────────────────
+3×3 Array{Float64,2}:
+ 0.00941335  0.00297151  0.00283671
+ 0.00297151  0.00949645  0.00242005
+ 0.00283671  0.00242005  0.00808946
 </code></pre>
-
-<pre><code class="julia">display( vcov(glmest))
-</code></pre>
-
-<pre><code>3×3 Array{Float64,2}:
- 0.00729261  0.00204095  0.00169854
- 0.00204095  0.00798523  0.00230951
- 0.00169854  0.00230951  0.00741632
-</code></pre>
-
 <h2 id="delta-method">Delta method<a class="headerlink" href="#delta-method" title="Permanent link">&para;</a></h2>
 <p>In many models, we are interested in some transformation of the
 parameters in addition to the parameters themselves. For example, in a
@@ -462,15 +431,15 @@ the model parameters. </p>
 <p>$\sqrt{n} (\hat{\theta} - \theta_0) \indist N(0,\Omega)$</p>
 </li>
 <li>
-<p>$g: \R^k \to \R^m$ is continuously differentiable</p>
+<p>$g: \R^k → \R^m$ is continuously differentiable</p>
 </li>
 </ol>
-<p>Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, \nabla g(\theta_0)^T \Omega \nabla g(\theta_0)$</p>
+<p>Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, ∇ g(\theta_0)^T Ω ∇ g(\theta_0)$</p>
 </div>
 <p>The following code uses the delta method to plot a 90% pointwise
 confidence band around the estimate marginal effect of one of the
 regressors. </p>
-<pre><code class="julia">using LinearAlgebra
+<pre><code class="language-julia">using LinearAlgebra
 function logit_mfx(β,x)
   ForwardDiff.jacobian(β-&gt; map(xb -&gt; cdf(Logistic(),xb), x*β), β)  
 end
@@ -494,7 +463,6 @@ plot(xmfx[:,1],mfx[:,1],ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,
      xlabel=L&quot;x_1&quot;, ylabel=L&quot;\frac{\partial}{\partial x_1}P(y=1|x)&quot;, legend=false,
          title=&quot;Marginal effect of x[1] when x[2:k]=0&quot;)
 </code></pre>
-
 <p><img alt="" src="../figures/extremumEstimation_7_1.png" /></p>
 <p>The same approach can be used to compute standard errors and
 confidence regions for the results of more complicated counterfactual
@@ -504,7 +472,7 @@ natural to write simulations with outcomes that are not smooth in the
 parameters. For example, the following code uses simulation to
 calculate the change in the probability of $y$ from adding 0.1 to
 $x$.</p>
-<pre><code class="julia">function counterfactual_sim(β, x, S)
+<pre><code class="language-julia">function counterfactual_sim(β, x, S)
   function onesim()
     e = rand(Logistic(), size(x)[1])
     baseline= (x*β .+ e .&gt; 0)
@@ -513,44 +481,39 @@ $x$.</p>
   end
   mean([onesim() for s in 1:S])
 end
-ForwardDiff.gradient(β-&gt;counterfactual_sim(β,x,10),βhat)
+@show ∇s = ForwardDiff.gradient(β-&gt;counterfactual_sim(β,x,10),βhat)
 </code></pre>
-
-<pre><code>3-element Array{Float64,1}:
+<pre><code>∇s = ForwardDiff.gradient((β-&gt;begin
+                #= /home/paul/.julia/dev/GMMInference/docs/jmd/extremumEsti
+mation.jmd:11 =#
+                counterfactual_sim(β, x, 10)
+            end), βhat) = [0.0, 0.0, 0.0]
+3-element Array{Float64,1}:
  0.0
  0.0
  0.0
 </code></pre>
-
 <p>Here, the gradient is 0 because the simulation function is a
 step-function. In this situation, an alternative to the delta method
 is the simulation based approach of Krinsky and Robb (1986)<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. The procedure is
 quite simple. Suppose 
 $\sqrt{n}(\hat{\theta} - \theta_0) \indist N(0,\Omega)$,
 and you want to an estimate of the distribution of $g(\theta)$. 
-Repeatedly draw $\theta_s \sim N(\hat{\theta}, \Omega/n)$ and compute
+Repeatedly draw $\theta_s ∼ N(\hat{\theta}, \Omega/n)$ and compute
 $g(\theta_s)$. Use the distribution of $g(\theta_s)$ for
 inference. For example, a 90% confidence interval for $g(\theta)$
 would be the 5%-tile of $g(\theta_s)$ to the 95%-tile of
 $g(\theta_s)$. </p>
-<pre><code class="julia">Ω = avar.variance/n
-Ω = (Ω+Ω')/2         # otherwise, it's not exactly symmetric due to
-                     # floating point roundoff
+<pre><code class="language-julia">Ω = avar.variance/n
+Ω = Symmetric((Ω+Ω')/2) # otherwise, it's not exactly symmetric due to
+                        # floating point roundoff
 function kr_confint(g, θ, Ω, simulations; coverage=0.9)
   θs = [g(rand(MultivariateNormal(θ,Ω))) for s in 1:simulations]
   quantile(θs, [(1.0-coverage)/2, coverage + (1.0-coverage)/2])
 end
 
 @show kr_confint(β-&gt;counterfactual_sim(β,x,10), βhat, Ω, 1000)
-</code></pre>
 
-<pre><code>kr_confint((β-&gt;begin
-            #= none:2 =#
-            counterfactual_sim(β, x, 10)
-        end), βhat, Ω, 1000) = [0.04289499999999999, 0.051500000000000004]
-</code></pre>
-
-<pre><code class="julia">
 # a delta method based confidence interval for the same thing
 function counterfactual_calc(β, x)
   baseline      = cdf.(Logistic(), x*β)
@@ -562,15 +525,17 @@ ghat = counterfactual_calc(βhat,x)
 @show [ghat + sqrt(v)*quantile(Normal(),0.05), ghat +
        sqrt(v)*quantile(Normal(),0.95)]
 </code></pre>
-
-<pre><code>[ghat + sqrt(v) * quantile(Normal(), 0.05), ghat + sqrt(v) * quantile(Norma
-l(), 0.95)] = Array{Float64,2}[[0.04441465819074853], [0.04983451027386987]
-]
+<pre><code>kr_confint((β-&gt;begin
+            #= /home/paul/.julia/dev/GMMInference/docs/jmd/extremumEstimati
+on.jmd:10 =#
+            counterfactual_sim(β, x, 10)
+        end), βhat, Ω, 1000) = [0.0455, 0.054400000000000004]
+[ghat + sqrt(v) * quantile(Normal(), 0.05), ghat + sqrt(v) * quantile(Norma
+l(), 0.95)] = [[0.04768275114416668], [0.053060295456726844]]
 2-element Array{Array{Float64,2},1}:
- [0.04441465819074853]
- [0.04983451027386987]
+ [0.04768275114416668]
+ [0.053060295456726844]
 </code></pre>
-
 <h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
 <div class="footnote">
 <hr />
@@ -583,6 +548,7 @@ l(), 0.95)] = Array{Float64,2}[[0.04441465819074853], [0.04983451027386987]
 </li>
 </ol>
 </div></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -598,12 +564,12 @@ l(), 0.95)] = Array{Float64,2}[[0.04441465819074853], [0.04983451027386987]
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
         <script src="../assets/mathjaxhelper.js" defer></script>
 
-        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">
