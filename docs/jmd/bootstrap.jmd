@@ -154,15 +154,21 @@ consistent.
 
 *Proof sketch:* $T_n$ and $T_n^\ast$ both $\leadsto T$ immediately
 implies 
-$G_n(\tau, F_0) \inprob G_\infty(\tau)$ 
+$$
+G_n(\tau, F_0) \inprob G_\infty(\tau)
+$$ 
 and
-$G_n(\tau,\hat{F}_n) \inprob G_\infty(\tau)$ ,
+$$
+G_n(\tau,\hat{F}_n) \inprob G_\infty(\tau),,
+$$ 
 where 
 $G_\infty(\tau)$
 is the CDF of 
 $T$ .
 This implies that 
-$G^{-1}_n(\tau,\hat{F}_n) \inprob G^{-1}_\infty(\tau)$
+$$
+G^{-1}_n(\tau,\hat{F}_n) \inprob G^{-1}_\infty(\tau)
+$$
 for all $\tau$ where $G_\infty$ is continuous. Then we have
 $$
 \Pr(\theta_0 \geq \hat{\theta}_n - G_n^{-1}(\tau, \hat{F}_n)
@@ -181,7 +187,7 @@ draws of $x_i$ from it.
 
 !!! tip "**Lemma**"
     Let $x_1, x_2, ...$ be i.i.d. with mean $\mu$ and variance
-    $\sigma^2$. Then conditional on $x_1, ...$ for almost every sequence
+    $\sigma^2$. Then conditional on $x_1, ..., x_n$ for almost every sequence
     $$
     \sqrt{n} (\bar{x}_n^\ast - \bar{x}_n) \indist N(0,\sigma^2)
     $$

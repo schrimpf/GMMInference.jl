@@ -25,10 +25,10 @@ $$
 \def\R{\mathbb{R}}
 \def\En{{\mathbb{E}_n}}
 \def\Pr{\mathrm{P}}
-\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
-\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\argmin}{arg\,min}
+\renewcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\renewcommand{\abs}[1]{\left\vert {#1} \right\vert}
+%\DeclareMathOperator*{\argmax}{arg\,max}
+%\DeclareMathOperator*{\argmin}{arg\,min}
 \def\inprob{\,{\buildrel p \over \rightarrow}\,} 
 \def\indist{\,{\buildrel d \over \rightarrow}\,} 
 $$
@@ -41,6 +41,7 @@ catch
 end
 
 if !("DISPLAY" ∈ keys(ENV))
+
   ENV["GKSwstype"]="nul"
   ENV["MPLBACKEND"]="Agg"
 end
@@ -52,7 +53,7 @@ Many, perhaps most, estimators in econometrics are extrumem
 estimators. That is, many estimators are defined by
 
 $$
-\hat{\theta} = \argmax_{\theta \in \Theta}
+\hat{\theta} = \argmax_{\theta ∈ \Theta}
 \hat{Q}_n(\theta) 
 $$
 
@@ -117,7 +118,7 @@ Now we maximize the likelihood using a few different algorithms from [Optim.jl](
 
 ### Aside: Reverse mode automatic differentiation
 
-For functions $f:\R^n \to \R^m$, the work for forward automatic
+For functions $f:\R^n → \R^m$, the work for forward automatic
 differentiation increases linearly with $n$. This is because forward
 automatic differentiation applies the chain rule to each of the $n$
 inputs. An alternative, is reverse automatic differentiation. Reverse
@@ -185,16 +186,16 @@ consistency and asymptotic normality.
     
     1. $\hat{\theta} \inprob \theta_0$
         
-    2. $\theta_0 \in interior(\Theta)$
+    2. $\theta_0 ∈ interior(\Theta)$
         
     3. $\hat{Q}_n(\theta)$ is twice continuously differentiable in
     open $N$ containing $\theta$ , and 
-    $\sup_{\theta \in N} \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$ 
+    $\sup_{\theta ∈ N} ‖ \nabla^2 \hat{Q}_n(\theta) - H(\theta) ‖ \inprob 0$ 
     with $H(\theta_0)$ nonsingular
         
-    4. $\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
+    4. $\sqrt{n} ∇ \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
        
-    Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma H^{-1} \right)$
+    Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} Σ H^{-1} \right)$
 
 Implementing this in Julia using automatic differentiation is straightforward. 
 
@@ -266,9 +267,9 @@ the model parameters.
     
     1. $\sqrt{n} (\hat{\theta} - \theta_0) \indist N(0,\Omega)$
     
-    2. $g: \R^k \to \R^m$ is continuously differentiable
+    2. $g: \R^k → \R^m$ is continuously differentiable
     
-    Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, \nabla g(\theta_0)^T \Omega \nabla g(\theta_0)$
+    Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, ∇ g(\theta_0)^T Ω ∇ g(\theta_0)$
 
 The following code uses the delta method to plot a 90% pointwise
 confidence band around the estimate marginal effect of one of the
@@ -320,7 +321,7 @@ function counterfactual_sim(β, x, S)
   end
   mean([onesim() for s in 1:S])
 end
-ForwardDiff.gradient(β->counterfactual_sim(β,x,10),βhat)
+@show ∇s = ForwardDiff.gradient(β->counterfactual_sim(β,x,10),βhat)
 ```
 
 Here, the gradient is 0 because the simulation function is a
@@ -329,7 +330,7 @@ is the simulation based approach of Krinsky and Robb (1986)[@krinsky1986]. The p
 quite simple. Suppose 
 $\sqrt{n}(\hat{\theta} - \theta_0) \indist N(0,\Omega)$,
 and you want to an estimate of the distribution of $g(\theta)$. 
-Repeatedly draw $\theta_s \sim N(\hat{\theta}, \Omega/n)$ and compute
+Repeatedly draw $\theta_s ∼ N(\hat{\theta}, \Omega/n)$ and compute
 $g(\theta_s)$. Use the distribution of $g(\theta_s)$ for
 inference. For example, a 90% confidence interval for $g(\theta)$
 would be the 5%-tile of $g(\theta_s)$ to the 95%-tile of
@@ -337,8 +338,8 @@ $g(\theta_s)$.
 
 ```julia; cache=true
 Ω = avar.variance/n
-Ω = (Ω+Ω')/2         # otherwise, it's not exactly symmetric due to
-                     # floating point roundoff
+Ω = Symmetric((Ω+Ω')/2) # otherwise, it's not exactly symmetric due to
+                        # floating point roundoff
 function kr_confint(g, θ, Ω, simulations; coverage=0.9)
   θs = [g(rand(MultivariateNormal(θ,Ω))) for s in 1:simulations]
   quantile(θs, [(1.0-coverage)/2, coverage + (1.0-coverage)/2])
@@ -361,3 +362,4 @@ ghat = counterfactual_calc(βhat,x)
 # References
 
 \bibliography
+

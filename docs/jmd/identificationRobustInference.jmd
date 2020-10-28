@@ -25,10 +25,10 @@ $$
 \def\R{\mathbb{R}}
 \def\En{{\mathbb{E}_n}}
 \def\Pr{\mathrm{P}}
-\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
-\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\argmin}{arg\,min}
+%\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+%\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+%\DeclareMathOperator*{\argmax}{arg\,max}
+%\DeclareMathOperator*{\argmin}{arg\,min}
 \def\inprob{\,{\buildrel p \over \rightarrow}\,} 
 \def\indist{\,{\buildrel d \over \rightarrow}\,} 
 $$
@@ -77,26 +77,26 @@ most often arrive and have been studied in the context of GMM. Also,
 it is not difficult to transform other extremum estimators into GMM. 
 
 For a GMM objective function of the form:
-$$ [1/n \sum_i g_i(\theta)] W_n [1/n \sum g_i(\theta]$$, 
+$$ [1/n \sum_i g_i(\theta)] W_n [1/n \sum g_i(\theta)]$$, 
 if we assume:
 
-1. $1/\sqrt{n} \sum_i g_i(\theta_0) \indist N(0,\Sigma)$
+1. $1/\sqrt{n} \sum_i g_i(\theta_0) \leadsto N(0,\Sigma)$
 
-2. $1/n \sum_i \nabla g_i(\theta) \inprob E[\nabla g(\theta)]$, 
-   $W_n \inprob W$
+2. $1/n \sum_i \nabla g_i(\theta) \to^p E[\nabla g(\theta)]\equiv D$, 
+   $W_n \to^p W$
 
 3. $(D'WD)$ is nonsingular.
 
 then the above theorem for asymptotic normality of extremum
 estimators implies that 
 $$
-\sqrt{n}(\hat{\theta} - \theta_0) \indist N(0,\Omega)
+\sqrt{n}(\hat{\theta} - \theta_0) \leadsto N(0,\Omega)
 $$
 where 
 $$
  \Omega= (D'WD)^{-1} (D' W \Sigma W D) (D'WD)^{-1}.
 $$
-If we additionally assume $W_n \inprob \Sigma^{-1}$, e.g. observations
+If we additionally assume $W_n \to^p \Sigma^{-1}$, e.g. observations
 are independent and $W_n =
 \widehat{Var}(g_i(\theta))^{-1}$, then the asymptotic variance
 simplifies to $(D' \Sigma D)^{-1}$. 

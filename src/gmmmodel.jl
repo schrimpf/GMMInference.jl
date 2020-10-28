@@ -134,15 +134,16 @@ function gel_nlp_problem(model::GMMModel, h::Function=log)
   k = number_moments(model)
   el(x) = -sum(h.(x[1:n]))
   c = gmm_constraints(model)
-  nc = c==nothing ? 0 : length(c(zeros(d)))
+  nc = isnothing(c) ? 0 : length(c(zeros(d)))
   con = function(x)
     p = x[1:n]
     θ = x[(n+1):end]
-    if c==nothing      
-      [sum(p) sum(gi(θ).*p, dims=1)]
+    if isnothing(c)      
+      out=[sum(p) sum(gi(θ).*p, dims=1)]
     else
-      [sum(p) sum(gi(θ).*p, dims=1) c(θ)]
+      out=[sum(p) sum(gi(θ).*p, dims=1) c(θ)]
     end
+    return(vec(out))
   end
   lcon = [1.0, zeros(k+nc)...]
   ucon = [1.0, zeros(k+nc)...]
@@ -150,8 +151,8 @@ function gel_nlp_problem(model::GMMModel, h::Function=log)
   uvar = [ones(n)... ,  fill(1e10,d)...]
   name = "GEL for $(typeof(model))"
   x0 = [fill(1/n,n)... , ones(d)...]
-  return(ADNLPModel(el,x0, lvar=lvar, uvar=uvar, 
-                    c=con, lcon=lcon, ucon=ucon,
+  return(ADNLPModel(el,x0, lvar, uvar, 
+                    con, lcon, ucon,
                     name=name))
 end
 
@@ -162,7 +163,7 @@ Constructs NLPModel for GMMModel.
 """
 function gmm_nlp_problem(model::GMMModel, obj=gmm_objective)
   con = gmm_constraints(model)
-  if con==nothing
+  if con===nothing
     return(ADNLPModel(obj(model), ones(number_parameters(model)),
                       name="$(typeof(model))"))
   else
@@ -184,7 +185,7 @@ function gmm_jump_problem(model::GMMModel, obj=gmm_objective)
   m = Model()
   d = number_parameters(model)
   @variable(m, θ[1:d])
-  if con!=nothing
+  if con!==nothing
     error("gmm_jump_problem not implemented with constraints for $(typeof(GMMModel))")
   end
   f = obj(model)
@@ -218,13 +219,13 @@ function gel_optim_args(model::GMMModel, gel::Function=log)
     h
   end
   cfn = gmm_constraints(model)
-  nc = cfn==nothing ? 0 : length(cfn(zeros(d)))
+  nc = cfn===nothing ? 0 : length(cfn(zeros(d)))
   con_c! = function(c,x)
     p = x[1:n]
     θ = x[(n+1):end]
     c[1] = sum(p)
     c[2:(k+1)] .= sum(gi(θ).*p, dims=1)[:]
-    if cfn!=nothing      
+    if cfn!==nothing      
       c[(k+2):(k+nc+1)] .= cfn(θ)
     end
     c
@@ -236,7 +237,7 @@ function gel_optim_args(model::GMMModel, gel::Function=log)
     J[1,(n+1):end] .= 0
     J[2:(k+1),1:n] .= gi(θ)'
     J[2:(k+1),(n+1):end] .= ForwardDiff.jacobian(t->sum(gi(t).*p, dims=1), θ)
-    if (cfn!=nothing)
+    if (cfn!==nothing)
       J[(k+2):(k+nc+1),1:n].=0
       J[(k+2):(k+nc+1),(n+1):end].=ForwardDiff.jacobian(cfn, θ)
     end
@@ -254,7 +255,7 @@ function gel_optim_args(model::GMMModel, gel::Function=log)
     end
     h[(n+1):(n+d),(n+1):(n+d)] .+=
       ForwardDiff.hessian(t->dot(λ[2:(1+k)],sum(gi(t).*p, dims=1)), θ) 
-    if (cfn!=nothing)
+    if (cfn!==nothing)
       h[(n+1):(n+d),(n+1):(n+d)] .+= ForwardDiff.hessian(t->dot(λ[(2+k):end],cfn(t)), θ)
     end
     h
