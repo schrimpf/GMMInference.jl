@@ -10,7 +10,7 @@ bibliography: "ee.bib"
 
 This work is licensed under a [Creative Commons Attribution-ShareAlike
 4.0 International
-License](http://creativecommons.org/licenses/by-sa/4.0/) 
+License](http://creativecommons.org/licenses/by-sa/4.0/)
 
 ### About this document {-}
 
@@ -25,12 +25,12 @@ $$
 \def\R{\mathbb{R}}
 \def\En{{\mathbb{E}_n}}
 \def\Pr{\mathrm{P}}
-\renewcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
-\renewcommand{\abs}[1]{\left\vert {#1} \right\vert}
-%\DeclareMathOperator*{\argmax}{arg\,max}
-%\DeclareMathOperator*{\argmin}{arg\,min}
-\def\inprob{\,{\buildrel p \over \rightarrow}\,} 
-\def\indist{\,{\buildrel d \over \rightarrow}\,} 
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\def\inprob{\,{\buildrel p \over \rightarrow}\,}
+\def\indist{\,{\buildrel d \over \rightarrow}\,}
 $$
 
 ```julia; echo=false; results="hidden"
@@ -53,15 +53,15 @@ Many, perhaps most, estimators in econometrics are extrumem
 estimators. That is, many estimators are defined by
 
 $$
-\hat{\theta} = \argmax_{\theta ∈ \Theta}
-\hat{Q}_n(\theta) 
+\hat{\theta} = \argmax_{\theta \in \Theta}
+\hat{Q}_n(\theta)
 $$
 
 where $\hat{Q}_n(\theta)$ is some objective
-function that depends on data. Examples include maximum likelihood, 
+function that depends on data. Examples include maximum likelihood,
 
 $$
-\hat{Q}_n(\theta) = \frac{1}{n} \sum_{i=1}^n f(z_i | \theta) 
+\hat{Q}_n(\theta) = \frac{1}{n} \sum_{i=1}^n f(z_i | \theta)
 $$
 
 GMM,
@@ -72,12 +72,12 @@ $$
 \theta)\right)
 $$
 
-and nonlinear least squares 
+and nonlinear least squares
 
 $$
 \hat{Q}_n(\theta) =
-\frac{1}{n} \sum_{i=1}^n (y_i - h(x_i,\theta))^2.  
-$$ 
+\frac{1}{n} \sum_{i=1}^n (y_i - h(x_i,\theta))^2.
+$$
 
 See Newey and McFadden (1994)[@newey1994] for more details and examples.
 
@@ -93,7 +93,7 @@ function simulate_logit(observations, β)
   x = randn(observations, length(β))
   y = (x*β + rand(Logistic(), observations)) .>= 0.0
   return((y=y,x=x))
-end 
+end
 
 function logit_likelihood(β,y,x)
   p = map(xb -> cdf(Logistic(),xb), x*β)
@@ -111,9 +111,9 @@ Q(β0)
 Now we maximize the likelihood using a few different algorithms from [Optim.jl](https://github.com/JuliaNLSolvers/Optim.jl)
 
 ```julia; cache=true
-@btime optimize(Q, zeros(k), NelderMead())
-@btime optimize(Q, zeros(k), BFGS(), autodiff = :forward)
-@btime optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
+@time optimize(Q, zeros(k), NelderMead())
+@time optimize(Q, zeros(k), BFGS(), autodiff = :forward)
+@time optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
 ```
 
 ### Aside: Reverse mode automatic differentiation
@@ -160,7 +160,7 @@ dQf = β->ForwardDiff.gradient(Q,β)
 
 This is based on Newey and McFadden (1994)[@newey1994]. You should already be familiar with this
 from 627, so we will just state some basic "high-level" conditions for
-consistency and asymptotic normality. 
+consistency and asymptotic normality.
 
 ## Consistency
 
@@ -176,28 +176,28 @@ consistency and asymptotic normality.
     3. $\Theta$ is compact and $Q_0(\theta)$ is continuous.
 
     Then $\hat{\theta} \inprob \theta_0$
-    
+
 
 ## Asymptotic normality
 
 
 !!! tip "**Theorem:** asymptotic normality for extremum estimators"
     Assume
-    
-    1. $\hat{\theta} \inprob \theta_0$
-        
-    2. $\theta_0 ∈ interior(\Theta)$
-        
-    3. $\hat{Q}_n(\theta)$ is twice continuously differentiable in
-    open $N$ containing $\theta$ , and 
-    $\sup_{\theta ∈ N} ‖ \nabla^2 \hat{Q}_n(\theta) - H(\theta) ‖ \inprob 0$ 
-    with $H(\theta_0)$ nonsingular
-        
-    4. $\sqrt{n} ∇ \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
-       
-    Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} Σ H^{-1} \right)$
 
-Implementing this in Julia using automatic differentiation is straightforward. 
+    1. $\hat{\theta} \inprob \theta_0$
+
+    2. $\theta_0 \in interior(\Theta)$
+
+    3. $\hat{Q}_n(\theta)$ is twice continuously differentiable in
+    open $N$ containing $\theta$ , and
+    $\sup_{\theta \in N} \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$
+    with $H(\theta_0)$ nonsingular
+
+    4. $\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
+
+    Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma H^{-1} \right)$
+
+Implementing this in Julia using automatic differentiation is straightforward.
 
 ```julia
 function logit_likei(β,y,x)
@@ -213,8 +213,8 @@ n = 1000
 k = 3
 β0 = ones(k)
 (y,x) = simulate_logit(n,β0)
-      
-Q = β -> -logit_likelihood(β,y,x)      
+
+Q = β -> -logit_likelihood(β,y,x)
 optres = optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
 βhat = optres.minimizer
 
@@ -239,12 +239,12 @@ are each consistent estimates of the variance of $\hat{\theta}$.
 
 The code above is for demonstration and learning. If we really wanted
 to estimate a logit for research, it would be better to use a
-well-tested package. Here's how to estimate  a logit using GLM.jl. 
+well-tested package. Here's how to estimate  a logit using GLM.jl.
 
 ```julia;  cache=true
 using GLM, DataFrames
-df = DataFrame(x)
-df[:y] = y
+df = DataFrame(x, :auto)
+df[!,:y] = y
 glmest=glm(@formula(y ~ -1 + x1+x2+x3), df, Binomial(),LogitLink())
 display( glmest)
 display( vcov(glmest))
@@ -256,34 +256,34 @@ In many models, we are interested in some transformation of the
 parameters in addition to the parameters themselves. For example, in a
 logit, we might want to report marginal effects in addition to the
 coefficients. In structural models, we typically use the parameter
-estimates to conduct counterfactual simulations. In many 
+estimates to conduct counterfactual simulations. In many
 situations we are more interested these transformation(s) of
 parameters than in the parameters themselves. The delta method is one
-convenient way to approximate the distribution of transformations of 
-the model parameters. 
+convenient way to approximate the distribution of transformations of
+the model parameters.
 
 !!! tip "**Theorem:** Delta method"
     Assume:
-    
+
     1. $\sqrt{n} (\hat{\theta} - \theta_0) \indist N(0,\Omega)$
-    
-    2. $g: \R^k → \R^m$ is continuously differentiable
-    
-    Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, ∇ g(\theta_0)^T Ω ∇ g(\theta_0)$
+
+    2. $g: \R^k \to \R^m$ is continuously differentiable
+
+    Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, \nabla g(\theta_0)^T \Omega \nabla g(\theta_0)$
 
 The following code uses the delta method to plot a 90% pointwise
 confidence band around the estimate marginal effect of one of the
-regressors. 
+regressors.
 
 ```julia
 using LinearAlgebra
 function logit_mfx(β,x)
-  ForwardDiff.jacobian(β-> map(xb -> cdf(Logistic(),xb), x*β), β)  
+  ForwardDiff.jacobian(x-> map(xb -> cdf(Logistic(),xb), x*β), x)
 end
 
 function delta_method(g, θ, Ω)
   dG = ForwardDiff.jacobian(θ->g(θ),θ)
-  dG*Ω*dG'  
+  dG*Ω*dG'
 end
 
 nfx = 100
@@ -296,9 +296,8 @@ sdfx = sqrt.(diag(vmfx))
 
 using Plots, LaTeXStrings
 Plots.gr()
-plot(xmfx[:,1],mfx[:,1],ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,
-     xlabel=L"x_1", ylabel=L"\frac{\partial}{\partial x_1}P(y=1|x)", legend=false,
-         title="Marginal effect of x[1] when x[2:k]=0")
+#Plots.unicodeplots()
+plot(xmfx[:,1],mfx[:,1],ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,xlabel=L"x_1", ylabel=L"\frac{\partial}{\partial x_1}P(y=1|x)", legend=false,title="Marginal effect of x[1] when x[2:k]=0")
 
 ```
 
@@ -327,14 +326,14 @@ end
 Here, the gradient is 0 because the simulation function is a
 step-function. In this situation, an alternative to the delta method
 is the simulation based approach of Krinsky and Robb (1986)[@krinsky1986]. The procedure is
-quite simple. Suppose 
+quite simple. Suppose
 $\sqrt{n}(\hat{\theta} - \theta_0) \indist N(0,\Omega)$,
-and you want to an estimate of the distribution of $g(\theta)$. 
-Repeatedly draw $\theta_s ∼ N(\hat{\theta}, \Omega/n)$ and compute
+and you want to an estimate of the distribution of $g(\theta)$.
+Repeatedly draw $\theta_s \sim N(\hat{\theta}, \Omega/n)$ and compute
 $g(\theta_s)$. Use the distribution of $g(\theta_s)$ for
 inference. For example, a 90% confidence interval for $g(\theta)$
 would be the 5%-tile of $g(\theta_s)$ to the 95%-tile of
-$g(\theta_s)$. 
+$g(\theta_s)$.
 
 ```julia; cache=true
 Ω = avar.variance/n
@@ -362,4 +361,3 @@ ghat = counterfactual_calc(βhat,x)
 # References
 
 \bibliography
-

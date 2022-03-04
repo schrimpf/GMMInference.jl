@@ -24,7 +24,6 @@ markdown_extensions:
   - admonition
   - footnotes
   - mdx_math
-  
 
 plugins:
   - bibtex:

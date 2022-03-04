@@ -99,7 +99,7 @@ $$
 If we additionally assume $W_n \to^p \Sigma^{-1}$, e.g. observations
 are independent and $W_n =
 \widehat{Var}(g_i(\theta))^{-1}$, then the asymptotic variance
-simplifies to $(D' \Sigma D)^{-1}$. 
+simplifies to $(D' \Sigma^{-1} D)^{-1}$. 
 
 ### Anderson-Rubin test
 

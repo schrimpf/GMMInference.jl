@@ -1,6 +1,6 @@
 using Documenter, GMMInference, DocumenterMarkdown
 
-runweave=true 
+runweave=true
 runnotebook=false
 if runweave
   using Weave
@@ -20,13 +20,13 @@ if runweave
               doctype="github", mod=Main,
               args=Dict("md" => true))
       end
-      target = joinpath("..","build",replace(f, r"jmd$"=>s"ipynb"))      
+      target = joinpath("..","build",replace(f, r"jmd$"=>s"ipynb"))
       if (runnotebook && stat(src).mtime > stat(target).mtime)
           notebook(src,out_path=joinpath("..","build"),
                    nbconvert_options="--allow-errors")
       end
     end
-  finally  
+  finally
     cd(wd)
   end
   if (isfile("build/temp.md"))
