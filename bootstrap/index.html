@@ -12,12 +12,12 @@
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
         <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
@@ -154,7 +154,7 @@ License</a> </p>
 <p>This document was created using Weave.jl. The code is available in
 <a href="https://github.com/schrimpf/GMMInference.jl">on github</a>. The same
 document generates both static webpages and associated jupyter
-notebooks <a href="bootstrap.ipynb">jupyter notebook</a>.</p>
+notebooks <a href="../bootstrap.ipynb">jupyter notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
 \def\indep{\perp\!\!\!\perp}
@@ -265,23 +265,11 @@ and in particular,
 </p>
 </div>
 <p><em>Proof sketch:</em> $T_n$ and $T_n^\ast$ both $\leadsto T$ immediately
-implies 
-<script type="math/tex; mode=display">
-G_n(\tau, F_0) \inprob G_\infty(\tau)
-</script> 
-and
-<script type="math/tex; mode=display">
-G_n(\tau,\hat{F}_n) \inprob G_\infty(\tau),,
-</script> 
-where 
-$G_\infty(\tau)$
-is the CDF of 
-$T$ .
-This implies that 
-<script type="math/tex; mode=display">
-G^{-1}_n(\tau,\hat{F}_n) \inprob G^{-1}_\infty(\tau)
-</script>
-for all $\tau$ where $G_\infty$ is continuous. Then we have
+implies $G_n(\tau, F_0) \inprob G_\infty(\tau)$ and
+$G_n(\tau,\hat{F}<em>n) \inprob G</em>\infty(\tau)$ , where $G_\infty(\tau)$
+is the CDF of $T$ . This implies that 
+$G^{-1}<em>n(\tau,\hat{F}_n) \inprob G^{-1}</em>\infty(\tau)$ for all $\tau$
+where $G_\infty$ is continuous. Then we have
 <script type="math/tex; mode=display">
 \Pr(\theta_0 \geq \hat{\theta}_n - G_n^{-1}(\tau, \hat{F}_n)
  \hat{\sigma}_n) = \Pr\left(\frac{\theta_0 -
@@ -299,7 +287,7 @@ draws of $x_i$ from it.</p>
 <div class="admonition tip">
 <p class="admonition-title"><strong>Lemma</strong></p>
 <p>Let $x_1, x_2, &hellip;$ be i.i.d. with mean $\mu$ and variance
-$\sigma^2$. Then conditional on $x_1, &hellip;, x_n$ for almost every sequence
+$\sigma^2$. Then conditional on $x_1, &hellip;$ for almost every sequence
 <script type="math/tex; mode=display">
 \sqrt{n} (\bar{x}_n^\ast - \bar{x}_n) \indist N(0,\sigma^2)
 </script>
@@ -489,7 +477,7 @@ plot!(p, p-&gt;(mean(pvals[:,3].&lt;p)-p),  label=&quot;correct bootstrap&quot;)
 <p><img alt="" src="../figures/bootstrap_8_1.png" /></p>
 <p>With the same sort of modification the KLM and CLR statistics can also
 be bootstrapped. All three statistics remain identification robust
-when bootstrapped. See Kleibergen (2006)<sup id="fnref:13"><a class="footnote-ref" href="#fn:13">13</a></sup> for details.</p>
+when bootstrapped. See Kleibergen (2006)<sup id="fnref:14"><a class="footnote-ref" href="#fn:14">14</a></sup> for details.</p>
 <h2 id="single-coefficients">Single coefficients<a class="headerlink" href="#single-coefficients" title="Permanent link">&para;</a></h2>
 <p>If we want to construct a confidence interval for a single
 coefficient, we can apply the bootstrap to a statistic like 
@@ -500,9 +488,9 @@ as above, we can do this by subtracting $1/n\sum_i g_i(\hat{\theta})$
 from the bootstrapped moments. Thus, one way to bootstrap is 
 $\sqrt{n} (\hat{\theta} - \theta_0)$ is to</p>
 <ul>
-<li>Compute $\hat{\theta}$, $\bar{g}_n(\hat{\theta}) = 1/n\sum_i g_i(\hat{\theta})$</li>
-<li>Draw with replacement 
-  $g_i^\ast(\theta)$ from ${g_i(\theta) - \bar{g}<em i="1">n(\hat{\theta})}</em>^n$. </li>
+<li>Compute $\hat{\theta}$, $\bar{g}_n(\theta) = 1/n\sum_i g_i(\hat{\theta})$</li>
+<li>Draw with replacement $g_i^\ast(\theta)$ from ${g_i(\theta) -
+  \bar{g}<em i="1">n(\theta)}</em>^n$. </li>
 <li>Compute </li>
 </ul>
 <p>
@@ -623,13 +611,13 @@ vs weakly identified. </p>
 <hr />
 <ol>
 <li id="fn:1">
-<p>James G. MacKinnon. Bootstrap methods in econometrics*. <em>Economic Record</em>, 82<script type="math/tex">s1</script>:S2&ndash;S18, 2006. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1475-4932.2006.00328.x">https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1475-4932.2006.00328.x</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1475-4932.2006.00328.x">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1475-4932.2006.00328.x</a>, <a href="https://doi.org/10.1111/j.1475-4932.2006.00328.x">doi:10.1111/j.1475-4932.2006.00328.x</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>James G. MacKinnon. Bootstrap methods in econometrics*. <em>Economic Record</em>, 82(s1):S2&ndash;S18, 2006. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1475-4932.2006.00328.x">https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1475-4932.2006.00328.x</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1475-4932.2006.00328.x">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1475-4932.2006.00328.x</a>, <a href="https://doi.org/10.1111/j.1475-4932.2006.00328.x">doi:10.1111/j.1475-4932.2006.00328.x</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
 <p>James G MacKinnon. Bootstrap hypothesis testing. <em>Handbook of Computational Econometrics</em>, 183:213, 2009. URL: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.1033.330&amp;rep=rep1&amp;type=pdf#page=203">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.1033.330&amp;rep=rep1&amp;type=pdf#page=203</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p>Joel L. Horowitz. Chapter 52 - the bootstrap. In James J. Heckman and Edward Leamer, editors, <em>Handbook of Econometrics</em>, volume 5 of Handbook of Econometrics, pages 3159 &ndash; 3228. Elsevier, 2001. URL: <a href="http://www.sciencedirect.com/science/article/pii/S157344120105005X">http://www.sciencedirect.com/science/article/pii/S157344120105005X</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(01)05005-X">doi:https://doi.org/10.1016/S1573-4412<script type="math/tex">01</script>05005-X</a>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>Joel L. Horowitz. Chapter 52 - the bootstrap. In James J. Heckman and Edward Leamer, editors, <em>Handbook of Econometrics</em>, volume 5 of Handbook of Econometrics, pages 3159 &ndash; 3228. Elsevier, 2001. URL: <a href="http://www.sciencedirect.com/science/article/pii/S157344120105005X">http://www.sciencedirect.com/science/article/pii/S157344120105005X</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(01)05005-X">doi:https://doi.org/10.1016/S1573-4412(01)05005-X</a>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
 <p>XiaoXia Shi. Lecture 10: bootstrap. 2012. URL: <a href="https://www.ssc.wisc.edu/~xshi/econ715/Lecture_10_bootstrap.pdf">https://www.ssc.wisc.edu/~xshi/econ715/Lecture_10_bootstrap.pdf</a>.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
@@ -638,28 +626,31 @@ vs weakly identified. </p>
 <p>Evarist Gine. <em>Lectures on some aspects of the bootstrap</em>, pages 37–151. Springer Berlin Heidelberg, Berlin, Heidelberg, 1997. URL: <a href="https://doi.org/10.1007/BFb0092619">https://doi.org/10.1007/BFb0092619</a>, <a href="https://doi.org/10.1007/BFb0092619">doi:10.1007/BFb0092619</a>.&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 <li id="fn:6">
-<p>Alberto Abadie and Guido W. Imbens. On the failure of the bootstrap for matching estimators. <em>Econometrica</em>, 76<script type="math/tex">6</script>:1537&ndash;1557, 2008. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA6474">https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA6474</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.3982/ECTA6474">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.3982/ECTA6474</a>, <a href="https://doi.org/10.3982/ECTA6474">doi:10.3982/ECTA6474</a>.&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+<p>Alberto Abadie and Guido W. Imbens. On the failure of the bootstrap for matching estimators. <em>Econometrica</em>, 76(6):1537&ndash;1557, 2008. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA6474">https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA6474</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.3982/ECTA6474">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.3982/ECTA6474</a>, <a href="https://doi.org/10.3982/ECTA6474">doi:10.3982/ECTA6474</a>.&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 <li id="fn:7">
-<p>Donald W. K. Andrews. Inconsistency of the bootstrap when a parameter is on the boundary of the parameter space. <em>Econometrica</em>, 68<script type="math/tex">2</script>:399&ndash;405, 2000. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00114">https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00114</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00114">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00114</a>, <a href="https://doi.org/10.1111/1468-0262.00114">doi:10.1111/1468-0262.00114</a>.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+<p>Donald W. K. Andrews. Inconsistency of the bootstrap when a parameter is on the boundary of the parameter space. <em>Econometrica</em>, 68(2):399&ndash;405, 2000. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00114">https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00114</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00114">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00114</a>, <a href="https://doi.org/10.1111/1468-0262.00114">doi:10.1111/1468-0262.00114</a>.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 <li id="fn:8">
-<p>Donald W. K. Andrews and Sukjin Han. Invalidity of the bootstrap and the m out of n bootstrap for confidence interval endpoints defined by moment inequalities. <em>The Econometrics Journal</em>, 12<script type="math/tex">s1</script>:S172&ndash;S199, 2009. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1368-423X.2008.00265.x">https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1368-423X.2008.00265.x</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1368-423X.2008.00265.x">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1368-423X.2008.00265.x</a>, <a href="https://doi.org/10.1111/j.1368-423X.2008.00265.x">doi:10.1111/j.1368-423X.2008.00265.x</a>.&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+<p>Donald W. K. Andrews and Sukjin Han. Invalidity of the bootstrap and the m out of n bootstrap for confidence interval endpoints defined by moment inequalities. <em>The Econometrics Journal</em>, 12(s1):S172&ndash;S199, 2009. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1368-423X.2008.00265.x">https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1368-423X.2008.00265.x</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1368-423X.2008.00265.x">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1368-423X.2008.00265.x</a>, <a href="https://doi.org/10.1111/j.1368-423X.2008.00265.x">doi:10.1111/j.1368-423X.2008.00265.x</a>.&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
 </li>
 <li id="fn:9">
-<p>Joseph P. Romano and Azeem M. Shaikh. On the uniform asymptotic validity of subsampling and the bootstrap. <em>Ann. Statist.</em>, 40<script type="math/tex">6</script>:2798–2822, 12 2012. URL: <a href="https://doi.org/10.1214/12-AOS1051">https://doi.org/10.1214/12-AOS1051</a>, <a href="https://doi.org/10.1214/12-AOS1051">doi:10.1214/12-AOS1051</a>.&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+<p>Joseph P. Romano and Azeem M. Shaikh. On the uniform asymptotic validity of subsampling and the bootstrap. <em>Ann. Statist.</em>, 40(6):2798–2822, 12 2012. URL: <a href="https://doi.org/10.1214/12-AOS1051">https://doi.org/10.1214/12-AOS1051</a>, <a href="https://doi.org/10.1214/12-AOS1051">doi:10.1214/12-AOS1051</a>.&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
 </li>
 <li id="fn:10">
-<p>Peter Hall. Chapter 39 methodology and theory for the bootstrap. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2341 &ndash; 2381. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S157344120580008X">http://www.sciencedirect.com/science/article/pii/S157344120580008X</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80008-X">doi:https://doi.org/10.1016/S1573-4412<script type="math/tex">05</script>80008-X</a>.&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+<p>Peter Hall. Chapter 39 methodology and theory for the bootstrap. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2341 &ndash; 2381. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S157344120580008X">http://www.sciencedirect.com/science/article/pii/S157344120580008X</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80008-X">doi:https://doi.org/10.1016/S1573-4412(05)80008-X</a>.&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
 </li>
 <li id="fn:11">
-<p>Victor Chernozhukov, Denis Chetverikov, and Kengo Kato. Central limit theorems and bootstrap in high dimensions. <em>Ann. Probab.</em>, 45<script type="math/tex">4</script>:2309–2352, 07 2017. URL: <a href="https://doi.org/10.1214/16-AOP1113">https://doi.org/10.1214/16-AOP1113</a>, <a href="https://doi.org/10.1214/16-AOP1113">doi:10.1214/16-AOP1113</a>.&#160;<a class="footnote-backref" href="#fnref:11" title="Jump back to footnote 11 in the text">&#8617;</a></p>
+<p>Victor Chernozhukov, Denis Chetverikov, and Kengo Kato. Central limit theorems and bootstrap in high dimensions. <em>Ann. Probab.</em>, 45(4):2309–2352, 07 2017. URL: <a href="https://doi.org/10.1214/16-AOP1113">https://doi.org/10.1214/16-AOP1113</a>, <a href="https://doi.org/10.1214/16-AOP1113">doi:10.1214/16-AOP1113</a>.&#160;<a class="footnote-backref" href="#fnref:11" title="Jump back to footnote 11 in the text">&#8617;</a></p>
 </li>
 <li id="fn:12">
 <p>Aad W Van der Vaart. <em>Asymptotic statistics</em>. Volume 3. Cambridge university press, 2000.&#160;<a class="footnote-backref" href="#fnref:12" title="Jump back to footnote 12 in the text">&#8617;</a></p>
 </li>
 <li id="fn:13">
-<p>Frank Kleibergen. Expansions of gmm statistics and the bootstrap. 2006. URL: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.595.6481&amp;rep=rep1&amp;type=pdf">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.595.6481&amp;rep=rep1&amp;type=pdf</a>.&#160;<a class="footnote-backref" href="#fnref:13" title="Jump back to footnote 13 in the text">&#8617;</a></p>
+<p>Peter Hall. Chapter 39 methodology and theory for the bootstrap. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2341 &ndash; 2381. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S157344120580008X">http://www.sciencedirect.com/science/article/pii/S157344120580008X</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80008-X">doi:https://doi.org/10.1016/S1573-4412(05)80008-X</a>.&#160;<a class="footnote-backref" href="#fnref:13" title="Jump back to footnote 13 in the text">&#8617;</a></p>
+</li>
+<li id="fn:14">
+<p>Frank Kleibergen. Expansions of gmm statistics and the bootstrap. 2006. URL: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.595.6481&amp;rep=rep1&amp;type=pdf">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.595.6481&amp;rep=rep1&amp;type=pdf</a>.&#160;<a class="footnote-backref" href="#fnref:14" title="Jump back to footnote 14 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div></div>

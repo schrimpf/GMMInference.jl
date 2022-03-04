@@ -12,12 +12,12 @@
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
         <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
@@ -123,7 +123,7 @@ License</a> </p>
 <h3 -="-" id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
 <p>This document was created using Weave.jl. The code is available in
 <a href="https://github.com/schrimpf/GMMInference.jl">on github</a>. The same
-document generates both static webpages and associated <a href="identificationRobustInference.ipynb">jupyter
+document generates both static webpages and associated <a href="../identificationRobustInference.ipynb">jupyter
 notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
@@ -132,28 +132,28 @@ notebook</a>.</p>
 \def\R{\mathbb{R}}
 \def\En{{\mathbb{E}_n}}
 \def\Pr{\mathrm{P}}
-%\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
-%\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
-%\DeclareMathOperator*{\argmax}{arg\,max}
-%\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \def\inprob{\,{\buildrel p \over \rightarrow}\,} 
 \def\indist{\,{\buildrel d \over \rightarrow}\,} 
 </script>
 </p>
 <h1 id="identification-robust-inference">Identification robust inference<a class="headerlink" href="#identification-robust-inference" title="Permanent link">&para;</a></h1>
-<p>As discussed in section 9 of Newey and McFadden (1994)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, there are three classic types
+<p>As discussed in section 9 of Newey and McFadden (1994)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup><sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>, there are three classic types
 of statistics for testing restrictions on parameters. Suppose you want
 to test $H_0: a(\theta) = 0$. Let $\hat{\theta}$ denote the
 unrestricted estimate, and let $\hat{\theta}^r$ denote the
 estimate of $\theta$ subject to the restriction. Wald test-statistics
 are based on $\hat{\theta}-\hat{\theta}^r$. Lagrange multiplier tests
 look at the distribution of the estimated Lagrange
-multiplier. Likelihood ratio (aka distance metric in Newey and McFadden (1994)<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>) tests
+multiplier. Likelihood ratio (aka distance metric in Newey and McFadden (1994)<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup><sup id="fnref2:3"><a class="footnote-ref" href="#fn:3">3</a></sup>) tests
 look at $Q_n(\hat{\theta}) - Q_n(\hat{\theta}^r)$. If we consider
 testing $H_0: \theta = \vartheta$ for some fixed $\vartheta$, then the
 usual approach based on the asymptotic normality of $\hat{\theta}$
 discussed above is exactly the same as the Wald test of this
-restriction. As discussed by Newey and McFadden (1994)<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, under standard assumptions,
+restriction. As discussed by Newey and McFadden (1994)<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref3:2"><a class="footnote-ref" href="#fn:2">2</a></sup><sup id="fnref3:3"><a class="footnote-ref" href="#fn:3">3</a></sup>, under standard assumptions,
 all three testing approaches are asymptotically equivalent. However,
 the tests can and will differ in finite samples. More importantly, in
 the face of identification problems, Wald tests tend to break down,
@@ -168,15 +168,15 @@ this section, we will focus on GMM estimators. Identification problems
 most often arrive and have been studied in the context of GMM. Also,
 it is not difficult to transform other extremum estimators into GMM. </p>
 <p>For a GMM objective function of the form:
-<script type="math/tex; mode=display"> [1/n \sum_i g_i(\theta)] W_n [1/n \sum g_i(\theta)]</script>, 
+<script type="math/tex; mode=display"> [1/n \sum_i g_i(\theta)] W_n [1/n \sum g_i(\theta]</script>, 
 if we assume:</p>
 <ol>
 <li>
-<p>$1/\sqrt{n} \sum_i g_i(\theta_0) \leadsto N(0,\Sigma)$</p>
+<p>$1/\sqrt{n} \sum_i g_i(\theta_0) \indist N(0,\Sigma)$</p>
 </li>
 <li>
-<p>$1/n \sum_i \nabla g_i(\theta) \to^p E[\nabla g(\theta)]\equiv D$, 
-   $W_n \to^p W$</p>
+<p>$1/n \sum_i \nabla g_i(\theta) \inprob E[\nabla g(\theta)]$, 
+   $W_n \inprob W$</p>
 </li>
 <li>
 <p>$(D&rsquo;WD)$ is nonsingular.</p>
@@ -185,16 +185,16 @@ if we assume:</p>
 <p>then the above theorem for asymptotic normality of extremum
 estimators implies that 
 <script type="math/tex; mode=display">
-\sqrt{n}(\hat{\theta} - \theta_0) \leadsto N(0,\Omega)
+\sqrt{n}(\hat{\theta} - \theta_0) \indist N(0,\Omega)
 </script>
 where 
 <script type="math/tex; mode=display">
  \Omega= (D'WD)^{-1} (D' W \Sigma W D) (D'WD)^{-1}.
 </script>
-If we additionally assume $W_n \to^p \Sigma^{-1}$, e.g. observations
+If we additionally assume $W_n \inprob \Sigma^{-1}$, e.g. observations
 are independent and $W_n =
 \widehat{Var}(g_i(\theta))^{-1}$, then the asymptotic variance
-simplifies to $(D&rsquo; \Sigma D)^{-1}$. </p>
+simplifies to $(D&rsquo; \Sigma^{-1} D)^{-1}$. </p>
 <h3 id="anderson-rubin-test">Anderson-Rubin test<a class="headerlink" href="#anderson-rubin-test" title="Permanent link">&para;</a></h3>
 <p>As already stated, the assumption that $(D&rsquo;WD)$ is nonsingular is
 problematic if we want to allow for identification problems. However,
@@ -216,10 +216,10 @@ where $m$ is the number of moments (dimension of $g_i(\theta)$). This
 is called the Anderson-Rubin test. Note that this result holds without
 any explicit nonsingular assumption about a Hessian. Hence, there is
 hope that this result would be true even with identification
-problems. Indeed, it is. Stock and Wright (2000)<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> first proposed using this test
-statistic for weakly identified GMM estimators. Stock, Wright, and Yogo (2002)<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup> gives an
+problems. Indeed, it is. Stock and Wright (2000)<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> first proposed using this test
+statistic for weakly identified GMM estimators. Stock, Wright, and Yogo (2002)<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup> gives an
 overview of this test and related tests with a focus on linear
-IV. Caner (2009)<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> discusses this test in the context of GMM.</p>
+IV. Caner (2009)<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup> discusses this test in the context of GMM.</p>
 <p>Typical usage of the AR test is to invert the test to construct a
 confidence region for $\theta$. For each $\theta \in \Theta$, 
 let 
@@ -331,18 +331,18 @@ optcue = optimize(ar_ivshare,
 Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
 display(Vcue)
 </code></pre>
-<pre><code>β1 = opt1.minimizer = [0.9691394598832827, 0.9806032409100547]
-2×2 Array{Float64,2}:
- 0.000521544  2.11442e-5
- 2.11442e-5   0.000469985
-βeff = opteff.minimizer = [0.9691759652011898, 0.9806794961675405]
-2×2 Array{Float64,2}:
- 0.000521034  2.02281e-5
- 2.02281e-5   0.000467981
-βcue = optcue.minimizer = [0.9691757964714255, 0.9806793000650721]
-2×2 Array{Float64,2}:
- 0.000521034  2.0228e-5
- 2.0228e-5    0.000467981
+<pre><code>β1 = opt1.minimizer = [0.9943331572023069, 1.0284745059641915]
+2×2 Matrix{Float64}:
+  0.000445012  -1.04306e-5
+ -1.04306e-5    0.000451406
+βeff = opteff.minimizer = [0.9939962613042377, 1.0279274724605962]
+2×2 Matrix{Float64}:
+  0.000415986  -5.78772e-5
+ -5.78772e-5    0.000375073
+βcue = optcue.minimizer = [0.9939962221467734, 1.0279284221955005]
+2×2 Matrix{Float64}:
+  0.000415986  -5.78776e-5
+ -5.78776e-5    0.000375072
 </code></pre>
 <p>Now we compare confidence regions based on the Wald test, and from
 inverting the AR statistic.</p>
@@ -391,10 +391,10 @@ Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))
 display(Vcue)
 plot_cr(βcue,Vcue, ar_ivshare)
 </code></pre>
-<pre><code>βcue = optcue.minimizer = [1.2856678480722803e17, -1.3806245930167446e17]
-2×2 Array{Float64,2}:
-  1.91967e34  -2.0877e34
- -2.0877e34    2.28451e34
+<pre><code>βcue = optcue.minimizer = [-17.028279593079123, 19.984605560036016]
+2×2 Matrix{Float64}:
+  196.997  -207.696
+ -207.696   220.281
 </code></pre>
 <p><img alt="" src="../figures/identificationRobustInference_5_1.png" /></p>
 <p>Now the confidence regions are dramatically different. Does either one
@@ -457,8 +457,10 @@ plot!(pgrid, p-&gt;mean( pweak[:,3] .&lt;= p),
 
 plot!(pgrid,pgrid,alpha=0.1, label=&quot;&quot;)
 </code></pre>
-<pre><code>15.263291 seconds (31.53 M allocations: 2.284 GiB, 3.59% gc time)
-  0.602131 seconds (1.15 M allocations: 759.485 MiB, 12.01% gc time)
+<pre><code>19.564759 seconds (51.44 M allocations: 4.338 GiB, 6.51% gc time, 95.72% c
+ompilation time)
+  0.644463 seconds (1.08 M allocations: 1.537 GiB, 25.72% gc time, 6.49% co
+mpilation time)
 </code></pre>
 <p><img alt="" src="../figures/identificationRobustInference_6_1.png" /></p>
 <p>We see that the Wald test has fairly large size distortions, even when
@@ -466,12 +468,12 @@ identification is strong. The AR test has approximately correct size
 for both the weakly and strongly identified DGP. </p>
 <h3 id="other-identification-robust-tests">Other identification robust tests<a class="headerlink" href="#other-identification-robust-tests" title="Permanent link">&para;</a></h3>
 <p>There are also identification robust versions of likelihood ratio and
-lagrange multiplier test. Moreira (2003)<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup> proposed a conditional
+lagrange multiplier test. Moreire (2003)<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup> proposed a conditional
 likelihood ratio (CLR) test for weakly identified linear IV
-models. Kleibergen (2005)<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup> developed a Lagrange multiplier (often called
+models. Kleibergen (2005)<sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup> developed a Lagrange multiplier (often called
 the KLM) test and extended Moreira&rsquo;s CLR test to weakly identified GMM
-models.  More recently, Andrews and Guggenberger (2015) <sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup>
-and Andrews and Guggenberger (2017) <sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup> showed the
+models.  More recently, Andrews and Guggenberge (2015) <sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup>
+and Andrews and Guggenberge (2017) <sup id="fnref:10"><a class="footnote-ref" href="#fn:10">10</a></sup><sup id="fnref:11"><a class="footnote-ref" href="#fn:11">11</a></sup> showed the
 validity of these tests under more general conditions. These tests are
 somewhat more complicated than the AR test, but they have the
 advantage that they are often more powerful. The AR test statistic has
@@ -482,7 +484,7 @@ parameters. Consequently, when the model is overidentified, the CLR
 and LM tests are more powerful than the AR test. </p>
 <p>Here is an implementation of the KLM and CLR statistics. The names of
 variables roughly follows the notation of Andrews and
-Guggenberge(2017) <sup id="fnref2:8"><a class="footnote-ref" href="#fn:8">8</a></sup>.</p>
+Guggenberge(2017) <sup id="fnref2:10"><a class="footnote-ref" href="#fn:10">10</a></sup><sup id="fnref2:11"><a class="footnote-ref" href="#fn:11">11</a></sup>.</p>
 <pre><code class="language-julia">using ForwardDiff, Plots, Optim
 Plots.gr()
 function statparts(θ,gi)
@@ -679,28 +681,37 @@ plot!(pgrid,pgrid,alpha=0.5, label=&quot;&quot;)
 <hr />
 <ol>
 <li id="fn:1">
-<p>Whitney K. Newey and Daniel McFadden. Chapter 36 large sample estimation and hypothesis testing. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2111 &ndash; 2245. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S1573441205800054">http://www.sciencedirect.com/science/article/pii/S1573441205800054</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80005-4">doi:https://doi.org/10.1016/S1573-4412<script type="math/tex">05</script>80005-4</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>Whitney K. Newey and Daniel McFadden. Chapter 36 large sample estimation and hypothesis testing. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2111 &ndash; 2245. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S1573441205800054">http://www.sciencedirect.com/science/article/pii/S1573441205800054</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80005-4">doi:https://doi.org/10.1016/S1573-4412(05)80005-4</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>James H. Stock and Jonathan H. Wright. Gmm with weak identification. <em>Econometrica</em>, 68<script type="math/tex">5</script>:1055&ndash;1096, 2000. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00151">https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00151</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00151">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00151</a>, <a href="https://doi.org/10.1111/1468-0262.00151">doi:10.1111/1468-0262.00151</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>Whitney K. Newey and Daniel McFadden. Chapter 36 large sample estimation and hypothesis testing. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2111 &ndash; 2245. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S1573441205800054">http://www.sciencedirect.com/science/article/pii/S1573441205800054</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80005-4">doi:https://doi.org/10.1016/S1573-4412(05)80005-4</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p>James H Stock, Jonathan H Wright, and Motohiro Yogo. A survey of weak instruments and weak identification in generalized method of moments. <em>Journal of Business &amp; Economic Statistics</em>, 20<script type="math/tex">4</script>:518&ndash;529, 2002. URL: <a href="https://doi.org/10.1198/073500102288618658">https://doi.org/10.1198/073500102288618658</a>, <a href="https://arxiv.org/abs/https://doi.org/10.1198/073500102288618658">arXiv:https://doi.org/10.1198/073500102288618658</a>, <a href="https://doi.org/10.1198/073500102288618658">doi:10.1198/073500102288618658</a>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>Whitney K. Newey and Daniel McFadden. Chapter 36 large sample estimation and hypothesis testing. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2111 &ndash; 2245. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S1573441205800054">http://www.sciencedirect.com/science/article/pii/S1573441205800054</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80005-4">doi:https://doi.org/10.1016/S1573-4412(05)80005-4</a>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
-<p>Mehmet Caner. Testing, estimation in gmm and cue with nearly-weak identification. <em>Econometric Reviews</em>, 29<script type="math/tex">3</script>:330&ndash;363, 2009. URL: <a href="https://doi.org/10.1080/07474930903451599">https://doi.org/10.1080/07474930903451599</a>, <a href="https://arxiv.org/abs/https://doi.org/10.1080/07474930903451599">arXiv:https://doi.org/10.1080/07474930903451599</a>, <a href="https://doi.org/10.1080/07474930903451599">doi:10.1080/07474930903451599</a>.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p>James H. Stock and Jonathan H. Wright. Gmm with weak identification. <em>Econometrica</em>, 68(5):1055&ndash;1096, 2000. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00151">https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00151</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00151">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00151</a>, <a href="https://doi.org/10.1111/1468-0262.00151">doi:10.1111/1468-0262.00151</a>.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 <li id="fn:5">
-<p>Marcelo J. Moreira. A conditional likelihood ratio test for structural models. <em>Econometrica</em>, 71<script type="math/tex">4</script>:1027&ndash;1048, 2003. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00438">https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00438</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00438">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00438</a>, <a href="https://doi.org/10.1111/1468-0262.00438">doi:10.1111/1468-0262.00438</a>.&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+<p>James H Stock, Jonathan H Wright, and Motohiro Yogo. A survey of weak instruments and weak identification in generalized method of moments. <em>Journal of Business &amp; Economic Statistics</em>, 20(4):518&ndash;529, 2002. URL: <a href="https://doi.org/10.1198/073500102288618658">https://doi.org/10.1198/073500102288618658</a>, <a href="https://arxiv.org/abs/https://doi.org/10.1198/073500102288618658">arXiv:https://doi.org/10.1198/073500102288618658</a>, <a href="https://doi.org/10.1198/073500102288618658">doi:10.1198/073500102288618658</a>.&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 <li id="fn:6">
-<p>Frank Kleibergen. Testing parameters in gmm without assuming that they are identified. <em>Econometrica</em>, 73<script type="math/tex">4</script>:1103&ndash;1123, 2005. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1468-0262.2005.00610.x">https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1468-0262.2005.00610.x</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1468-0262.2005.00610.x">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1468-0262.2005.00610.x</a>, <a href="https://doi.org/10.1111/j.1468-0262.2005.00610.x">doi:10.1111/j.1468-0262.2005.00610.x</a>.&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+<p>Mehmet Caner. Testing, estimation in gmm and cue with nearly-weak identification. <em>Econometric Reviews</em>, 29(3):330&ndash;363, 2009. URL: <a href="https://doi.org/10.1080/07474930903451599">https://doi.org/10.1080/07474930903451599</a>, <a href="https://arxiv.org/abs/https://doi.org/10.1080/07474930903451599">arXiv:https://doi.org/10.1080/07474930903451599</a>, <a href="https://doi.org/10.1080/07474930903451599">doi:10.1080/07474930903451599</a>.&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 <li id="fn:7">
-<p>Donald Andrews and Patrik Guggenberger. Identification-and singularity-robust inference for moment condition models. 2015. URL: <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2545374">https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2545374</a>.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+<p>Marcelo J. Moreira. A conditional likelihood ratio test for structural models. <em>Econometrica</em>, 71(4):1027&ndash;1048, 2003. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00438">https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00438</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00438">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/1468-0262.00438</a>, <a href="https://doi.org/10.1111/1468-0262.00438">doi:10.1111/1468-0262.00438</a>.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 <li id="fn:8">
-<p>Donald W.K. Andrews and Patrik Guggenberger. Asymptotic size of kleibergen’s lm and conditional lr tests for moment condition models. <em>Econometric Theory</em>, 33<script type="math/tex">5</script>:1046–1080, 2017. <a href="https://doi.org/10.1017/S0266466616000347">doi:10.1017/S0266466616000347</a>.&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+<p>Frank Kleibergen. Testing parameters in gmm without assuming that they are identified. <em>Econometrica</em>, 73(4):1103&ndash;1123, 2005. URL: <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1468-0262.2005.00610.x">https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1468-0262.2005.00610.x</a>, <a href="https://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1468-0262.2005.00610.x">arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1468-0262.2005.00610.x</a>, <a href="https://doi.org/10.1111/j.1468-0262.2005.00610.x">doi:10.1111/j.1468-0262.2005.00610.x</a>.&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+</li>
+<li id="fn:9">
+<p>Donald Andrews and Patrik Guggenberger. Identification-and singularity-robust inference for moment condition models. 2015. URL: <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2545374">https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2545374</a>.&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+</li>
+<li id="fn:10">
+<p>Donald W.K. Andrews and Patrik Guggenberger. Asymptotic size of kleibergen’s lm and conditional lr tests for moment condition models. <em>Econometric Theory</em>, 33(5):1046–1080, 2017. <a href="https://doi.org/10.1017/S0266466616000347">doi:10.1017/S0266466616000347</a>.&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+</li>
+<li id="fn:11">
+<p>Donald W.K. Andrews and Patrik Guggenberger. Asymptotic size of kleibergen’s lm and conditional lr tests for moment condition models. <em>Econometric Theory</em>, 33(5):1046–1080, 2017. <a href="https://doi.org/10.1017/S0266466616000347">doi:10.1017/S0266466616000347</a>.&#160;<a class="footnote-backref" href="#fnref:11" title="Jump back to footnote 11 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:11" title="Jump back to footnote 11 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div></div>

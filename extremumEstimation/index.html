@@ -12,12 +12,12 @@
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-forest-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/atelier-forest-light.min.css">
         <link href="../assets/Documenter.css" rel="stylesheet">
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
         <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
@@ -140,11 +140,11 @@
 <p><a href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a></p>
 <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
 4.0 International
-License</a> </p>
+License</a></p>
 <h3 -="-" id="about-this-document">About this document<a class="headerlink" href="#about-this-document" title="Permanent link">&para;</a></h3>
 <p>This document was created using Weave.jl. The code is available in
 <a href="https://github.com/schrimpf/GMMInference.jl">on github</a>. The same
-document generates both static webpages and associated <a href="extremumEstimation.ipynb">jupyter
+document generates both static webpages and associated <a href="../extremumEstimation.ipynb">jupyter
 notebook</a>.</p>
 <p>
 <script type="math/tex; mode=display">
@@ -153,12 +153,12 @@ notebook</a>.</p>
 \def\R{\mathbb{R}}
 \def\En{{\mathbb{E}_n}}
 \def\Pr{\mathrm{P}}
-\renewcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
-\renewcommand{\abs}[1]{\left\vert {#1} \right\vert}
-%\DeclareMathOperator*{\argmax}{arg\,max}
-%\DeclareMathOperator*{\argmin}{arg\,min}
-\def\inprob{\,{\buildrel p \over \rightarrow}\,} 
-\def\indist{\,{\buildrel d \over \rightarrow}\,} 
+\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
+\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\def\inprob{\,{\buildrel p \over \rightarrow}\,}
+\def\indist{\,{\buildrel d \over \rightarrow}\,}
 </script>
 </p>
 <h1 id="extremum-estimation">Extremum Estimation<a class="headerlink" href="#extremum-estimation" title="Permanent link">&para;</a></h1>
@@ -166,15 +166,15 @@ notebook</a>.</p>
 estimators. That is, many estimators are defined by</p>
 <p>
 <script type="math/tex; mode=display">
-\hat{\theta} = \argmax_{\theta ∈ \Theta}
-\hat{Q}_n(\theta) 
+\hat{\theta} = \argmax_{\theta \in \Theta}
+\hat{Q}_n(\theta)
 </script>
 </p>
 <p>where $\hat{Q}_n(\theta)$ is some objective
-function that depends on data. Examples include maximum likelihood, </p>
+function that depends on data. Examples include maximum likelihood,</p>
 <p>
 <script type="math/tex; mode=display">
-\hat{Q}_n(\theta) = \frac{1}{n} \sum_{i=1}^n f(z_i | \theta) 
+\hat{Q}_n(\theta) = \frac{1}{n} \sum_{i=1}^n f(z_i | \theta)
 </script>
 </p>
 <p>GMM,</p>
@@ -185,14 +185,14 @@ function that depends on data. Examples include maximum likelihood, </p>
 \theta)\right)
 </script>
 </p>
-<p>and nonlinear least squares </p>
+<p>and nonlinear least squares</p>
 <p>
 <script type="math/tex; mode=display">
 \hat{Q}_n(\theta) =
-\frac{1}{n} \sum_{i=1}^n (y_i - h(x_i,\theta))^2.  
+\frac{1}{n} \sum_{i=1}^n (y_i - h(x_i,\theta))^2.
 </script>
 </p>
-<p>See Newey and McFadden (1994)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> for more details and examples.</p>
+<p>See Newey and McFadden (1994)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> for more details and examples.</p>
 <h2 id="example-logit">Example: logit<a class="headerlink" href="#example-logit" title="Permanent link">&para;</a></h2>
 <p>As a simple example, let&rsquo;s look look at some code for estimating a
 logit.</p>
@@ -202,7 +202,7 @@ function simulate_logit(observations, β)
   x = randn(observations, length(β))
   y = (x*β + rand(Logistic(), observations)) .&gt;= 0.0
   return((y=y,x=x))
-end 
+end
 
 function logit_likelihood(β,y,x)
   p = map(xb -&gt; cdf(Logistic(),xb), x*β)
@@ -216,40 +216,42 @@ k = 3
 Q = β -&gt; -logit_likelihood(β,y,x)
 Q(β0)
 </code></pre>
-<pre><code>235.39402907467374
+<pre><code>238.08693921800221
 </code></pre>
 <p>Now we maximize the likelihood using a few different algorithms from <a href="https://github.com/JuliaNLSolvers/Optim.jl">Optim.jl</a></p>
-<pre><code class="language-julia">@btime optimize(Q, zeros(k), NelderMead())
-@btime optimize(Q, zeros(k), BFGS(), autodiff = :forward)
-@btime optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
+<pre><code class="language-julia">@time optimize(Q, zeros(k), NelderMead())
+@time optimize(Q, zeros(k), BFGS(), autodiff = :forward)
+@time optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
 </code></pre>
-<pre><code>2.963 ms (1190 allocations: 1.98 MiB)
-  880.654 μs (421 allocations: 1.17 MiB)
-  8.166 ms (4484 allocations: 11.37 MiB)
+<pre><code>0.002197 seconds (1.26 k allocations: 2.086 MiB)
+  0.733200 seconds (2.60 M allocations: 136.030 MiB, 99.83% compilation tim
+e)
+  1.273711 seconds (4.01 M allocations: 207.743 MiB, 3.92% gc time, 99.88% 
+compilation time)
  * Status: success
 
  * Candidate solution
-    Final objective value:     2.325797e+02
+    Final objective value:     2.370103e+02
 
  * Found with
     Algorithm:     Newton's Method (Trust Region)
 
  * Convergence measures
-    |x - x'|               = 7.64e-11 ≰ 0.0e+00
-    |x - x'|/|x'|          = 6.03e-11 ≰ 0.0e+00
-    |f(x) - f(x')|         = 0.00e+00 ≤ 0.0e+00
-    |f(x) - f(x')|/|f(x')| = 0.00e+00 ≤ 0.0e+00
-    |g(x)|                 = 7.40e-07 ≰ 1.0e-08
+    |x - x'|               = 4.95e-08 ≰ 0.0e+00
+    |x - x'|/|x'|          = 4.13e-08 ≰ 0.0e+00
+    |f(x) - f(x')|         = 1.42e-13 ≰ 0.0e+00
+    |f(x) - f(x')|/|f(x')| = 6.00e-16 ≰ 0.0e+00
+    |g(x)|                 = 6.75e-14 ≤ 1.0e-08
 
  * Work counters
     Seconds run:   0  (vs limit Inf)
-    Iterations:    77
-    f(x) calls:    66
-    ∇f(x) calls:   66
-    ∇²f(x) calls:  43
+    Iterations:    6
+    f(x) calls:    7
+    ∇f(x) calls:   7
+    ∇²f(x) calls:  7
 </code></pre>
 <h3 id="aside-reverse-mode-automatic-differentiation">Aside: Reverse mode automatic differentiation<a class="headerlink" href="#aside-reverse-mode-automatic-differentiation" title="Permanent link">&para;</a></h3>
-<p>For functions $f:\R^n → \R^m$, the work for forward automatic
+<p>For functions $f:\R^n \to \R^m$, the work for forward automatic
 differentiation increases linearly with $n$. This is because forward
 automatic differentiation applies the chain rule to each of the $n$
 inputs. An alternative, is reverse automatic differentiation. Reverse
@@ -284,16 +286,16 @@ dQf = β-&gt;ForwardDiff.gradient(Q,β)
 @btime dQr(β0);
 </code></pre>
 <pre><code>dQr(β0) ≈ dQf(β0) = true
-  34.786 μs (9 allocations: 47.81 KiB)
-  190.970 μs (4658 allocations: 352.31 KiB)
+  23.387 μs (9 allocations: 47.77 KiB)
+  66.415 μs (88 allocations: 143.73 KiB)
 dQr(β0) ≈ dQf(β0) = true
-  8.255 ms (140 allocations: 2.56 MiB)
-  296.335 μs (4659 allocations: 1.10 MiB)
+  6.389 ms (141 allocations: 2.56 MiB)
+  198.482 μs (89 allocations: 914.84 KiB)
 </code></pre>
 <h1 id="review-of-extremum-estimator-theory">Review of extremum estimator theory<a class="headerlink" href="#review-of-extremum-estimator-theory" title="Permanent link">&para;</a></h1>
-<p>This is based on Newey and McFadden (1994)<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. You should already be familiar with this
+<p>This is based on Newey and McFadden (1994)<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. You should already be familiar with this
 from 627, so we will just state some basic &ldquo;high-level&rdquo; conditions for
-consistency and asymptotic normality. </p>
+consistency and asymptotic normality.</p>
 <h2 id="consistency">Consistency<a class="headerlink" href="#consistency" title="Permanent link">&para;</a></h2>
 <div class="admonition tip">
 <p class="admonition-title"><strong>Theorem:</strong> consistency for extremum estimators</p>
@@ -321,21 +323,21 @@ $Q_0(\theta)$</p>
 <p>$\hat{\theta} \inprob \theta_0$</p>
 </li>
 <li>
-<p>$\theta_0 ∈ interior(\Theta)$</p>
+<p>$\theta_0 \in interior(\Theta)$</p>
 </li>
 <li>
-<p>$\hat{Q}<em N="N" _="∈" _theta="\theta">n(\theta)$ is twice continuously differentiable in
-open $N$ containing $\theta$ , and 
-$\sup</em> ‖ \nabla^2 \hat{Q}_n(\theta) - H(\theta) ‖ \inprob 0$ 
+<p>$\hat{Q}<em N="N" _in="\in" _theta="\theta">n(\theta)$ is twice continuously differentiable in
+open $N$ containing $\theta$ , and
+$\sup</em> \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$
 with $H(\theta_0)$ nonsingular</p>
 </li>
 <li>
-<p>$\sqrt{n} ∇ \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$</p>
+<p>$\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$</p>
 </li>
 </ol>
-<p>Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} Σ H^{-1} \right)$</p>
+<p>Then $\sqrt{n} (\hat{\theta} - \theta_0) \indist N\left(0,H^{-1} \Sigma H^{-1} \right)$</p>
 </div>
-<p>Implementing this in Julia using automatic differentiation is straightforward. </p>
+<p>Implementing this in Julia using automatic differentiation is straightforward.</p>
 <pre><code class="language-julia">function logit_likei(β,y,x)
   p = map(xb -&gt; cdf(Logistic(),xb), x*β)
   log.(ifelse.(y, p, 1.0 .- p))
@@ -350,7 +352,7 @@ k = 3
 β0 = ones(k)
 (y,x) = simulate_logit(n,β0)
 
-Q = β -&gt; -logit_likelihood(β,y,x)      
+Q = β -&gt; -logit_likelihood(β,y,x)
 optres = optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
 βhat = optres.minimizer
 
@@ -368,61 +370,61 @@ display( avar.variance/n)
 display( -avar.invH/n)
 display(inv(avar.Σ)/n)
 </code></pre>
-<pre><code>3×3 Array{Float64,2}:
- 0.0102233   0.0033441   0.00407194
- 0.0033441   0.00892501  0.00336759
- 0.00407194  0.00336759  0.0098589
-3×3 Array{Float64,2}:
- 0.00942456  0.00297845  0.00284374
- 0.00297845  0.00950676  0.00242628
- 0.00284374  0.00242628  0.00809877
-3×3 Array{Float64,2}:
- 0.00879075  0.00274404  0.00184822
- 0.00274404  0.0102885   0.00162404
- 0.00184822  0.00162404  0.00668922
+<pre><code>3×3 Matrix{Float64}:
+ 0.00818827  0.00193123  0.00164696
+ 0.00193123  0.00794838  0.00192441
+ 0.00164696  0.00192441  0.00845101
+3×3 Matrix{Float64}:
+ 0.00771534  0.00224534  0.00198786
+ 0.00224534  0.0079883   0.00210081
+ 0.00198786  0.00210081  0.00791974
+3×3 Matrix{Float64}:
+ 0.00730949  0.00254474  0.00228685
+ 0.00254474  0.00804228  0.0022803
+ 0.00228685  0.0022803   0.00745307
 </code></pre>
 <p>For maximum likelihood, the information equality says $-H = \Sigma$,
 so the three expressions above have the same probability limit, and
 are each consistent estimates of the variance of $\hat{\theta}$.</p>
 <p>The code above is for demonstration and learning. If we really wanted
 to estimate a logit for research, it would be better to use a
-well-tested package. Here&rsquo;s how to estimate  a logit using GLM.jl. </p>
+well-tested package. Here&rsquo;s how to estimate  a logit using GLM.jl.</p>
 <pre><code class="language-julia">using GLM, DataFrames
-df = DataFrame(x)
-df[:y] = y
+df = DataFrame(x, :auto)
+df[!,:y] = y
 glmest=glm(@formula(y ~ -1 + x1+x2+x3), df, Binomial(),LogitLink())
 display( glmest)
 display( vcov(glmest))
 </code></pre>
-<pre><code>StatsModels.TableRegressionModel{GeneralizedLinearModel{GLM.GlmResp{Array{F
-loat64,1},Binomial{Float64},LogitLink},GLM.DensePredChol{Float64,Cholesky{F
-loat64,Array{Float64,2}}}},Array{Float64,2}}
+<pre><code>StatsModels.TableRegressionModel{GeneralizedLinearModel{GLM.GlmResp{Vector{
+Float64}, Binomial{Float64}, LogitLink}, GLM.DensePredChol{Float64, Cholesk
+y{Float64, Matrix{Float64}}}}, Matrix{Float64}}
 
 y ~ 0 + x1 + x2 + x3
 
 Coefficients:
-──────────────────────────────────────────────────────────────
-      Coef.  Std. Error      z  Pr(&gt;|z|)  Lower 95%  Upper 95%
-──────────────────────────────────────────────────────────────
-x1  1.04483   0.0970224  10.77    &lt;1e-26   0.85467     1.23499
-x2  1.03537   0.0974497  10.62    &lt;1e-25   0.844369    1.22636
-x3  1.06199   0.0899414  11.81    &lt;1e-31   0.885703    1.23827
-──────────────────────────────────────────────────────────────
-3×3 Array{Float64,2}:
- 0.00941335  0.00297151  0.00283671
- 0.00297151  0.00949645  0.00242005
- 0.00283671  0.00242005  0.00808946
+───────────────────────────────────────────────────────────────
+       Coef.  Std. Error      z  Pr(&gt;|z|)  Lower 95%  Upper 95%
+───────────────────────────────────────────────────────────────
+x1  0.918876   0.0878288  10.46    &lt;1e-24   0.746735    1.09102
+x2  0.976711   0.0893682  10.93    &lt;1e-27   0.801553    1.15187
+x3  0.949527   0.0889833  10.67    &lt;1e-25   0.775123    1.12393
+───────────────────────────────────────────────────────────────
+3×3 Matrix{Float64}:
+ 0.00771389  0.0022444   0.00198692
+ 0.0022444   0.00798667  0.00209977
+ 0.00198692  0.00209977  0.00791803
 </code></pre>
 <h2 id="delta-method">Delta method<a class="headerlink" href="#delta-method" title="Permanent link">&para;</a></h2>
 <p>In many models, we are interested in some transformation of the
 parameters in addition to the parameters themselves. For example, in a
 logit, we might want to report marginal effects in addition to the
 coefficients. In structural models, we typically use the parameter
-estimates to conduct counterfactual simulations. In many 
+estimates to conduct counterfactual simulations. In many
 situations we are more interested these transformation(s) of
 parameters than in the parameters themselves. The delta method is one
-convenient way to approximate the distribution of transformations of 
-the model parameters. </p>
+convenient way to approximate the distribution of transformations of
+the model parameters.</p>
 <div class="admonition tip">
 <p class="admonition-title"><strong>Theorem:</strong> Delta method</p>
 <p>Assume:</p>
@@ -431,22 +433,22 @@ the model parameters. </p>
 <p>$\sqrt{n} (\hat{\theta} - \theta_0) \indist N(0,\Omega)$</p>
 </li>
 <li>
-<p>$g: \R^k → \R^m$ is continuously differentiable</p>
+<p>$g: \R^k \to \R^m$ is continuously differentiable</p>
 </li>
 </ol>
-<p>Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, ∇ g(\theta_0)^T Ω ∇ g(\theta_0)$</p>
+<p>Then $\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \indist N(0, \nabla g(\theta_0)^T \Omega \nabla g(\theta_0)$</p>
 </div>
 <p>The following code uses the delta method to plot a 90% pointwise
 confidence band around the estimate marginal effect of one of the
-regressors. </p>
+regressors.</p>
 <pre><code class="language-julia">using LinearAlgebra
 function logit_mfx(β,x)
-  ForwardDiff.jacobian(β-&gt; map(xb -&gt; cdf(Logistic(),xb), x*β), β)  
+  ForwardDiff.jacobian(x-&gt; map(xb -&gt; cdf(Logistic(),xb), x*β), x)
 end
 
 function delta_method(g, θ, Ω)
   dG = ForwardDiff.jacobian(θ-&gt;g(θ),θ)
-  dG*Ω*dG'  
+  dG*Ω*dG'
 end
 
 nfx = 100
@@ -459,9 +461,8 @@ sdfx = sqrt.(diag(vmfx))
 
 using Plots, LaTeXStrings
 Plots.gr()
-plot(xmfx[:,1],mfx[:,1],ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,
-     xlabel=L&quot;x_1&quot;, ylabel=L&quot;\frac{\partial}{\partial x_1}P(y=1|x)&quot;, legend=false,
-         title=&quot;Marginal effect of x[1] when x[2:k]=0&quot;)
+#Plots.unicodeplots()
+plot(xmfx[:,1],mfx[:,1],ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,xlabel=L&quot;x_1&quot;, ylabel=L&quot;\frac{\partial}{\partial x_1}P(y=1|x)&quot;, legend=false,title=&quot;Marginal effect of x[1] when x[2:k]=0&quot;)
 </code></pre>
 <p><img alt="" src="../figures/extremumEstimation_7_1.png" /></p>
 <p>The same approach can be used to compute standard errors and
@@ -481,32 +482,27 @@ $x$.</p>
   end
   mean([onesim() for s in 1:S])
 end
-@show ∇s = ForwardDiff.gradient(β-&gt;counterfactual_sim(β,x,10),βhat)
+ForwardDiff.gradient(β-&gt;counterfactual_sim(β,x,10),βhat)
 </code></pre>
-<pre><code>∇s = ForwardDiff.gradient((β-&gt;begin
-                #= /home/paul/.julia/dev/GMMInference/docs/jmd/extremumEsti
-mation.jmd:11 =#
-                counterfactual_sim(β, x, 10)
-            end), βhat) = [0.0, 0.0, 0.0]
-3-element Array{Float64,1}:
+<pre><code>3-element Vector{Float64}:
  0.0
  0.0
  0.0
 </code></pre>
 <p>Here, the gradient is 0 because the simulation function is a
 step-function. In this situation, an alternative to the delta method
-is the simulation based approach of Krinsky and Robb (1986)<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. The procedure is
-quite simple. Suppose 
+is the simulation based approach of Krinsky and Robb (1986)<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>. The procedure is
+quite simple. Suppose
 $\sqrt{n}(\hat{\theta} - \theta_0) \indist N(0,\Omega)$,
-and you want to an estimate of the distribution of $g(\theta)$. 
-Repeatedly draw $\theta_s ∼ N(\hat{\theta}, \Omega/n)$ and compute
+and you want to an estimate of the distribution of $g(\theta)$.
+Repeatedly draw $\theta_s \sim N(\hat{\theta}, \Omega/n)$ and compute
 $g(\theta_s)$. Use the distribution of $g(\theta_s)$ for
 inference. For example, a 90% confidence interval for $g(\theta)$
 would be the 5%-tile of $g(\theta_s)$ to the 95%-tile of
-$g(\theta_s)$. </p>
+$g(\theta_s)$.</p>
 <pre><code class="language-julia">Ω = avar.variance/n
-Ω = Symmetric((Ω+Ω')/2) # otherwise, it's not exactly symmetric due to
-                        # floating point roundoff
+Ω = (Ω+Ω')/2         # otherwise, it's not exactly symmetric due to
+                     # floating point roundoff
 function kr_confint(g, θ, Ω, simulations; coverage=0.9)
   θs = [g(rand(MultivariateNormal(θ,Ω))) for s in 1:simulations]
   quantile(θs, [(1.0-coverage)/2, coverage + (1.0-coverage)/2])
@@ -529,22 +525,25 @@ ghat = counterfactual_calc(βhat,x)
             #= /home/paul/.julia/dev/GMMInference/docs/jmd/extremumEstimati
 on.jmd:10 =#
             counterfactual_sim(β, x, 10)
-        end), βhat, Ω, 1000) = [0.0455, 0.054400000000000004]
+        end), βhat, Ω, 1000) = [0.0432, 0.052305]
 [ghat + sqrt(v) * quantile(Normal(), 0.05), ghat + sqrt(v) * quantile(Norma
-l(), 0.95)] = [[0.04768275114416668], [0.053060295456726844]]
-2-element Array{Array{Float64,2},1}:
- [0.04768275114416668]
- [0.053060295456726844]
+l(), 0.95)] = [[0.045645901625267424;;], [0.05070264808429101;;]]
+2-element Vector{Matrix{Float64}}:
+ [0.045645901625267424;;]
+ [0.05070264808429101;;]
 </code></pre>
 <h1 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h1>
 <div class="footnote">
 <hr />
 <ol>
 <li id="fn:1">
-<p>Whitney K. Newey and Daniel McFadden. Chapter 36 large sample estimation and hypothesis testing. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2111 &ndash; 2245. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S1573441205800054">http://www.sciencedirect.com/science/article/pii/S1573441205800054</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80005-4">doi:https://doi.org/10.1016/S1573-4412<script type="math/tex">05</script>80005-4</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>Whitney K. Newey and Daniel McFadden. Chapter 36 large sample estimation and hypothesis testing. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2111 &ndash; 2245. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S1573441205800054">http://www.sciencedirect.com/science/article/pii/S1573441205800054</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80005-4">doi:https://doi.org/10.1016/S1573-4412(05)80005-4</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>Itzhak Krinsky and A. Leslie Robb. On approximating the statistical properties of elasticities. <em>The Review of Economics and Statistics</em>, 68<script type="math/tex">4</script>:715–719, 1986. URL: <a href="http://www.jstor.org/stable/1924536">http://www.jstor.org/stable/1924536</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>Whitney K. Newey and Daniel McFadden. Chapter 36 large sample estimation and hypothesis testing. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2111 &ndash; 2245. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S1573441205800054">http://www.sciencedirect.com/science/article/pii/S1573441205800054</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80005-4">doi:https://doi.org/10.1016/S1573-4412(05)80005-4</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>Itzhak Krinsky and A. Leslie Robb. On approximating the statistical properties of elasticities. <em>The Review of Economics and Statistics</em>, 68(4):715–719, 1986. URL: <a href="http://www.jstor.org/stable/1924536">http://www.jstor.org/stable/1924536</a>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div></div>
