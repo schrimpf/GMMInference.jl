@@ -41,7 +41,6 @@ catch
 end
 
 if !("DISPLAY" ∈ keys(ENV))
-
   ENV["GKSwstype"]="nul"
   ENV["MPLBACKEND"]="Agg"
 end
@@ -111,9 +110,9 @@ Q(β0)
 Now we maximize the likelihood using a few different algorithms from [Optim.jl](https://github.com/JuliaNLSolvers/Optim.jl)
 
 ```julia; cache=true
-@time optimize(Q, zeros(k), NelderMead())
-@time optimize(Q, zeros(k), BFGS(), autodiff = :forward)
-@time optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
+@btime nm=optimize(Q, zeros(k), NelderMead())
+@btime bfgs=optimize(Q, zeros(k), BFGS(), autodiff = :forward)
+@btime ntr=optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward);
 ```
 
 ### Aside: Reverse mode automatic differentiation
@@ -190,7 +189,7 @@ consistency and asymptotic normality.
 
     3. $\hat{Q}_n(\theta)$ is twice continuously differentiable in
     open $N$ containing $\theta$ , and
-    $\sup_{\theta \in N} \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$
+    $\sup_{\theta \in N} \left\Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \right\Vert \inprob 0$
     with $H(\theta_0)$ nonsingular
 
     4. $\sqrt{n} \nabla \hat{Q}_n(\theta_0) \indist N(0,\Sigma)$
@@ -209,7 +208,7 @@ function logit_likelihood(β,y,x)
   mean(logit_likei(β,y,x))
 end
 
-n = 1000
+n = 100
 k = 3
 β0 = ones(k)
 (y,x) = simulate_logit(n,β0)
@@ -278,7 +277,8 @@ regressors.
 ```julia
 using LinearAlgebra
 function logit_mfx(β,x)
-  ForwardDiff.jacobian(x-> map(xb -> cdf(Logistic(),xb), x*β), x)
+  out = ForwardDiff.jacobian(x-> map(xb -> cdf(Logistic(),xb), x*β), x)
+  out = reshape(out, size(out,1), size(x)...)
 end
 
 function delta_method(g, θ, Ω)
@@ -291,13 +291,22 @@ xmfx = zeros(nfx,3)
 xmfx[:,1] .= -3.0:(6.0/(nfx-1)):3.0
 
 mfx = logit_mfx(βhat,xmfx)
-vmfx = delta_method(β->logit_mfx(β,xmfx)[:,1], βhat, avar.variance/n)
+vmfx = delta_method(β->diag(logit_mfx(β,xmfx)[:,:,1]), βhat, avar.variance/n)
 sdfx = sqrt.(diag(vmfx))
 
 using Plots, LaTeXStrings
-Plots.gr()
 #Plots.unicodeplots()
-plot(xmfx[:,1],mfx[:,1],ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,xlabel=L"x_1", ylabel=L"\frac{\partial}{\partial x_1}P(y=1|x)", legend=false,title="Marginal effect of x[1] when x[2:k]=0")
+#using PlotlyLight
+#plt = Plot()
+#plt(x=xmfx[:,1], y=diag(mfx[:,:,1]), 
+#    error_y=Config(:type=>"data",
+#                 :array=>quantile(Normal(),0.95)*sdfx,
+#                 :visible=>true))
+#plt.layout.title.text = "Marginal effect of x[1] when x[2:k]=0"
+#plt.layout.xaxis.title=L"x_1"
+#plt.layout.yaxis.title=L"\frac{\partial}{\partial x_1}P(y=1|x)"
+#plt
+plot(xmfx[:,1],diag(mfx[:,:,1]),ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,xlabel=L"x_1", ylabel=L"\frac{\partial}{\partial x_1}P(y=1|x)", legend=false,title="Marginal effect of x[1] when x[2:k]=0")
 
 ```
 

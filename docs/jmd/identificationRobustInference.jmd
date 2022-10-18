@@ -306,7 +306,7 @@ Wald tests of $H_0 : \beta = \beta_0$
 
 ```julia; cache=true
 S = 500
-n = 100
+n = 150
 function sim_p(π0)
   (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
   opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
@@ -344,23 +344,21 @@ end
 @time pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 
 pgrid = 0:0.01:1
-plot(pgrid, p->mean( pstrong[:,1] .<= p), legend=:topleft,
+plot(pgrid, p->mean( pstrong[:,1] .<= p)-p, legend=:bottomleft,
      label="AR, strong ID", style=:dash, color=:red,
-     xlabel="p", ylabel="P(p value < p)",
-     title="Simulated CDF of p-values") 
-plot!(pgrid, p->mean( pstrong[:,2] .<= p),
+     xlabel="p", ylabel="P(p value < p) - p",
+     title="Simulated size distortion") 
+plot!(pgrid, p->mean( pstrong[:,2] .<= p)-p,
       label="Wald CUE, strong ID", style=:dash, color=:blue)
-plot!(pgrid, p->mean( pstrong[:,3] .<= p),
+plot!(pgrid, p->mean( pstrong[:,3] .<= p)-p,
       label="Wald I, strong ID", style=:dash, color=:green)
 
-plot!(pgrid, p->mean( pweak[:,1] .<= p),
+plot!(pgrid, p->mean( pweak[:,1] .<= p)-p,
       label="AR, weak ID", style=:solid, color=:red)
-plot!(pgrid, p->mean( pweak[:,2] .<= p),
+plot!(pgrid, p->mean( pweak[:,2] .<= p)-p,
       label="Wald CUE, weak ID", style=:solid, color=:blue)
-plot!(pgrid, p->mean( pweak[:,3] .<= p),
+plot!(pgrid, p->mean( pweak[:,3] .<= p)-p,
       label="Wald I, weak ID", style=:solid, color=:green)
-
-plot!(pgrid,pgrid,alpha=0.1, label="")
 
 ```
 
@@ -550,26 +548,25 @@ pweak=vcat([sim_p(πweak ) for s in 1:S]...)
 pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 
 pgrid = 0:0.01:1
-plot(pgrid, p->mean( pstrong[:,1] .<= p), legend=:topleft,
+plot(pgrid, p->mean( pstrong[:,1] .<= p)-p, legend=:topleft,
      label="AR, strong ID", style=:dash, color=:blue,
      xlabel="p", ylabel="P(p value < p)",
-     title="Simulated CDF of p-values") 
-plot!(pgrid, p->mean( pstrong[:,2] .<= p),
+     title="Simulated size distortion") 
+plot!(pgrid, p->mean( pstrong[:,2] .<= p)-p,
       label="Wald I, strong ID", style=:dash, color=:green)
-plot!(pgrid, p->mean( pstrong[:,3] .<= p),
+plot!(pgrid, p->mean( pstrong[:,3] .<= p)-p,
       label="CLR, strong ID", style=:dash, color=:black)
-plot!(pgrid, p->mean( pstrong[:,4] .<= p),
+plot!(pgrid, p->mean( pstrong[:,4] .<= p)-p,
       label="KLM, strong ID", style=:dash, color=:red)
 
-plot!(pgrid, p->mean( pweak[:,1] .<= p),
+plot!(pgrid, p->mean( pweak[:,1] .<= p)-p,
       label="AR, weak ID", style=:solid, color=:blue)
-plot!(pgrid, p->mean( pweak[:,2] .<= p),
+plot!(pgrid, p->mean( pweak[:,2] .<= p)-p,
       label="Wald I, weak ID", style=:solid, color=:green)
-plot!(pgrid, p->mean( pweak[:,3] .<= p),
+plot!(pgrid, p->mean( pweak[:,3] .<= p)-p,
       label="CLR, weak ID", style=:solid, color=:black)
-plot!(pgrid, p->mean( pweak[:,4] .<= p),
+plot!(pgrid, p->mean( pweak[:,4] .<= p)-p,
       label="KLM, weak ID", style=:solid, color=:red)
-plot!(pgrid,pgrid,alpha=0.5, label="")
 
 ```
 
