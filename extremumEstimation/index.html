@@ -192,7 +192,7 @@ function that depends on data. Examples include maximum likelihood,</p>
 \frac{1}{n} \sum_{i=1}^n (y_i - h(x_i,\theta))^2.
 </script>
 </p>
-<p>See Newey and McFadden (1994)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> for more details and examples.</p>
+<p>See Newey and McFadden (1994)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> for more details and examples.</p>
 <h2 id="example-logit">Example: logit<a class="headerlink" href="#example-logit" title="Permanent link">&para;</a></h2>
 <p>As a simple example, let&rsquo;s look look at some code for estimating a
 logit.</p>
@@ -216,7 +216,7 @@ k = 3
 Q = β -&gt; -logit_likelihood(β,y,x)
 Q(β0)
 </code></pre>
-<pre><code>238.08693921800221
+<pre><code>247.02307703978195
 </code></pre>
 <p>Now we maximize the likelihood using a few different algorithms from <a href="https://github.com/JuliaNLSolvers/Optim.jl">Optim.jl</a></p>
 <pre><code class="language-julia">@time optimize(Q, zeros(k), NelderMead())
@@ -251,7 +251,7 @@ compilation time)
     ∇²f(x) calls:  7
 </code></pre>
 <h3 id="aside-reverse-mode-automatic-differentiation">Aside: Reverse mode automatic differentiation<a class="headerlink" href="#aside-reverse-mode-automatic-differentiation" title="Permanent link">&para;</a></h3>
-<p>For functions $f:\R^n \to \R^m$, the work for forward automatic
+<p>For functions $f:\R^n → \R^m$, the work for forward automatic
 differentiation increases linearly with $n$. This is because forward
 automatic differentiation applies the chain rule to each of the $n$
 inputs. An alternative, is reverse automatic differentiation. Reverse
@@ -293,7 +293,7 @@ dQr(β0) ≈ dQf(β0) = true
   198.482 μs (89 allocations: 914.84 KiB)
 </code></pre>
 <h1 id="review-of-extremum-estimator-theory">Review of extremum estimator theory<a class="headerlink" href="#review-of-extremum-estimator-theory" title="Permanent link">&para;</a></h1>
-<p>This is based on Newey and McFadden (1994)<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. You should already be familiar with this
+<p>This is based on Newey and McFadden (1994)<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. You should already be familiar with this
 from 627, so we will just state some basic &ldquo;high-level&rdquo; conditions for
 consistency and asymptotic normality.</p>
 <h2 id="consistency">Consistency<a class="headerlink" href="#consistency" title="Permanent link">&para;</a></h2>
@@ -328,7 +328,7 @@ $Q_0(\theta)$</p>
 <li>
 <p>$\hat{Q}<em N="N" _in="\in" _theta="\theta">n(\theta)$ is twice continuously differentiable in
 open $N$ containing $\theta$ , and
-$\sup</em> \Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \Vert \inprob 0$
+$\sup</em> \left\Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \right\Vert \inprob 0$
 with $H(\theta_0)$ nonsingular</p>
 </li>
 <li>
@@ -347,7 +347,7 @@ function logit_likelihood(β,y,x)
   mean(logit_likei(β,y,x))
 end
 
-n = 1000
+n = 100
 k = 3
 β0 = ones(k)
 (y,x) = simulate_logit(n,β0)
@@ -371,17 +371,17 @@ display( -avar.invH/n)
 display(inv(avar.Σ)/n)
 </code></pre>
 <pre><code>3×3 Matrix{Float64}:
- 0.00818827  0.00193123  0.00164696
- 0.00193123  0.00794838  0.00192441
- 0.00164696  0.00192441  0.00845101
+ 0.0671014  0.0100753  0.0137901
+ 0.0100753  0.0485069  0.0170796
+ 0.0137901  0.0170796  0.0584229
 3×3 Matrix{Float64}:
- 0.00771534  0.00224534  0.00198786
- 0.00224534  0.0079883   0.00210081
- 0.00198786  0.00210081  0.00791974
+ 0.0763673  0.0221305  0.0219578
+ 0.0221305  0.0665209  0.0200308
+ 0.0219578  0.0200308  0.0777187
 3×3 Matrix{Float64}:
- 0.00730949  0.00254474  0.00228685
- 0.00254474  0.00804228  0.0022803
- 0.00228685  0.0022803   0.00745307
+ 0.0894934  0.0392628  0.0326049
+ 0.0392628  0.0927231  0.0234643
+ 0.0326049  0.0234643  0.103806
 </code></pre>
 <p>For maximum likelihood, the information equality says $-H = \Sigma$,
 so the three expressions above have the same probability limit, and
@@ -443,7 +443,8 @@ confidence band around the estimate marginal effect of one of the
 regressors.</p>
 <pre><code class="language-julia">using LinearAlgebra
 function logit_mfx(β,x)
-  ForwardDiff.jacobian(x-&gt; map(xb -&gt; cdf(Logistic(),xb), x*β), x)
+  out = ForwardDiff.jacobian(x-&gt; map(xb -&gt; cdf(Logistic(),xb), x*β), x)
+  out = reshape(out, size(out,1), size(x)...)
 end
 
 function delta_method(g, θ, Ω)
@@ -456,13 +457,22 @@ xmfx = zeros(nfx,3)
 xmfx[:,1] .= -3.0:(6.0/(nfx-1)):3.0
 
 mfx = logit_mfx(βhat,xmfx)
-vmfx = delta_method(β-&gt;logit_mfx(β,xmfx)[:,1], βhat, avar.variance/n)
+vmfx = delta_method(β-&gt;diag(logit_mfx(β,xmfx)[:,:,1]), βhat, avar.variance/n)
 sdfx = sqrt.(diag(vmfx))
 
 using Plots, LaTeXStrings
-Plots.gr()
 #Plots.unicodeplots()
-plot(xmfx[:,1],mfx[:,1],ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,xlabel=L&quot;x_1&quot;, ylabel=L&quot;\frac{\partial}{\partial x_1}P(y=1|x)&quot;, legend=false,title=&quot;Marginal effect of x[1] when x[2:k]=0&quot;)
+#using PlotlyLight
+#plt = Plot()
+#plt(x=xmfx[:,1], y=diag(mfx[:,:,1]), 
+#    error_y=Config(:type=&gt;&quot;data&quot;,
+#                 :array=&gt;quantile(Normal(),0.95)*sdfx,
+#                 :visible=&gt;true))
+#plt.layout.title.text = &quot;Marginal effect of x[1] when x[2:k]=0&quot;
+#plt.layout.xaxis.title=L&quot;x_1&quot;
+#plt.layout.yaxis.title=L&quot;\frac{\partial}{\partial x_1}P(y=1|x)&quot;
+#plt
+plot(xmfx[:,1],diag(mfx[:,:,1]),ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,xlabel=L&quot;x_1&quot;, ylabel=L&quot;\frac{\partial}{\partial x_1}P(y=1|x)&quot;, legend=false,title=&quot;Marginal effect of x[1] when x[2:k]=0&quot;)
 </code></pre>
 <p><img alt="" src="../figures/extremumEstimation_7_1.png" /></p>
 <p>The same approach can be used to compute standard errors and
@@ -491,7 +501,7 @@ ForwardDiff.gradient(β-&gt;counterfactual_sim(β,x,10),βhat)
 </code></pre>
 <p>Here, the gradient is 0 because the simulation function is a
 step-function. In this situation, an alternative to the delta method
-is the simulation based approach of Krinsky and Robb (1986)<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>. The procedure is
+is the simulation based approach of Krinsky and Robb (1986)<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. The procedure is
 quite simple. Suppose
 $\sqrt{n}(\hat{\theta} - \theta_0) \indist N(0,\Omega)$,
 and you want to an estimate of the distribution of $g(\theta)$.
@@ -540,10 +550,7 @@ l(), 0.95)] = [[0.045645901625267424;;], [0.05070264808429101;;]]
 <p>Whitney K. Newey and Daniel McFadden. Chapter 36 large sample estimation and hypothesis testing. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2111 &ndash; 2245. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S1573441205800054">http://www.sciencedirect.com/science/article/pii/S1573441205800054</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80005-4">doi:https://doi.org/10.1016/S1573-4412(05)80005-4</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>Whitney K. Newey and Daniel McFadden. Chapter 36 large sample estimation and hypothesis testing. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2111 &ndash; 2245. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S1573441205800054">http://www.sciencedirect.com/science/article/pii/S1573441205800054</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80005-4">doi:https://doi.org/10.1016/S1573-4412(05)80005-4</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
-</li>
-<li id="fn:3">
-<p>Itzhak Krinsky and A. Leslie Robb. On approximating the statistical properties of elasticities. <em>The Review of Economics and Statistics</em>, 68(4):715–719, 1986. URL: <a href="http://www.jstor.org/stable/1924536">http://www.jstor.org/stable/1924536</a>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>Itzhak Krinsky and A. Leslie Robb. On approximating the statistical properties of elasticities. <em>The Review of Economics and Statistics</em>, 68(4):715–719, 1986. URL: <a href="http://www.jstor.org/stable/1924536">http://www.jstor.org/stable/1924536</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div></div>

@@ -265,11 +265,23 @@ and in particular,
 </p>
 </div>
 <p><em>Proof sketch:</em> $T_n$ and $T_n^\ast$ both $\leadsto T$ immediately
-implies $G_n(\tau, F_0) \inprob G_\infty(\tau)$ and
-$G_n(\tau,\hat{F}<em>n) \inprob G</em>\infty(\tau)$ , where $G_\infty(\tau)$
-is the CDF of $T$ . This implies that 
-$G^{-1}<em>n(\tau,\hat{F}_n) \inprob G^{-1}</em>\infty(\tau)$ for all $\tau$
-where $G_\infty$ is continuous. Then we have
+implies 
+<script type="math/tex; mode=display">
+G_n(\tau, F_0) \inprob G_\infty(\tau)
+</script> 
+and
+<script type="math/tex; mode=display">
+G_n(\tau,\hat{F}_n) \inprob G_\infty(\tau),,
+</script> 
+where 
+$G_\infty(\tau)$
+is the CDF of 
+$T$ .
+This implies that 
+<script type="math/tex; mode=display">
+G^{-1}_n(\tau,\hat{F}_n) \inprob G^{-1}_\infty(\tau)
+</script>
+for all $\tau$ where $G_\infty$ is continuous. Then we have
 <script type="math/tex; mode=display">
 \Pr(\theta_0 \geq \hat{\theta}_n - G_n^{-1}(\tau, \hat{F}_n)
  \hat{\sigma}_n) = \Pr\left(\frac{\theta_0 -
@@ -287,7 +299,7 @@ draws of $x_i$ from it.</p>
 <div class="admonition tip">
 <p class="admonition-title"><strong>Lemma</strong></p>
 <p>Let $x_1, x_2, &hellip;$ be i.i.d. with mean $\mu$ and variance
-$\sigma^2$. Then conditional on $x_1, &hellip;$ for almost every sequence
+$\sigma^2$. Then conditional on $x_1, &hellip;, x_n$ for almost every sequence
 <script type="math/tex; mode=display">
 \sqrt{n} (\bar{x}_n^\ast - \bar{x}_n) \indist N(0,\sigma^2)
 </script>
@@ -477,7 +489,7 @@ plot!(p, p-&gt;(mean(pvals[:,3].&lt;p)-p),  label=&quot;correct bootstrap&quot;)
 <p><img alt="" src="../figures/bootstrap_8_1.png" /></p>
 <p>With the same sort of modification the KLM and CLR statistics can also
 be bootstrapped. All three statistics remain identification robust
-when bootstrapped. See Kleibergen (2006)<sup id="fnref:14"><a class="footnote-ref" href="#fn:14">14</a></sup> for details.</p>
+when bootstrapped. See Kleibergen (2006)<sup id="fnref:13"><a class="footnote-ref" href="#fn:13">13</a></sup> for details.</p>
 <h2 id="single-coefficients">Single coefficients<a class="headerlink" href="#single-coefficients" title="Permanent link">&para;</a></h2>
 <p>If we want to construct a confidence interval for a single
 coefficient, we can apply the bootstrap to a statistic like 
@@ -488,9 +500,9 @@ as above, we can do this by subtracting $1/n\sum_i g_i(\hat{\theta})$
 from the bootstrapped moments. Thus, one way to bootstrap is 
 $\sqrt{n} (\hat{\theta} - \theta_0)$ is to</p>
 <ul>
-<li>Compute $\hat{\theta}$, $\bar{g}_n(\theta) = 1/n\sum_i g_i(\hat{\theta})$</li>
-<li>Draw with replacement $g_i^\ast(\theta)$ from ${g_i(\theta) -
-  \bar{g}<em i="1">n(\theta)}</em>^n$. </li>
+<li>Compute $\hat{\theta}$, $\bar{g}_n(\hat{\theta}) = 1/n\sum_i g_i(\hat{\theta})$</li>
+<li>Draw with replacement 
+  $g_i^\ast(\theta)$ from ${g_i(\theta) - \bar{g}<em i="1">n(\hat{\theta})}</em>^n$. </li>
 <li>Compute </li>
 </ul>
 <p>
@@ -647,10 +659,7 @@ vs weakly identified. </p>
 <p>Aad W Van der Vaart. <em>Asymptotic statistics</em>. Volume 3. Cambridge university press, 2000.&#160;<a class="footnote-backref" href="#fnref:12" title="Jump back to footnote 12 in the text">&#8617;</a></p>
 </li>
 <li id="fn:13">
-<p>Peter Hall. Chapter 39 methodology and theory for the bootstrap. In <em>Handbook of Econometrics</em>, volume 4 of Handbook of Econometrics, pages 2341 &ndash; 2381. Elsevier, 1994. URL: <a href="http://www.sciencedirect.com/science/article/pii/S157344120580008X">http://www.sciencedirect.com/science/article/pii/S157344120580008X</a>, <a href="https://doi.org/https://doi.org/10.1016/S1573-4412(05)80008-X">doi:https://doi.org/10.1016/S1573-4412(05)80008-X</a>.&#160;<a class="footnote-backref" href="#fnref:13" title="Jump back to footnote 13 in the text">&#8617;</a></p>
-</li>
-<li id="fn:14">
-<p>Frank Kleibergen. Expansions of gmm statistics and the bootstrap. 2006. URL: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.595.6481&amp;rep=rep1&amp;type=pdf">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.595.6481&amp;rep=rep1&amp;type=pdf</a>.&#160;<a class="footnote-backref" href="#fnref:14" title="Jump back to footnote 14 in the text">&#8617;</a></p>
+<p>Frank Kleibergen. Expansions of gmm statistics and the bootstrap. 2006. URL: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.595.6481&amp;rep=rep1&amp;type=pdf">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.595.6481&amp;rep=rep1&amp;type=pdf</a>.&#160;<a class="footnote-backref" href="#fnref:13" title="Jump back to footnote 13 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div></div>
