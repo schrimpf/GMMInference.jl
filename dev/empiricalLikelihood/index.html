@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Empirical Likelihood · GMMInference.jl</title><meta name="title" content="Empirical Likelihood · GMMInference.jl"/><meta property="og:title" content="Empirical Likelihood · GMMInference.jl"/><meta property="twitter:title" content="Empirical Likelihood · GMMInference.jl"/><meta name="description" content="Documentation for GMMInference.jl."/><meta property="og:description" content="Documentation for GMMInference.jl."/><meta property="twitter:description" content="Documentation for GMMInference.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../extremumEstimation/">GMMInference.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../extremumEstimation/">Extremum Estimation</a></li><li><a class="tocitem" href="../identificationRobustInference/">Identification Robust Inference</a></li><li><a class="tocitem" href="../bootstrap/">Bootstrap</a></li><li class="is-active"><a class="tocitem" href>Empirical Likelihood</a><ul class="internal"><li><a class="tocitem" href="#GEL-with-other-optimization-packages"><span>GEL with other optimization packages</span></a></li><li class="toplevel"><a class="tocitem" href="#Inference-for-EL"><span>Inference for EL</span></a></li><li><a class="tocitem" href="#Bootstrap-for-EL"><span>Bootstrap for EL</span></a></li></ul></li><li><a class="tocitem" href="../">Autodocs</a></li><li><a class="tocitem" href="../references/">References</a></li><li><a class="tocitem" href="../license/">License</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Empirical Likelihood</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Empirical Likelihood</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/schrimpf/GMMInference.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/schrimpf/GMMInference.jl/blob/master/docs/src/empiricalLikelihood.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Empirical-likelihood"><a class="docs-heading-anchor" href="#Empirical-likelihood">Empirical likelihood</a><a id="Empirical-likelihood-1"></a><a class="docs-heading-anchor-permalink" href="#Empirical-likelihood" title="Permalink"></a></h1><p>An interesting alternative to GMM is (generalized) empirical likelihood (GEL). Empirical likelihood has some appealing higher-order statistical properties. In particular, it can be shown to have lower higher order asymptotic bias than GMM. See <a href="../references/#newey2004">(Newey and Smith, 2004)</a>. Relatedly, certain test statistics based on EL are robust to weak identification <a href="../references/#guggenberger2005">(Guggenberger and Smith, 2005)</a>. In fact, the identification robust tests that we have discusses are all based on the CUE-GMM objective function. The CUE-GMM objetive is a special case of generalized empirical likelihood.</p><p>A perceived downside of GEL is that it involves a more difficult looking optimization problem than GMM. However, given the ease with which Julia can solve high dimensional optimization problems, GEL is very feasible. </p><p>As in the extremum estimation notes, suppose we have moment conditions such that</p><p class="math-container">\[\mathrm{E}[g_i(\theta)] = 0\]</p><p>where <span>$g_i:\R^d \to \R^k$</span> are some data dependent moment conditions. The empirical likelihood estimator solves</p><p class="math-container">\[\begin{align*}
+    (\hat{\theta}, \hat{p}) = &amp; \argmax_{\theta,p} \frac{1}{n} \sum_i
+    \log(p_i) \;\; s.t.  \\
+     &amp; \sum_i p_i = 1, \;\; 0\leq p_i \leq 1 \\
+     &amp; \sum_i p_i g_i(\theta) = 0 
+\end{align*}\]</p><p>Generalized empirical likelihood replaces <span>$\log(p)$</span> with some other convex function <span>$h(p)$</span>, </p><p class="math-container">\[\begin{align*}
+    (\hat{\theta}^{GEL,h}, \hat{p}) = &amp; \argmin_{\theta,p}
+    \frac{1}{n}\sum_i h(p_i) \;\; s.t.  \\
+     &amp; \sum_i p_i = 1, \;\; 0\leq p \leq 1 \\
+     &amp; \sum_i p_i g_i(\theta) = 0 
+\end{align*}\]</p><p>setting <span>$h(p) = \frac{1}{2}(p^2-(1/n)^2)$</span> results in an estimator identical to the CUE-GMM estimator.</p><p>A common approach to computing GEL estimators is to eliminate <span>$\pi$</span> by looking at the dual problem</p><p class="math-container">\[\hat{\theta}^{GEL}  = \argmin_{\theta}\sup_\lambda \sum_i \rho(\lambda&#39;g_i(\theta))\]</p><p>where <span>$\rho$</span> is some function related to <span>$h$</span>. See <a href="../references/#newey2004">(Newey and Smith, 2004)</a> for details. There can be some analytic advantages to doing so, but computationally, the original statement of the problem has some advantages. First, there is more existing software for solving constrained minimization problems than for solving saddle point problems. Second, although <span>$p$</span> is high dimensional, it enters the constraints linearly, and the objective function is concave. Many optimization algorithms will take good advantage of this. </p><p>Let&#39;s look at some Julia code. Since the problem involves many variables with linear constraints, it is worthwhile to use JuMP for optimization. The code is slightly more verbose, but the speed of JuMP (and the Ipopt solver) are often worth it.</p><pre><code class="language-julia hljs">using GMMInference, JuMP, Ipopt, LinearAlgebra, Distributions
+import Random
+
+n = 300
+d = 4
+k = 2*d
+β0 = ones(d)
+π0 = vcat(I,ones(k-d,d))
+ρ = 0.5
+Random.seed!(622)
+data = IVLogitShare(n, β0, π0, ρ);</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">IVLogitShare([-0.8377743081997755 -2.224633097455664 -2.940053636531479 0.3591084357093045; 1.6191227497448457 0.9266725911378467 2.1165143262811807 0.8076502835132364; … ; -3.4587924465979367 -0.7948165455147139 -2.4176808443759454 -2.5336137087567314; 2.098950126510097 -0.21589460358785073 0.017361419687324964 1.4966465727086729], [0.011689861557263106, 0.9978770232380725, 0.46788834792475564, 0.916032665925364, 0.9919740447629471, 0.9998861290575222, 0.9150486813931771, 0.89982174832367, 0.999999278782903, 3.36983792881547e-6  …  0.9999934021894089, 0.9228475442674481, 0.001051456243291481, 0.7477040374132985, 0.9988705239336206, 0.2585878272613061, 0.9900176348463022, 0.9934695214987136, 2.520621043007413e-5, 0.9557896686496529], [-0.5732726400123623 -0.4050977318244873 … -1.0833164981956107 -0.07332997525674068; 0.1385386034683033 0.3875816815159894 … 0.09196101985120682 0.17005609821973922; … ; -0.7869749940038021 0.9579695763980348 … -0.40665139274128725 -0.7069975363177777; 0.68171929938209 -0.5127928544256146 … 0.17916008948432763 1.5759642680478665])</code></pre><pre><code class="language-julia hljs"># set up JuMP problem
+Ty = quantile.(Logistic(),data.y)
+m = Model()
+@variable(m, 0.0 &lt;= p[1:n] &lt;= 1.0)
+@variable(m, θ[1:d])
+@constraint(m, prob,sum(p)==1.0)
+@constraint(m, momentcon[i=1:k], dot((Ty - data.x*θ).*data.z[:,i],p)==0.0)
+@NLobjective(m,Max, sum(log(p[i]) for i in 1:n))
+m</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">A JuMP Model
+Maximization problem with:
+Variables: 304
+Objective function type: Nonlinear
+`JuMP.AffExpr`-in-`MathOptInterface.EqualTo{Float64}`: 1 constraint
+`JuMP.QuadExpr`-in-`MathOptInterface.EqualTo{Float64}`: 8 constraints
+`JuMP.VariableRef`-in-`MathOptInterface.GreaterThan{Float64}`: 300 constraints
+`JuMP.VariableRef`-in-`MathOptInterface.LessThan{Float64}`: 300 constraints
+Model mode: AUTOMATIC
+CachingOptimizer state: NO_OPTIMIZER
+Solver name: No optimizer attached.
+Names registered in the model: momentcon, p, prob, θ</code></pre><p>The <code>gel_jump_problem</code> function from <code>GMMInference.jl</code> does the same thing as the above code cell. </p><p>Let&#39;s solve the optimization problem.</p><pre><code class="language-julia hljs">set_optimizer(m, optimizer_with_attributes(Ipopt.Optimizer, &quot;print_level&quot; =&gt; 5))
+set_start_value.(m[:θ], 0.0)
+set_start_value.(m[:p], 1/n)
+optimize!(m)
+@show value.(m[:θ])
+@show value.(m[:p][1:10])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">10-element Vector{Float64}:
+ 0.003381755392134564
+ 0.0033748816799163235
+ 0.0032516075195505147
+ 0.00332585463385312
+ 0.0035215870440830598
+ 0.0033188073794414613
+ 0.0037270239563960096
+ 0.0032569705615538807
+ 0.0032846661415352487
+ 0.0030546865112219233</code></pre><p>For comparison here is how long it takes JuMP + Ipopt to solve for the CUE-GMM estimator. </p><pre><code class="language-julia hljs">@show mcue = gmm_jump_problem(data, cue_objective)
+set_start_value.(mcue[:θ], 0.0)
+set_optimizer(mcue,  optimizer_with_attributes(Ipopt.Optimizer, &quot;print_level&quot; =&gt;5))
+optimize!(mcue)
+@show value.(mcue[:θ])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4-element Vector{Float64}:
+ 1.0514389939300341
+ 0.9669404236758418
+ 0.9496932194981773
+ 1.034627950197883</code></pre><p>In this comparison, EL is both faster and more robust to initial values than CUE-GMM. GMM with a fixed weighting matrix will likely be faster than either.</p><h2 id="GEL-with-other-optimization-packages"><a class="docs-heading-anchor" href="#GEL-with-other-optimization-packages">GEL with other optimization packages</a><a id="GEL-with-other-optimization-packages-1"></a><a class="docs-heading-anchor-permalink" href="#GEL-with-other-optimization-packages" title="Permalink"></a></h2><p>We can also estimate GEL models with other optimization packages. Relative to JuMP, other optimization packages have the advantage that the problem does not have to be written in any special syntax. However, other packages have the downside that they will not recognize any special structure in the constraints (linear, quadratic, sparse, etc) unless we explicitly provide it. Let&#39;s see how much, if any difference this makes to performance. </p><p>Here we will use the <code>NLPModels.jl</code> interface to Ipopt. Essentially, all this does is call <code>ForwardDiff</code> on the objective function and constraints, and then give the resulting gradient and hessian functions to Ipopt.</p><pre><code class="language-julia hljs">using NLPModelsIpopt
+gel = gel_nlp_problem(data)
+ip = ipopt(gel)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;Execution stats: first-order stationary&quot;</code></pre><p>As you see, this approach is far slower than with JuMP. Notice that the number of iterations and function evaluations are identical. The big difference is that JuMP evaluates the function (and its derivatives) very quickly, while NLP takes much much longer. I would guess that this is largely because it is using ForwardDiff to calculate a gradients and hessians for 304 variables.</p><p>Let&#39;s also estimate the model using <code>Optim.jl</code>. </p><pre><code class="language-julia hljs">using Optim
+args = gel_optim_args(data)
+@time opt=optimize(args[1],args[2],
+                   [fill(1/(1.1*n),n)..., zeros(d)...],
+                   IPNewton(μ0=:auto, show_linesearch=false),
+                   Optim.Options(show_trace=true,
+                                 allow_f_increases=true,
+                                 successive_f_tol=10,
+                                 allow_outer_f_increases=true))
+@show opt.minimizer[(n+1):end]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4-element Vector{Float64}:
+ 1.0507509664968275
+ 0.9674436184677794
+ 0.9477423828185164
+ 1.034864478903945</code></pre><p>The <code>IPNewton()</code> optimizer from <code>Optim.jl</code> appears to be much less efficient than <code>Ipopt</code>. <code>IPNewton</code> takes more than 4 times as many iterations. </p><h1 id="Inference-for-EL"><a class="docs-heading-anchor" href="#Inference-for-EL">Inference for EL</a><a id="Inference-for-EL-1"></a><a class="docs-heading-anchor-permalink" href="#Inference-for-EL" title="Permalink"></a></h1><p><a href="../references/#guggenberger2005">(Guggenberger and Smith, 2005)</a> show that GEL versions of the AR and LM statistics are robust to weak identification. The GEL version of the AR statistic is the generalized empirical likelihood ratio. Specifically, <a href="../references/#guggenberger2005">(Guggenberger and Smith, 2005)</a> show that</p><p class="math-container">\[GELR(\theta_0) = 2\sum_{i=1}^n\left(h(p_i(\theta_0))  -
+   h(1/n)\right) \leadsto \chi^2_k \]</p><p>where <span>$p_i(\theta_0)$</span> are given by</p><p class="math-container">\[\begin{align*}
+    p(\theta)  =  \argmax_{0 \leq p \leq 1} \sum h(p_i) \text{ s.t. } &amp; \sum_i p_i
+    = 1 \\
+&amp; \sum_i p_i g_i(\theta) = 0
+\end{align*}\]</p><p>The GELR statistic shares the downsides of the AR statistic –- the degrees of freedom is the number of moments instead of the number of parameters, which tends to lead to lower power in overidentified models; and it combines a test of misspecification with a location test for <span>$\theta$</span>. </p><p>Consequently, it can be useful to instead look at a Lagrange multiplier style statistic. The true <span>$\theta$</span> maximizes the empirical likelihood, so </p><p class="math-container">\[0 = \sum_{i=1}^n \nabla_\theta h(p_i(\theta_0)) = \lambda(\theta_0)&#39; \sum_{i=1}^n
+p_i(\theta_0) \nabla_\theta g_i(\theta_0) \equiv \lambda(\theta_0) D(\theta_0)\]</p><p>where <span>$p_i(\theta_0)$</span> is as defined above, and <span>$\lambda(\theta_0)$</span> are the mulitpliers on the empirical moment condition constraint. Andrews and Guggenberger show that a quadratic form in the above score equation is asymptotically <span>$\chi^2_d$</span>. To be specific, let <span>$\Delta(\theta) = E[(1/n\sum_i g_i(\theta) - E[g(\theta)])(1/n \sum_i  g_i(\theta) - E[g(\theta)])&#39;]$</span>  and define</p><p class="math-container">\[S(\theta) = n\lambda(\theta)&#39; D(\theta) \left( D(\theta)
+\Delta(\theta)^{-1} D(\theta) \right)^{-1} D(\theta)&#39;\lambda(\theta)\]</p><p>then <span>$S(\theta_0) \leadsto \chi^2_d$</span>. This result holds whether or not <span>$\theta$</span> is strongly identified. </p><h3 id="Implementation"><a class="docs-heading-anchor" href="#Implementation">Implementation</a><a id="Implementation-1"></a><a class="docs-heading-anchor-permalink" href="#Implementation" title="Permalink"></a></h3><p>Computing the <span>$GELR$</span> and <span>$S$</span> statistics requires solving a linear program for each <span>$\theta$</span> we want to test. Fortunately, linear programs can be solved very quickly. See <code>gel_pλ</code> in <code>GMMInference.jl</code> for the relevant code. </p><p>Let&#39;s do a simulation to check that these tests have correct coverage.</p><pre><code class="language-julia hljs">using Plots
+Plots.gr()
+S = 500
+n = 200
+d = 2
+β0 = ones(d)
+ρ = 0.5
+k = 3
+function sim_p(π0)
+  data = IVLogitShare(n, β0, π0, ρ)
+  GELR, S, plr, ps = gel_tests(β0, data)
+  [plr ps]
+end
+πweak = ones(k,d) .+ vcat(diagm(0=&gt;fill(0.001,d)),zeros(k-d,d))
+πstrong = vcat(5*diagm(0=&gt;ones(d)),ones(k-d,d))
+pweak=vcat([sim_p(πweak ) for s in 1:S]...)
+pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
+
+pgrid = 0:0.01:1
+plot(pgrid, p-&gt;(mean( pstrong[:,1] .&lt;= p)-p), legend=:bottomleft,
+     label=&quot;GELR, strong ID&quot;, style=:dash, color=:blue,
+     xlabel=&quot;p&quot;, ylabel=&quot;P(p value &lt; p)-p&quot;,
+     title=&quot;Simulated CDF of p-values - p&quot;)
+plot!(pgrid, p-&gt;(mean( pstrong[:,2] .&lt;= p)-p),
+      label=&quot;S, strong ID&quot;, style=:dash, color=:green)
+
+plot!(pgrid, p-&gt;(mean( pweak[:,1] .&lt;= p)-p),
+      label=&quot;GELR, weak ID&quot;, style=:solid, color=:blue)
+plot!(pgrid, p-&gt;(mean( pweak[:,2] .&lt;= p)-p),
+      label=&quot;S, weak ID&quot;, style=:solid, color=:green)
+plot!(pgrid,0,alpha=0.5, label=&quot;&quot;)</code></pre><img src="5dec0045.svg" alt="Example block output"/><h3 id="Subvector-inference"><a class="docs-heading-anchor" href="#Subvector-inference">Subvector inference</a><a id="Subvector-inference-1"></a><a class="docs-heading-anchor-permalink" href="#Subvector-inference" title="Permalink"></a></h3><p><a href="../references/#guggenberger2005">(Guggenberger and Smith, 2005)</a> also give results for subvector inference. Let <span>$(\alpha, \beta) =\theta$</span>. Assume <span>$\beta$</span> is strongly identified. Guggenberger and Smith show that analogs of <span>$GELR$</span> and <span>$S$</span> with <span>$\beta$</span> concentrated out lead to valid tests for <span>$\alpha$</span>, whether <span>$\alpha$</span> is weakly or strongly identified. </p><h2 id="Bootstrap-for-EL"><a class="docs-heading-anchor" href="#Bootstrap-for-EL">Bootstrap for EL</a><a id="Bootstrap-for-EL-1"></a><a class="docs-heading-anchor-permalink" href="#Bootstrap-for-EL" title="Permalink"></a></h2><p>For bootstrapping GMM, we discussed how it is important that the null hypothesis holds in the bootstrapped data. In GMM we did this by substracting the sample averages of the moments. In GEL, an alternative way to impose the null, is to sample the data with probabilities <span>$\hat{p}_i$</span> instead of with equal proability. See <a href="../references/#brown2002">(Brown and Newey, 2002)</a> for more information. </p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../bootstrap/">« Bootstrap</a><a class="docs-footer-nextpage" href="../">Autodocs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.0.1 on <span class="colophon-date" title="Tuesday 19 September 2023 16:41">Tuesday 19 September 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

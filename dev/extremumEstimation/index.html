@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Extremum Estimation · GMMInference.jl</title><meta name="title" content="Extremum Estimation · GMMInference.jl"/><meta property="og:title" content="Extremum Estimation · GMMInference.jl"/><meta property="twitter:title" content="Extremum Estimation · GMMInference.jl"/><meta name="description" content="Documentation for GMMInference.jl."/><meta property="og:description" content="Documentation for GMMInference.jl."/><meta property="twitter:description" content="Documentation for GMMInference.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href>GMMInference.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li class="is-active"><a class="tocitem" href>Extremum Estimation</a><ul class="internal"><li><a class="tocitem" href="#Example:-logit"><span>Example: logit</span></a></li><li class="toplevel"><a class="tocitem" href="#Review-of-extremum-estimator-theory"><span>Review of extremum estimator theory</span></a></li><li><a class="tocitem" href="#Consistency"><span>Consistency</span></a></li><li><a class="tocitem" href="#Asymptotic-normality"><span>Asymptotic normality</span></a></li><li><a class="tocitem" href="#Delta-method"><span>Delta method</span></a></li></ul></li><li><a class="tocitem" href="../identificationRobustInference/">Identification Robust Inference</a></li><li><a class="tocitem" href="../bootstrap/">Bootstrap</a></li><li><a class="tocitem" href="../empiricalLikelihood/">Empirical Likelihood</a></li><li><a class="tocitem" href="../">Autodocs</a></li><li><a class="tocitem" href="../references/">References</a></li><li><a class="tocitem" href="../license/">License</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Extremum Estimation</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Extremum Estimation</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/schrimpf/GMMInference.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/schrimpf/GMMInference.jl/blob/master/docs/src/extremumEstimation.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Extremum-Estimation"><a class="docs-heading-anchor" href="#Extremum-Estimation">Extremum Estimation</a><a id="Extremum-Estimation-1"></a><a class="docs-heading-anchor-permalink" href="#Extremum-Estimation" title="Permalink"></a></h1><p class="math-container">\[\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\def\inprob{\,{\buildrel p \over \rightarrow}\,}
+\def\indist{\,{\buildrel d \over \rightarrow}\,}
+\,\]</p><p>Many, perhaps most, estimators in econometrics are extrumem estimators. That is, many estimators are defined by</p><p class="math-container">\[\hat{\theta} = \argmax_{\theta \in \Theta}
+\hat{Q}_n(\theta)\]</p><p>where <span>$\hat{Q}_n(\theta)$</span> is some objective function that depends on data. Examples include maximum likelihood,</p><p class="math-container">\[\hat{Q}_n(\theta) = \frac{1}{n} \sum_{i=1}^n f(z_i | \theta)\]</p><p>GMM,</p><p class="math-container">\[\hat{Q}_n(\theta) = \left(\frac{1}{n} \sum_{i=1}^n g(z_i,
+\theta)\right)&#39; \hat{W} \left(\frac{1}{n} \sum_{i=1}^n g(z_i,
+\theta)\right)\]</p><p>and nonlinear least squares</p><p class="math-container">\[\hat{Q}_n(\theta) =
+\frac{1}{n} \sum_{i=1}^n (y_i - h(x_i,\theta))^2.\]</p><p>See <a href="../references/#newey1994">(Newey and McFadden, 1994)</a> for more details and examples.</p><h2 id="Example:-logit"><a class="docs-heading-anchor" href="#Example:-logit">Example: logit</a><a id="Example:-logit-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-logit" title="Permalink"></a></h2><p>As a simple example, let&#39;s look look at some code for estimating a logit.</p><pre><code class="language-julia hljs">using Distributions, Optim, BenchmarkTools
+import ForwardDiff
+function simulate_logit(observations, β)
+  x = randn(observations, length(β))
+  y = (x*β + rand(Logistic(), observations)) .&gt;= 0.0
+  return((y=y,x=x))
+end
+
+function logit_likelihood(β,y,x)
+  p = map(xb -&gt; cdf(Logistic(),xb), x*β)
+  sum(log.(ifelse.(y, p, 1.0 .- p)))
+end
+
+n = 500
+k = 3
+β0 = ones(k)
+(y,x) = simulate_logit(n,β0)
+Q = β -&gt; -logit_likelihood(β,y,x)
+Q(β0)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">255.47046841366193</code></pre><p>Now we maximize the likelihood using a few different algorithms from <a href="https://github.com/JuliaNLSolvers/Optim.jl">Optim.jl</a></p><pre><code class="language-julia hljs">@btime nm=optimize(Q, zeros(k), NelderMead())
+@btime bfgs=optimize(Q, zeros(k), BFGS(), autodiff = :forward)
+@btime ntr=optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward);</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"> * Status: success (objective increased between iterations)
+
+ * Candidate solution
+    Final objective value:     2.548047e+02
+
+ * Found with
+    Algorithm:     Newton&#39;s Method (Trust Region)
+
+ * Convergence measures
+    |x - x&#39;|               = 2.42e-10 ≰ 0.0e+00
+    |x - x&#39;|/|x&#39;|          = 2.51e-10 ≰ 0.0e+00
+    |f(x) - f(x&#39;)|         = 2.84e-14 ≰ 0.0e+00
+    |f(x) - f(x&#39;)|/|f(x&#39;)| = 1.12e-16 ≰ 0.0e+00
+    |g(x)|                 = 4.88e-15 ≤ 1.0e-08
+
+ * Work counters
+    Seconds run:   0  (vs limit Inf)
+    Iterations:    6
+    f(x) calls:    7
+    ∇f(x) calls:   7
+    ∇²f(x) calls:  7
+</code></pre><h3 id="Aside:-Reverse-mode-automatic-differentiation"><a class="docs-heading-anchor" href="#Aside:-Reverse-mode-automatic-differentiation">Aside: Reverse mode automatic differentiation</a><a id="Aside:-Reverse-mode-automatic-differentiation-1"></a><a class="docs-heading-anchor-permalink" href="#Aside:-Reverse-mode-automatic-differentiation" title="Permalink"></a></h3><p>For functions <span>$f:\R^n \to \R^m$</span>, the work for forward automatic differentiation increases linearly with <span>$n$</span>. This is because forward automatic differentiation applies the chain rule to each of the <span>$n$</span> inputs. An alternative, is reverse automatic differentiation. Reverse automatic differentiation is also based on the chain rule, but it works backward from <span>$f$</span> through intermediate steps back to <span>$x$</span>. The work needed here scales linearly with <span>$m$</span>. Since optimization problems have <span>$m=1$</span>, reverse automatic differentiation can often work well. The downsides of reverse automatic differentiation are that: (1) it can require a large amount of memory and (2) it is more difficult to implement. There are handful of Julia packages that provide reverse automatic differentiation, but they have some limitations in terms of what functions thay can differentiate. Flux.jl and Zygote.jl are two such packages.</p><pre><code class="language-julia hljs">using Optim, BenchmarkTools
+import Zygote
+dQr = β-&gt;Zygote.gradient(Q,β)[1]
+dQf = β-&gt;ForwardDiff.gradient(Q,β)
+
+@show dQr(β0) ≈ dQf(β0)
+
+@btime dQf(β0)
+@btime dQr(β0)
+
+n = 500
+k = 200
+β0 = ones(k)
+(y,x) = simulate_logit(n,β0)
+Q = β -&gt; -logit_likelihood(β,y,x)
+dQr = β-&gt;Zygote.gradient(Q,β)[1]
+dQf = β-&gt;ForwardDiff.gradient(Q,β)
+@show dQr(β0) ≈dQf(β0)
+@btime dQf(β0);
+@btime dQr(β0);</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">200-element Vector{Float64}:
+  2.9140206847924945
+ -0.9642299166321493
+ -0.035062007891459634
+  5.581552960297493
+  0.35938888484608034
+ -5.385705085675523
+  0.7530220702087225
+ -1.7420888158826942
+  5.101485599891047
+  0.5594725039562599
+  ⋮
+  1.6331803317033529
+  0.6306767201722379
+  2.9570762344654047
+ -0.7387455078531859
+  2.2054786479496054
+  0.009302313781153426
+ -0.10888052998052422
+  3.612519808727654
+  2.8293221783699822</code></pre><h1 id="Review-of-extremum-estimator-theory"><a class="docs-heading-anchor" href="#Review-of-extremum-estimator-theory">Review of extremum estimator theory</a><a id="Review-of-extremum-estimator-theory-1"></a><a class="docs-heading-anchor-permalink" href="#Review-of-extremum-estimator-theory" title="Permalink"></a></h1><p>This is based on <a href="../references/#newey1994">(Newey and McFadden, 1994)</a>. You should already be familiar with this from 627, so we will just state some basic &quot;high-level&quot; conditions for consistency and asymptotic normality.</p><h2 id="Consistency"><a class="docs-heading-anchor" href="#Consistency">Consistency</a><a id="Consistency-1"></a><a class="docs-heading-anchor-permalink" href="#Consistency" title="Permalink"></a></h2><div class="admonition is-success"><header class="admonition-header">Theorem: consistency for extremum estimators</header><div class="admonition-body"><p>Assume</p><ol><li><span>$\hat{Q}_n(\theta)$</span> converges uniformly in probability to</li></ol><p><span>$Q_0(\theta)$</span></p><ol><li><p><span>$Q_0(\theta)$</span> is uniquely maximized at <span>$\theta_0$</span>.</p></li><li><p><span>$\Theta$</span> is compact and <span>$Q_0(\theta)$</span> is continuous.</p></li></ol><p>Then <span>$\hat{\theta} \to^p \theta_0$</span></p></div></div><h2 id="Asymptotic-normality"><a class="docs-heading-anchor" href="#Asymptotic-normality">Asymptotic normality</a><a id="Asymptotic-normality-1"></a><a class="docs-heading-anchor-permalink" href="#Asymptotic-normality" title="Permalink"></a></h2><div class="admonition is-success"><header class="admonition-header">Theorem: asymptotic normality for extremum estimators</header><div class="admonition-body"><p>Assume</p><ol><li><p><span>$\hat{\theta} \to^p \theta_0$</span></p></li><li><p><span>$\theta_0 \in interior(\Theta)$</span></p></li><li><p><span>$\hat{Q}_n(\theta)$</span> is twice continuously differentiable in</p></li></ol><p>open <span>$N$</span> containing <span>$\theta$</span> , and <span>$\sup_{\theta \in N} \left\Vert \nabla^2 \hat{Q}_n(\theta) - H(\theta) \right\Vert \to^p 0$</span> with <span>$H(\theta_0)$</span> nonsingular</p><ol><li><span>$\sqrt{n} \nabla \hat{Q}_n(\theta_0) \leadsto N(0,\Sigma)$</span></li></ol><p>Then <span>$\sqrt{n} (\hat{\theta} - \theta_0) \leadsto N\left(0,H^{-1} \Sigma H^{-1} \right)$</span></p></div></div><p>Implementing this in Julia using automatic differentiation is straightforward.</p><pre><code class="language-julia hljs">function logit_likei(β,y,x)
+  p = map(xb -&gt; cdf(Logistic(),xb), x*β)
+  log.(ifelse.(y, p, 1.0 .- p))
+end
+
+function logit_likelihood(β,y,x)
+  mean(logit_likei(β,y,x))
+end
+
+n = 100
+k = 3
+β0 = ones(k)
+(y,x) = simulate_logit(n,β0)
+
+Q = β -&gt; -logit_likelihood(β,y,x)
+optres = optimize(Q, zeros(k), NewtonTrustRegion(), autodiff =:forward)
+βhat = optres.minimizer
+
+function asymptotic_variance(Q,dQi, θ)
+  gi = dQi(θ)
+  Σ = gi&#39;*gi/size(gi)[1]
+  H = ForwardDiff.hessian(Q,θ)
+  invH = inv(H)
+  (variance=invH*Σ*invH, Σ=Σ, invH=invH)
+end
+
+avar=asymptotic_variance(θ-&gt;logit_likelihood(θ,y,x),
+                         θ-&gt;ForwardDiff.jacobian(β-&gt;logit_likei(β,y,x),θ),βhat)
+@show avar.variance/n
+@show -avar.invH/n
+@show inv(avar.Σ)/n</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">3×3 Matrix{Float64}:
+ 0.0711878   0.026525  0.00340459
+ 0.026525    0.132641  0.028478
+ 0.00340459  0.028478  0.106625</code></pre><p>For maximum likelihood, the information equality says <span>$-H = \Sigma$</span>, so the three expressions above have the same probability limit, and are each consistent estimates of the variance of <span>$\hat{\theta}$</span>.</p><p>The code above is for demonstration and learning. If we really wanted to estimate a logit for research, it would be better to use a well-tested package. Here&#39;s how to estimate  a logit using GLM.jl.</p><pre><code class="language-julia hljs">using GLM, DataFrames
+df = DataFrame(x, :auto)
+df[!,:y] = y
+glmest=glm(@formula(y ~ -1 + x1+x2+x3), df, Binomial(),LogitLink())
+@show glmest
+@show vcov(glmest)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">3×3 Matrix{Float64}:
+ 0.102938   0.0390477  0.0187094
+ 0.0390477  0.0974245  0.0198751
+ 0.0187094  0.0198751  0.0855913</code></pre><h2 id="Delta-method"><a class="docs-heading-anchor" href="#Delta-method">Delta method</a><a id="Delta-method-1"></a><a class="docs-heading-anchor-permalink" href="#Delta-method" title="Permalink"></a></h2><p>In many models, we are interested in some transformation of the parameters in addition to the parameters themselves. For example, in a logit, we might want to report marginal effects in addition to the coefficients. In structural models, we typically use the parameter estimates to conduct counterfactual simulations. In many situations we are more interested these transformation(s) of parameters than in the parameters themselves. The delta method is one convenient way to approximate the distribution of transformations of the model parameters.</p><div class="admonition is-success"><header class="admonition-header">Theorem: Delta method</header><div class="admonition-body"><p>Assume:</p><ol><li><p><span>$\sqrt{n} (\hat{\theta} - \theta_0) \leadsto N(0,\Omega)$</span></p></li><li><p><span>$g: \R^k \to \R^m$</span> is continuously differentiable</p></li></ol><p>Then <span>$\sqrt{n}(g(\hat{\theta}) - g(\theta_0)) \leadsto N(0, \nabla g(\theta_0)^T \Omega \nabla g(\theta_0)$</span></p></div></div><p>The following code uses the delta method to plot a 90% pointwise confidence band around the estimate marginal effect of one of the regressors.</p><pre><code class="language-julia hljs">using LinearAlgebra
+function logit_mfx(β,x)
+  out = ForwardDiff.jacobian(x-&gt; map(xb -&gt; cdf(Logistic(),xb), x*β), x)
+  out = reshape(out, size(out,1), size(x)...)
+end
+
+function delta_method(g, θ, Ω)
+  dG = ForwardDiff.jacobian(θ-&gt;g(θ),θ)
+  dG*Ω*dG&#39;
+end
+
+nfx = 100
+xmfx = zeros(nfx,3)
+xmfx[:,1] .= -3.0:(6.0/(nfx-1)):3.0
+
+mfx = logit_mfx(βhat,xmfx)
+vmfx = delta_method(β-&gt;diag(logit_mfx(β,xmfx)[:,:,1]), βhat, avar.variance/n)
+sdfx = sqrt.(diag(vmfx))
+
+using Plots, LaTeXStrings
+plot(xmfx[:,1],diag(mfx[:,:,1]),ribbon=quantile(Normal(),0.95)*sdfx,fillalpha=0.5,
+     xlabel=L&quot;x_1&quot;, ylabel=L&quot;\frac{\partial}{\partial x_1}P(y=1|x)&quot;,
+     legend=false,title=&quot;Marginal effect of x[1] when x[2:k]=0&quot;)</code></pre><img src="1f452fbf.svg" alt="Example block output"/><p>The same approach can be used to compute standard errors and confidence regions for the results of more complicated counterfactual simulations, as long as the associated simulations are smooth functions of the parameters. However, sometimes it might be more natural to write simulations with outcomes that are not smooth in the parameters. For example, the following code uses simulation to calculate the change in the probability of <span>$y$</span> from adding 0.1 to <span>$x$</span>.</p><pre><code class="language-julia hljs">function counterfactual_sim(β, x, S)
+  function onesim()
+    e = rand(Logistic(), size(x)[1])
+    baseline= (x*β .+ e .&gt; 0)
+    counterfactual= ((x.+0.1)*β .+ e .&gt; 0)
+    mean(counterfactual.-baseline)
+  end
+  mean([onesim() for s in 1:S])
+end
+@show ∇s = ForwardDiff.gradient(β-&gt;counterfactual_sim(β,x,10),βhat)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">3-element Vector{Float64}:
+ 0.0
+ 0.0
+ 0.0</code></pre><p>Here, the gradient is 0 because the simulation function is a step-function. In this situation, an alternative to the delta method is the simulation based approach of <a href="../references/#krinsky1986">(Krinsky and Robb, 1986)</a>. The procedure is quite simple. Suppose <span>$\sqrt{n}(\hat{\theta} - \theta_0) \leadsto N(0,\Omega)$</span>, and you want to an estimate of the distribution of <span>$g(\theta)$</span>. Repeatedly draw <span>$\theta_s \sim N(\hat{\theta}, \Omega/n)$</span> and compute <span>$g(\theta_s)$</span>. Use the distribution of <span>$g(\theta_s)$</span> for inference. For example, a 90% confidence interval for <span>$g(\theta)$</span> would be the 5%-tile of <span>$g(\theta_s)$</span> to the 95%-tile of <span>$g(\theta_s)$</span>.</p><pre><code class="language-julia hljs">Ω = avar.variance/n
+Ω = Symmetric((Ω+Ω&#39;)/2) # otherwise, it&#39;s not exactly symmetric due to
+                        # floating point roundoff
+function kr_confint(g, θ, Ω, simulations; coverage=0.9)
+  θs = [g(rand(MultivariateNormal(θ,Ω))) for s in 1:simulations]
+  quantile(θs, [(1.0-coverage)/2, coverage + (1.0-coverage)/2])
+end
+
+@show kr_confint(β-&gt;counterfactual_sim(β,x,10), βhat, Ω, 1000)
+
+# a delta method based confidence interval for the same thing
+function counterfactual_calc(β, x)
+  baseline      = cdf.(Logistic(), x*β)
+  counterfactual= cdf.(Logistic(), (x.+0.1)*β)
+  return([mean(counterfactual.-baseline)])
+end
+v = delta_method(β-&gt;counterfactual_calc(β,x), βhat, Ω)
+ghat = counterfactual_calc(βhat,x)
+@show [ghat + sqrt(v)*quantile(Normal(),0.05), ghat +
+       sqrt(v)*quantile(Normal(),0.95)]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2-element Vector{Matrix{Float64}}:
+ [0.04324141231567215;;]
+ [0.05206918643145998;;]</code></pre></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="../identificationRobustInference/">Identification Robust Inference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.0.1 on <span class="colophon-date" title="Tuesday 19 September 2023 16:41">Tuesday 19 September 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

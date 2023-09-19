@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Bootstrap · GMMInference.jl</title><meta name="title" content="Bootstrap · GMMInference.jl"/><meta property="og:title" content="Bootstrap · GMMInference.jl"/><meta property="twitter:title" content="Bootstrap · GMMInference.jl"/><meta name="description" content="Documentation for GMMInference.jl."/><meta property="og:description" content="Documentation for GMMInference.jl."/><meta property="twitter:description" content="Documentation for GMMInference.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../extremumEstimation/">GMMInference.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../extremumEstimation/">Extremum Estimation</a></li><li><a class="tocitem" href="../identificationRobustInference/">Identification Robust Inference</a></li><li class="is-active"><a class="tocitem" href>Bootstrap</a><ul class="internal"><li><a class="tocitem" href="#References"><span>References</span></a></li><li class="toplevel"><a class="tocitem" href="#Theory"><span>Theory</span></a></li><li><a class="tocitem" href="#Pivotal-statistics"><span>Pivotal statistics</span></a></li><li><a class="tocitem" href="#Bootstrap-does-not-always-work"><span>Bootstrap does not always work</span></a></li><li class="toplevel"><a class="tocitem" href="#Bootstrap-for-GMM"><span>Bootstrap for GMM</span></a></li><li><a class="tocitem" href="#Joint-hypotheses"><span>Joint hypotheses</span></a></li><li><a class="tocitem" href="#Single-coefficients"><span>Single coefficients</span></a></li></ul></li><li><a class="tocitem" href="../empiricalLikelihood/">Empirical Likelihood</a></li><li><a class="tocitem" href="../">Autodocs</a></li><li><a class="tocitem" href="../references/">References</a></li><li><a class="tocitem" href="../license/">License</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Bootstrap</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Bootstrap</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/schrimpf/GMMInference.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/schrimpf/GMMInference.jl/blob/master/docs/src/bootstrap.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Bootstrap"><a class="docs-heading-anchor" href="#Bootstrap">Bootstrap</a><a id="Bootstrap-1"></a><a class="docs-heading-anchor-permalink" href="#Bootstrap" title="Permalink"></a></h1><p>The bootstrap is a method of inference that utilizes resampling. The basic idea is as follows. Suppose you have some parameter of interest for which you want to do inference. Let <span>$T_n$</span> denote some test statistic involving the estimator. The test  statistic is a function of data, so the distribution of the estimator is a function of the distribution of data. Let <span>$F_0$</span> denote the exact, finite sample distribution of the data. Let </p><p class="math-container">\[G_n(\tau, F_0) = \Pr(\hat{\theta}_n \leq \tau)\]</p><p>denote the exact finite sample distribution of the statistic.  To do inference, we would like to know <span>$G_n(\tau, F_0)$</span>.  This is generally impossible without strong assumptions. Asymptotics get around this problem by approximating <span>$G_n(\tau, F_0)$</span> with its asymptotic distribution, <span>$G_\infty(\tau,F_0)$</span>. The bootstrap is an alternative approach (but the formal justification for the bootstrap still relies on asymptotics). The bootstrap approximates <span>$G_n(\tau, F_0)$</span> by replacing <span>$F_0$</span> with an estimate, <span>$\hat{F}_n$</span>. One common estimate of <span>$\hat{F}_n$</span> is simply the empirical CDF. When observations are independent, we can randomly draw <span>$T^\ast_n$</span> from  <span>$G_n(\tau, \hat{F}_n)$</span> by randomly drawing with replacement a sample of size <span>$n$</span> from the orgininal observations, and then computing <span>$T^\ast_n$</span> for this sample. We can do this repeatedly, and use the distribution of the resulting <span>$\hat{\theta}^\ast_n$</span>&#39;s to calculate <span>$G_n(\tau,\hat{F}_n)$</span>. </p><p>As a quick example, here&#39;s some code where the statistic is the sample median minus its true value.</p><pre><code class="language-julia hljs">using Plots, StatsPlots, Distributions, Optim, ForwardDiff, LinearAlgebra, GMMInference
+import Random
+Plots.gr();</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Plots.GRBackend()</code></pre><pre><code class="language-julia hljs">Random.seed!(622)
+dgp(n) = rand(n)
+estimator(x) = median(x)
+# simulating T ~ G_n(τ,F_0)
+n = 1000
+S = 999
+T = [estimator(dgp(n)) for s in 1:S] .- 0.5
+function bootstrap(data, estimator, S)
+  n = length(data)
+  θhat = estimator(data)
+  T = [estimator(sample(data,n, replace=true)) for s in 1:S] .- θhat
+end
+Tboot = bootstrap(dgp(n),estimator, S)
+density(T, label=&quot;true distribution&quot;)
+density!(Tboot, label=&quot;bootstrap distribution&quot;)</code></pre><img src="df83a6e2.svg" alt="Example block output"/><h2 id="References"><a class="docs-heading-anchor" href="#References">References</a><a id="References-1"></a><a class="docs-heading-anchor-permalink" href="#References" title="Permalink"></a></h2><p><a href="../references/#mackinnon2006">(MacKinnon, 2006)</a> and <a href="../references/#mackinnon2009">(MacKinnon, 2009)</a> are good practical introductions to the bootstrap. <a href="../references/#horowitz2001">(Horowitz, 2001)</a> is also a good overview, and includes more precise statements of theoretical results, but does not contain proofs. The lecture notes of <a href="../references/#shi2012">(Shi, 2012)</a> are another very good overview. <a href="../references/#gine1997">(Gine, 1997)</a> is a rigorous and fairly self-contained theoretical treatment of the bootstrap.</p><p>Although the bootstrap works in many situations, it does not always work. For example, <a href="../references/#abadie2008">(Abadie and Imbens, 2008)</a> show the failure of the bootstrap for matching estimators. See <a href="../references/#andrews2000">(Andrews, 2000)</a>,  <a href="../references/#andrews2009">(Andrews and Han, 2009)</a>, and <a href="../references/#romano2012">(Romano and Shaikh, 2012)</a> for theoretical developments on situations where the bootstrap fails and alternatives that work.   <a href="../references/#hall1994">(Hall, 1994)</a> gives a theoretical overview of when the bootstrap provides asymptotic refinement.  <a href="../references/#chernozhukov2017">(Chernozhukov *et al.*, 2017)</a> discusses the bootstrap in high dimensional models.</p><h1 id="Theory"><a class="docs-heading-anchor" href="#Theory">Theory</a><a id="Theory-1"></a><a class="docs-heading-anchor-permalink" href="#Theory" title="Permalink"></a></h1><p>This section follows the approach <a href="../references/#van2000">(Van der Vaart, 2000)</a>. We focus on the case where</p><p class="math-container">\[T_n = \frac{\hat{\theta}_n - \theta_0}{\hat{\sigma}_n}\]</p><p>is a t-statistic. A simple and useful result is that if <span>$T_n$</span> and <span>$T^\ast_n$</span> both converge to the same distribution, then the bootstrap is consistent. </p><div class="admonition is-success"><header class="admonition-header">Theroem: bootstrap consistency</header><div class="admonition-body"><p>Suppose that </p><p class="math-container">\[T_n = \frac{\hat{\theta}_n - \theta_0}{\hat{\sigma}_n} \leadsto T\]</p><p>and </p><p class="math-container">\[T_n^\ast =  \frac{\hat{\theta}^\ast_n - \hat{\theta}_n}{\hat{\sigma}^\ast_n} \leadsto T\]</p><p>conditional on the data, for some random variable <span>$T$</span> with a continuous distribution function. Then </p><p class="math-container">\[| G_n(\tau, F_0) - G_n(\tau,\hat{F}_n) | \to^p 0 |\]</p><p>and in particular,</p><p class="math-container">\[\Pr(\theta_0 \in [\hat{\theta}_n - G_n^{-1}(\alpha/2, \hat{F}_n)
+\hat{\sigma}_n ,  \hat{\theta}_n - G_n^{-1}(1-\alpha/2, \hat{F}_n)
+\hat{\sigma}_n ]) \to 1-\alpha.\]</p></div></div><div class="admonition is-info"><header class="admonition-header">Proof skecth:</header><div class="admonition-body"><p><span>$T_n$</span> and <span>$T_n^\ast$</span> both <span>$\leadsto T$</span> immediately implies </p><p class="math-container">\[G_n(\tau, F_0) \to^p G_\infty(\tau)\]</p><p>and</p><p class="math-container">\[G_n(\tau,\hat{F}_n) \to^p G_\infty(\tau),,\]</p><p>where  <span>$G_\infty(\tau)$</span> is the CDF of  <span>$T$</span> . This implies that </p><p class="math-container">\[G^{-1}_n(\tau,\hat{F}_n) \to^p G^{-1}_\infty(\tau)\]</p><p>for all <span>$\tau$</span> where <span>$G_\infty$</span> is continuous. Then we have</p><p class="math-container">\[\Pr(\theta_0 \geq \hat{\theta}_n - G_n^{-1}(\tau, \hat{F}_n)
+\hat{\sigma}_n) = \Pr\left(\frac{\theta_0 -
+\hat{\theta}_n}{\hat{\sigma}_n} \leq G_n^{-1}(\tau, \hat{F}_n)\right) \to
+\Pr(T \leq G^{-1}_\infty(\tau)) = \tau.\]</p></div></div><p>This theorem is very simple, but it is useful because it suggest a simple path to showing the consistency of the bootstrap: simply show that <span>$T_n^\ast$</span> has the same asymptotic distribution as <span>$T_n$</span>. Here is a simple result for when <span>$T_n^\ast$</span> is constructed by sampling with replacement from the empirical distribution. We will let <span>$\mathbb{P}_n$</span> denote the empirical distribution, and <span>$x_i^\ast$</span> denote draws of <span>$x_i$</span> from it.</p><div class="admonition is-success"><header class="admonition-header">Lemma</header><div class="admonition-body"><p>Let <span>$x_1, x_2, ...$</span> be i.i.d. with mean <span>$\mu$</span> and variance <span>$\sigma^2$</span>. Then conditional on <span>$x_1, ..., x_n$</span> for almost every sequence</p><p class="math-container">\[\sqrt{n} (\bar{x}_n^\ast - \bar{x}_n) \leadsto N(0,\sigma^2)\]</p></div></div><div class="admonition is-info"><header class="admonition-header">Proof sketch:</header><div class="admonition-body"><p>It is straightforward to show that <span>$\mathrm{E}[x_i^\ast | \mathbb{P}_n] = \bar{x}_n$</span> and ``Var(x<em>i^\ast|\mathbb{P}</em>n) = \bar{x^2}_n</p><ul><li>\bar{x}_n^2 \to \sigma^2``. Applying the Lindeberg CLT then gives the</li></ul><p>result.</p></div></div><h2 id="Pivotal-statistics"><a class="docs-heading-anchor" href="#Pivotal-statistics">Pivotal statistics</a><a id="Pivotal-statistics-1"></a><a class="docs-heading-anchor-permalink" href="#Pivotal-statistics" title="Permalink"></a></h2><p>The above results imply that the bootstrap works for both  <span>$S_n = \sqrt{n}(\bar{x}_n - \mu_0)$</span> and &quot;studentized&quot; a statistic  <span>$T_n = \sqrt{n}(\bar{x}_n - \mu_0)/\hat{\sigma}_n$</span>. There is some advantage to using the later. A statistic is called pivotal if its distribution is completely known. If we assume <span>$x_i \sim N$</span>, then <span>$T_n$</span> is pivotal and has a t-distribution. If we aren&#39;t willing to assume normality, then the distribution of <span>$T_n$</span> is unknown, but its asymptotic distribution is completely known, <span>$N(0,1)$</span>. Such a statistic is called asymptotically pivotal. <span>$S_n$</span> is not asymptotically pivotal because its asymptotic distribution depends on the unknown variance. It is possible to show that the bootstrap distribution of asymptotically pivotal statistics converge faster than either the usual asymptotic approximation or the bootstrap distribution of non-pivotal statistics. See <a href="../references/#hall1994">(Hall, 1994)</a> for details. </p><p>Here is a simulation to illustrate. </p><pre><code class="language-julia hljs">Random.seed!(14)
+dgp(n) = rand(Exponential(),n)
+estimator(x) = mean(x)
+θ0 = 1.0
+N = [5 10 20 100]
+B = 999
+function simulatetests(n)
+  function bootstrap(data, stat, S)
+    n = length(data)
+    T = [stat(sample(data,n)) for s in 1:S]
+  end
+  data = dgp(n)
+  t = sqrt(n)*(mean(data)-θ0)/std(data)
+  [cdf(Normal(),t),
+   mean(t.&lt;bootstrap(data, d-&gt;(sqrt(n)*(mean(d) - mean(data))/std(d)), B)),
+   mean((mean(data)-θ0) .&lt; bootstrap(data, d-&gt;(mean(d)-mean(data)), B))]
+end
+res=[hcat([simulatetests.(n) for s in 1:1000]...) for n in N]
+
+p = 0:0.01:1
+global fig = plot(layout=4, legend=:none)
+for i=1:4
+  plot!(fig,p, p-&gt;(mean(res[i][1,:].&lt;p)-p), title=&quot;N=$(N[i])&quot;,
+        label=&quot;asymptotic&quot;, subplot=i)
+
+  plot!(fig,p, p-&gt;(mean(res[i][2,:].&lt;p)-p), title=&quot;N=$(N[i])&quot;,
+        label=&quot;pivotal bootstrap&quot;, subplot=i)
+  plot!(fig,p, p-&gt;(mean(res[i][3,:].&lt;p)-p), title=&quot;N=$(N[i])&quot;,
+        label=&quot;non-pivotal boostrap&quot;, subplot=i)
+end
+fig</code></pre><img src="753c5c6f.svg" alt="Example block output"/><p>This figure shows the simulated CDF of p-values minus p. For a perfectly sized test, the line would be identically 0. The blue lines are for the usual t-test. Green is from bootstrapping the non-pivotal statistic <span>$\sqrt{n}(\bar{x}^\ast - \bar{x})$</span>. Red is from bootstrapping a pivotal t-statistic. As expected, the red line is closer to 0, illustrating the advantage of bootstrapping a pivotal statistic. </p><h2 id="Bootstrap-does-not-always-work"><a class="docs-heading-anchor" href="#Bootstrap-does-not-always-work">Bootstrap does not always work</a><a id="Bootstrap-does-not-always-work-1"></a><a class="docs-heading-anchor-permalink" href="#Bootstrap-does-not-always-work" title="Permalink"></a></h2><p>It is important to remember that the bootstrap is not guaranteed to work. A classic example is estimating the mean squared.  Let <span>$x_i \sim F_0$</span>, where<span>$F_0$</span> is any distribution with mean <span>$\mu$</span> and variance <span>$\sigma^2$</span>. The parameter of interest is <span>$\theta = \mu^2$</span>. The estimator will be <span>$\hat{\theta} = \bar{x}^2$</span>.  The delta method and CLT imply </p><p class="math-container">\[    \sqrt{n}(\bar{x}^2 - \mu^2) \leadsto 2\mu N(0,\sigma^2)\]</p><p>similarly conditional on the data,</p><p class="math-container">\[    \sqrt{n}(\bar{x^\ast}^2 - \bar{x}^2) \leadsto 2 \mu N(0,\sigma^2)\]</p><p>A problem occurs when <span>$\mu=0$</span>. The limiting distributions become point masses at 0. The CDF is no longer continuous, so the theorem above does not apply. </p><p>Here&#39;s an illustration </p><pre><code class="language-julia hljs">Random.seed!(622)
+function bootmeansquared(μ0, n)
+  dgp(n) = rand(n) .- 0.5 .+ μ0
+  estimator(x) = mean(x)^2
+  S = 1000
+  T = [estimator(dgp(n)) for s in 1:S] .- μ0^2
+  function bootstrap(data, estimator, S)
+    n = length(data)
+    θhat = estimator(data)
+    [estimator(sample(data,n,replace=true)) for s in 1:S] .- θhat
+  end
+  Tboot = bootstrap(dgp(n),estimator, S)
+  density(T, label=&quot;true distribution&quot;)
+  density!(Tboot, label=&quot;bootstrap distribution&quot;)
+end
+bootmeansquared(0.5,100)</code></pre><img src="9d10633c.svg" alt="Example block output"/><pre><code class="language-julia hljs">bootmeansquared(0.0,500)</code></pre><img src="6177c2fc.svg" alt="Example block output"/><p>Depending on the random numbers drawn (in particular, whether the simulated sample mean is very close to 0 or not), the above picture may look okay or terrible for the bootstrap. Try running it a few times to get a sense of how bad it might be.</p><h1 id="Bootstrap-for-GMM"><a class="docs-heading-anchor" href="#Bootstrap-for-GMM">Bootstrap for GMM</a><a id="Bootstrap-for-GMM-1"></a><a class="docs-heading-anchor-permalink" href="#Bootstrap-for-GMM" title="Permalink"></a></h1><h2 id="Joint-hypotheses"><a class="docs-heading-anchor" href="#Joint-hypotheses">Joint hypotheses</a><a id="Joint-hypotheses-1"></a><a class="docs-heading-anchor-permalink" href="#Joint-hypotheses" title="Permalink"></a></h2><p>The failure of the bootstrap for the mean squared when the true mean is 0 has important implications for GMM. In particular, the AR statistic, </p><p class="math-container">\[AR(\theta) = n [1/n \sum g_i(\theta)]&#39; \widehat{Var}(g_i(\theta))^{-1}
+[1/n \sum g_i(\theta)] \]</p><p>is essentially a mean squared. If we naively attempt to apply the bootstrap by computing</p><p class="math-container">\[AR(\theta)^\ast = n [1/n \sum g_i^\ast(\theta)]&#39; \widehat{Var}(g_i^\ast(\theta))^{-1}
+[1/n \sum g_i^\ast(\theta)] \]</p><p>we will get incorrect inference. The problem is that we want to test <span>$H_0: \mathrm{E}[g_i(\theta)] = 0$</span>, but in the bootstrap sample, </p><p class="math-container">\[\mathrm{E}[g^\ast(\theta)|data] = 1/n \sum g_i(\theta) \neq 0.\]</p><p>For the bootstrap to work, we must ensure that the null hypothesis is true in the bootstrap sample, we can do this by taking</p><p class="math-container">\[AR(\theta)^\ast = n [1/n \sum g_i^\ast(\theta) - \bar{g}_n(\theta)]&#39; \widehat{Var}(g_i^\ast(\theta))^{-1}
+[1/n \sum g_i^\ast(\theta) - \bar{g}_n(\theta)] \]</p><p>where <span>$\bar{g}_n(\theta) = 1/n \sum g_i(\theta)$</span>. </p><p>Here is a simulation to illustrate. It uses the same IV-logit share example as in the extremum estimation notes.</p><pre><code class="language-julia hljs">n = 100
+k = 2
+iv = 3
+β0 = ones(k)
+π0 = vcat(I,ones(iv-k,k))
+ρ = 0.5
+Random.seed!(622)
+data = IVLogitShare(n,β0,π0,ρ)
+
+function arstat(gi)
+  n = size(gi)[1]
+  gn = mean(gi,dims=1)
+  W = pinv(cov(gi))
+  n*( gn*W*gn&#39;)[1]
+end
+
+function ar(θ,gi)
+  n,m = size(gi(θ))
+  1.0-cdf(Chisq(m), arstat(gi(θ)))
+end
+
+function bootstrapAR(θ,gi)
+  giθ = gi(θ)
+  gn = mean(giθ,dims=1)
+  n = size(giθ)[1]
+  S = 999
+  T =hcat([ [arstat(giθ[sample(1:n,n,replace=true),:]),
+             arstat(giθ[sample(1:n,n,replace=true),:].-gn)
+             ] for s in 1:S]...)&#39;
+  t = arstat(giθ)
+  [1-cdf(Chisq(length(gn)),t)  mean(T.&gt;=t, dims=1)]
+end
+
+function simulatetests()
+  data = IVLogitShare(n,β0,π0,ρ)
+  bsp=bootstrapAR(β0, get_gi(data))
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">simulatetests (generic function with 2 methods)</code></pre><pre><code class="language-julia hljs">pvals = vcat([simulatetests() for s in 1:500]...)
+p = 0:0.01:1.0
+plot(p, p-&gt;(mean(pvals[:,1].&lt;p)-p),  label=&quot;asymptotic&quot;, legend=:bottomleft)
+plot!(p, p-&gt;(mean(pvals[:,2].&lt;p)-p),  label=&quot;incorrect bootstrap&quot;)
+plot!(p, p-&gt;(mean(pvals[:,3].&lt;p)-p),  label=&quot;correct bootstrap&quot;)</code></pre><img src="95843dec.svg" alt="Example block output"/><p>With the same sort of modification the KLM and CLR statistics can also be bootstrapped. All three statistics remain identification robust when bootstrapped. See Kleibergen (2006)[@kleibergen2006] for details.</p><h2 id="Single-coefficients"><a class="docs-heading-anchor" href="#Single-coefficients">Single coefficients</a><a id="Single-coefficients-1"></a><a class="docs-heading-anchor-permalink" href="#Single-coefficients" title="Permalink"></a></h2><p>If we want to construct a confidence interval for a single coefficient, we can apply the bootstrap to a statistic like  <span>$\sqrt{n} (\hat{\theta} - \theta_0)$</span> (or a studentized version of it). Just like in the previous subsection, we must be careful to ensure that the null hypothesis holds in the bootstrapped data. Also, as above, we can do this by subtracting <span>$1/n\sum_i g_i(\hat{\theta})$</span> from the bootstrapped moments. Thus, one way to bootstrap is  <span>$\sqrt{n} (\hat{\theta} - \theta_0)$</span> is to</p><ul><li>Compute <span>$\hat{\theta}$</span>, <span>$\bar{g}_n(\hat{\theta}) = 1/n\sum_i g_i(\hat{\theta})$</span></li><li>Draw with replacement  <span>$g_i^\ast(\theta)$</span> from <span>$\{g_i(\theta) - \bar{g}_n(\hat{\theta})\}_{i=1}^n$</span>. </li><li>Compute </li></ul><p class="math-container">\[\hat{\theta}^\ast = \argmin [1/n \sum_i g_i^\ast(\theta)] W_n^\ast(\theta)
+  [1/n \sum g_i^\ast(\theta]\]</p><ul><li>Use distribution of <span>$\sqrt{n} (\hat{\theta}^\ast - \hat{\theta})$</span> to approximate <span>$\sqrt{n} (\hat{\theta} - \theta_0)$</span></li></ul><p>For some models, the minimazation needed to compute <span>$\hat{\theta}^\ast$</span> can be very time consuming. Fortunately, it can be avoided. A key step in showing that <span>$\hat{\theta}$</span> is asymptotically normal is a linearization</p><p class="math-container">\[\sqrt{n}(\hat{\theta} - \theta_0) = -(D&#39;WD)^{-1} (D&#39; W)
+\frac{1}{\sqrt{n}} \sum_i g_i(\theta_0) + o_p(1) \]</p><p>Showing the bootstrap estimator is asymptotically normal conditional on the data involves a similar linearization</p><p class="math-container">\[\sqrt{n}(\hat{\theta}^\ast - \hat{\theta}) = -(\hat{D}&#39;\hat{W}\hat{D})^{-1} (\hat{D}&#39; \hat{W})
+\frac{1}{\sqrt{n}} \sum_i g_i^\ast(\hat{\theta}) + o_p(1) \]</p><p>This suggests taking </p><p class="math-container">\[\hat{\theta}^\ast = \hat{\theta} + (\hat{D}&#39;\hat{W}\hat{D})^{-1} (\hat{D}&#39; \hat{W})
+\frac{1}{\sqrt{n}} \sum_i g_i^\ast(\hat{\theta}) \]</p><p>instead of re-minimizing. </p><pre><code class="language-julia hljs">function gmmVar(θ,gi,W)
+  g = gi(θ)
+  n = size(g)[1]
+  D = ForwardDiff.jacobian(θ-&gt;mean(gi(θ),dims=1),θ)
+  Σ = cov(gi(θ))
+  1/n*inv(D&#39;*W*D)*(D&#39;*W*Σ*W*D)*inv(D&#39;*W*D)
+end
+
+function bsweights(n)
+  s = sample(1:n,n)
+  (x-&gt;sum(x.==s)).(1:n)
+end
+
+
+function bootstrapt(θ,gi, W)
+  giθ = gi(θ)
+  gn = size(giθ)[1]
+  D = ForwardDiff.jacobian(θ-&gt;mean(gi(θ),dims=1),θ)
+  function bootonce(θ,gi)
+    giθ = gi(θ)
+    n = size(giθ)[1]
+    gn = mean(giθ,dims=1)
+    w = bsweights(n)
+    giw(θ) = (gi(θ).*w .- gn)
+    gmmobj = gmm_objective(giw, W)
+    opt1 = optimize(gmmobj, θ, BFGS(), autodiff =:forward)
+    θs1 = opt1.minimizer
+    θs2 = θ - inv(D&#39;*W*D)*(D&#39;*W*( (mean(giθ.*w,dims=1).-gn)&#39; ))
+    [θs1[1] θs2[1]]
+  end
+  S = 299
+  vcat([bootonce(θ,gi) for s in 1:S]...)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">bootstrapt (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">n = 50
+k = 2
+iv = 3
+β0 = ones(k)
+π0 = vcat(I,ones(iv-k,k))
+ρ = 0.5
+Random.seed!(622)
+data = IVLogitShare(n,β0,π0,ρ)
+gi = get_gi(data)
+W = I
+optres = optimize(gmm_objective(data,W), β0, BFGS(),
+                  autodiff = :forward)
+θhat = optres.minimizer
+θs = bootstrapt(θhat,gi,I)
+density(θs[:,1], label=&quot;minimization bootstrap&quot;)
+density!(θs[:,2], label=&quot;score bootstrap&quot;)</code></pre><img src="0ab60310.svg" alt="Example block output"/><pre><code class="language-julia hljs">function simulatetests()
+  data = IVLogitShare(n,β0,π0,ρ)
+  gi = get_gi(data)
+  W = I
+  optres = optimize(gmm_objective(gi,W), β0, BFGS(), autodiff =:forward)
+  θhat = optres.minimizer
+  θs = bootstrapt(θhat,gi,I)
+  p = mean((θhat[1]-β0[1]).&lt;(θs .- θhat[1]), dims=1)
+end
+Random.seed!(622)
+pvals = vcat([simulatetests() for s in 1:300]...)
+p = 0:0.01:1.0
+fig=plot(p, p-&gt;(mean(pvals[:,1].&lt;p)-p),
+         label=&quot;minimization bootstrap&quot;, legend=:best)
+plot!(fig,p, p-&gt;(mean(pvals[:,2].&lt;p)-p),  label=&quot;score bootstrap&quot;)
+fig</code></pre><img src="c3f9be30.svg" alt="Example block output"/><p>Both versions of the bootstrap appear to work well enough here. Note that neither one is robust to identification problems. Inference on a subset of parameters while remaining robust to identification problems is somewhat of an open problem. Various conservative approaches are available, the simplest of which is to just take projections of the AR, KLM, or CLR confidence sets. There are also more powerful approaches for situations where you know which parameters are strongly vs weakly identified. </p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../identificationRobustInference/">« Identification Robust Inference</a><a class="docs-footer-nextpage" href="../empiricalLikelihood/">Empirical Likelihood »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.0.1 on <span class="colophon-date" title="Tuesday 19 September 2023 16:41">Tuesday 19 September 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

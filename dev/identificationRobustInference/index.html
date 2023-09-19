@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Identification Robust Inference · GMMInference.jl</title><meta name="title" content="Identification Robust Inference · GMMInference.jl"/><meta property="og:title" content="Identification Robust Inference · GMMInference.jl"/><meta property="twitter:title" content="Identification Robust Inference · GMMInference.jl"/><meta name="description" content="Documentation for GMMInference.jl."/><meta property="og:description" content="Documentation for GMMInference.jl."/><meta property="twitter:description" content="Documentation for GMMInference.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../extremumEstimation/">GMMInference.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../extremumEstimation/">Extremum Estimation</a></li><li class="is-active"><a class="tocitem" href>Identification Robust Inference</a></li><li><a class="tocitem" href="../bootstrap/">Bootstrap</a></li><li><a class="tocitem" href="../empiricalLikelihood/">Empirical Likelihood</a></li><li><a class="tocitem" href="../">Autodocs</a></li><li><a class="tocitem" href="../references/">References</a></li><li><a class="tocitem" href="../license/">License</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Identification Robust Inference</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Identification Robust Inference</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/schrimpf/GMMInference.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/schrimpf/GMMInference.jl/blob/master/docs/src/identificationRobustInference.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Identification-robust-inference"><a class="docs-heading-anchor" href="#Identification-robust-inference">Identification robust inference</a><a id="Identification-robust-inference-1"></a><a class="docs-heading-anchor-permalink" href="#Identification-robust-inference" title="Permalink"></a></h1><p class="math-container">\[\def\indep{\perp\!\!\!\perp}
+\def\Er{\mathrm{E}}
+\def\R{\mathbb{R}}
+\def\En{{\mathbb{E}_n}}
+\def\Pr{\mathrm{P}}
+\def\inprob{\,{\buildrel p \over \rightarrow}\,} 
+\def\indist{\,{\buildrel d \over \rightarrow}\,} 
+\,\]</p><p>As discussed in section 9 of <a href="../references/#newey1994">(Newey and McFadden, 1994)</a>, there are three classic types of statistics for testing restrictions on parameters. Suppose you want to test <span>$H_0: a(\theta) = 0$</span>. Let <span>$\hat{\theta}$</span> denote the unrestricted estimate, and let <span>$\hat{\theta}^r$</span> denote the estimate of <span>$\theta$</span> subject to the restriction. Wald test-statistics are based on <span>$\hat{\theta}-\hat{\theta}^r$</span>. Lagrange multiplier tests look at the distribution of the estimated Lagrange multiplier. Likelihood ratio (aka distance metric in <a href="../references/#newey1994">(Newey and McFadden, 1994)</a>) tests look at <span>$Q_n(\hat{\theta}) - Q_n(\hat{\theta}^r)$</span>. If we consider testing <span>$H_0: \theta = \vartheta$</span> for some fixed <span>$\vartheta$</span>, then the usual approach based on the asymptotic normality of <span>$\hat{\theta}$</span> discussed above is exactly the same as the Wald test of this restriction. As discussed by <a href="../references/#newey1994">(Newey and McFadden, 1994)</a>, under standard assumptions, all three testing approaches are asymptotically equivalent. However, the tests can and will differ in finite samples. More importantly, in the face of identification problems, Wald tests tend to break down, while Lagrange multiplier and likelihood ratio style tests can continue to work. </p><p>By identification robust, we mean an inference procedure that has correct size regardless of whether identification is strong, weak, or partial. In the asymptotic normality of extremum estimators theorem above, non-strong identification will create problems for assumption 3, in particular the assumption that the Hessian is non-singular. For this section, we will focus on GMM estimators. Identification problems most often arrive and have been studied in the context of GMM. Also, it is not difficult to transform other extremum estimators into GMM. </p><p>For a GMM objective function of the form:</p><p class="math-container">\[ \left(\frac{1}{n} \sum_i g_i(\theta)\right)&#39; W_n \left(\frac{1}{n} \sum g_i(\theta)\right),\]</p><p>if we assume:</p><ol><li><p><span>$1/\sqrt{n} \sum_i g_i(\theta_0) \leadsto N(0,\Sigma)$</span></p></li><li><p><span>$1/n \sum_i \nabla g_i(\theta) \to^p E[\nabla g(\theta)]\equiv D$</span>,  <span>$W_n \to^p W$</span></p></li><li><p><span>$(D&#39;WD)$</span> is nonsingular.</p></li></ol><p>then the above theorem for asymptotic normality of extremum estimators implies that </p><p class="math-container">\[\sqrt{n}(\hat{\theta} - \theta_0) \leadsto N(0,\Omega)\]</p><p>where </p><p class="math-container">\[ \Omega= (D&#39;WD)^{-1} (D&#39; W \Sigma W D) (D&#39;WD)^{-1}.\]</p><p>If we additionally assume <span>$W_n \to^p \Sigma^{-1}$</span>, e.g. observations are independent and <span>$W_n = \widehat{Var}(g_i(\theta))^{-1}$</span>, then the asymptotic variance simplifies to <span>$(D&#39; \Sigma^{-1} D)^{-1}$</span>. </p><h3 id="Anderson-Rubin-test"><a class="docs-heading-anchor" href="#Anderson-Rubin-test">Anderson-Rubin test</a><a id="Anderson-Rubin-test-1"></a><a class="docs-heading-anchor-permalink" href="#Anderson-Rubin-test" title="Permalink"></a></h3><p>As already stated, the assumption that <span>$(D&#39;WD)$</span> is nonsingular is problematic if we want to allow for identification problems. However, if we assume only that </p><ol><li><p><span>$\frac{1}{\sqrt{n}} \sum_i g_i(\theta_0) \leadsto N(0,\Sigma)$</span></p></li><li><p><span>$W_n \to^p \Sigma^{-1}$</span></p></li></ol><p>then </p><p class="math-container">\[n \left(\frac{1}{n} \sum_i g_i(\theta)\right)&#39; W_n \left(\frac{1}{n} \sum g_i(\theta)\right)
+  \leadsto \chi^2_m\]</p><p>where <span>$m$</span> is the number of moments (dimension of <span>$g_i(\theta)$</span>). This is called the Anderson-Rubin test. Note that this result holds without any explicit nonsingular assumption about a Hessian. Hence, there is hope that this result would be true even with identification problems. Indeed, it is. <a href="../references/#stock2000">(Stock and Wright, 2000)</a> first proposed using this test statistic for weakly identified GMM estimators. <a href="../references/#stock2002">(Stock *et al.*, 2002)</a> gives an overview of this test and related tests with a focus on linear IV. <a href="../references/#caner2009">(Caner, 2009)</a> discusses this test in the context of GMM.</p><p>Typical usage of the AR test is to invert the test to construct a confidence region for <span>$\theta$</span>. For each <span>$\theta \in \Theta$</span>,  let </p><p class="math-container">\[AR(\theta) = n [1/n \sum g_i(\theta)]&#39; \widehat{Var}(g_i(\theta))^{-1}
+[1/n \sum g_i(\theta)] \]</p><p>and let <span>$c_{\alpha}= \alpha$</span> quantile of <span>$\chi^2_m$</span>. Then a <span>$\alpha$</span> confidence region for <span>$\theta_0$</span> is</p><p class="math-container">\[\{ \theta \in \Theta: AR(\theta) \leq c_\alpha \}\]</p><h3 id="Example:-IV-logit-demand"><a class="docs-heading-anchor" href="#Example:-IV-logit-demand">Example: IV logit demand</a><a id="Example:-IV-logit-demand-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-IV-logit-demand" title="Permalink"></a></h3><p>A common way to model demand for differentiated products is to aggregate an individual discrete choice. We will look at the simplest such model here. This is a model for when we have data on product market shares, <span>$y_j$</span>, and product attributes, <span>$x_j$</span>, for many different markets. In concrete applications, markets may be defined geographically, temporally, by consumer segment, or some combination thereof. </p><p>Consider a single good, which consumers chooose to purchase or not. Consumer <span>$i$</span>&#39;s utility from consuming the good is</p><p class="math-container">\[u_{ij} = x_j \beta + \xi_j + \epsilon_{ij}\]</p><p>where <span>$x_j$</span> are the observed attributes of the good in market <span>$j$</span>, <span>$\xi_j$</span> is a market level demand shock, and <span>$\epsilon_{ij}$</span> is an individual taste shock. Person <span>$i$</span> purchases the good if  <span>$u_{ij} \geq 0$</span>. Aggregating individual purchases implies that the market share in market <span>$j$</span> is </p><p class="math-container">\[y_j = F_{-\epsilon}(x_j \beta + \xi_j) \]</p><p>where <span>$F_{-\epsilon}$</span> is the CDF of <span>$-\epsilon$</span>.</p><p>We assume that <span>$\epsilon_{ij}$</span> is independent of <span>$x_j$</span> and <span>$\xi_j$</span>. Typically, <span>$x_j$</span> includes some easily adjusted product attributes, such as price, so we want to allow <span>$x_j$</span> to be correlated with <span>$\xi_j$</span>. Assume that we have some instruments <span>$z_j$</span> such that <span>$\mathrm{E}[\xi_j z_j]=0.$</span>  We can write this moment condition in terms of observables and <span>$\beta$</span> as</p><p class="math-container">\[\mathrm{E}[ (F^{-1}_{-\epsilon}(y_j) - x_j\beta) z_j ] = 0\]</p><p>This is the moment condition we will use to estimate <span>$\beta$</span>.</p><p>First, we will simulate the model, then estimate it. This code looks at three variants of GMM. </p><p>First, it computes an estimate with <span>$W_n = I$</span>. </p><p>Second, it computes an efficiently weighted estimated with </p><p class="math-container">\[W_n = \widehat{Var}(g_i(\hat{\theta}_{(1)}))\]</p><p>where <span>$\hat{\theta}_{(1)}$</span> is the first estimate. </p><p>Third, it computes the continuously updating estimator, which uses <span>$AR(\theta)$</span> as the objective function ( <span>$W$</span> is &quot;continuously updated&quot; to be <span>$\widehat{Var}( g_i(\theta))$</span> ).</p><pre><code class="language-julia hljs">using Optim, ForwardDiff, LinearAlgebra, Distributions
+import Random
+function simulate_ivshare(n,β,γ,ρ)
+  z = randn(n, size(γ)[1])
+  endo = randn(n, length(β))
+  x = z*γ .+ endo
+  ξ = rand(Normal(0,sqrt((1.0-ρ^2))),n).+endo[:,1]*ρ
+  y = cdf.(Logistic(), x*β .+ ξ)
+  return((y=y,x=x,z=z))
+end
+n = 100
+k = 2
+iv = 3
+β0 = ones(k)
+π0 = vcat(5*I,ones(iv-k,k))
+ρ = 0.5
+Random.seed!(622)
+(y,x,z) = simulate_ivshare(n,β0,π0,ρ)
+
+function gi_ivshare(β,y,x,z)
+  ξ = quantile.(Logistic(),y) .- x*β
+  ξ.*z
+end
+
+function gmmObj(θ,gi,W)
+  g = gi(θ)
+  m = mean(g,dims=1)
+  (size(g)[1]*( m*W*m&#39;)[1]) # return scalar, not 1x1 array
+end
+
+function gmmVar(θ,gi,W)
+  g = gi(θ)
+  n = size(g)[1]
+  D = ForwardDiff.jacobian(θ-&gt;mean(gi(θ),dims=1),θ)
+  Σ = cov(gi(θ))
+  1/n*inv(D&#39;*W*D)*(D&#39;*W*Σ*W*D)*inv(D&#39;*W*D)
+end
+
+function ar(θ,gi)
+  gmmObj(θ,gi,inv(cov(gi(θ))))
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">ar (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
+                zeros(k), BFGS(), autodiff =:forward)
+@show β1 = opt1.minimizer
+display(gmmVar(β1, β-&gt;gi_ivshare(β,y,x,z),I))
+opteff = optimize(θ-&gt;gmmObj(θ,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(β1,y,x,z)))),
+                  zeros(k), BFGS(), autodiff =:forward)
+@show βeff = opteff.minimizer
+display(gmmVar(βeff,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(β1,y,x,z)))))
+
+ar_ivshare = θ-&gt;ar(θ,β-&gt;gi_ivshare(β,y,x,z))
+optcue = optimize(ar_ivshare,
+                  β0, BFGS(), autodiff =:forward)
+@show βcue = optcue.minimizer
+Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
+display(Vcue)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">β1 = opt1.minimizer = [1.0079023850793418, 0.98590333489019]
+βeff = opteff.minimizer = [1.0097132305101875, 0.986672156322635]
+βcue = optcue.minimizer = [1.0097203540661173, 0.9870817086437047]</code></pre><p>Now we compare confidence regions based on the Wald test, and from inverting the AR statistic.</p><pre><code class="language-julia hljs">using Plots, LaTeXStrings
+Plots.gr()
+function plot_cr(β,V, AR)
+  lb = β - sqrt.(diag(V))*5
+  ub = β + sqrt.(diag(V))*5
+  ntest = 1000
+  βtest = [rand(length(β)).*(ub-lb) .+ lb for i in 1:ntest]
+  arstat = AR.(βtest)
+  βtest = vcat(βtest&#39;...)
+  crit = quantile(Chisq(size(z)[2]), 0.9)
+  scatter(βtest[:,1],βtest[:,2], group=(arstat.&lt;crit), legend=false,
+          markersize=4, markerstrokewidth=0.0, seriesalpha=0.8,
+          xlabel=L&quot;\beta_1&quot;, ylabel=L&quot;\beta_2&quot;)
+  scatter!([β0[1]], [β0[2]], markersize=8)
+  b1 = lb[1]:(ub[1]-lb[1])/100:ub[1]
+  b2 = lb[2]:(ub[2]-lb[2])/100:ub[2]
+  arf = (a,b) -&gt; cdf(Chisq(size(z)[2]),AR([a,b]))
+  contour!(b1,b2,arf, levels = [0.9, 0.95],
+           contour_labels=false, legend=false,
+           label=&quot;AR CI&quot;,
+           c=cgrad([:black,:black],[0.0,1.0]))
+  waldf = (a,b) -&gt; cdf(Chisq(length(βcue)),([a,b]-βcue)&#39;*inv(Vcue)*([a,b]-βcue))
+  contour!(b1,b2,waldf, levels = [0.9, 0.95],
+           contour_labels=false,
+           label=&quot;Wald CI&quot;, c=cgrad([:red,:red], [0.0,1.0]),
+           legend=false)
+end
+plot_cr(βcue,Vcue, ar_ivshare)</code></pre><img src="827cd630.svg" alt="Example block output"/><p>The two confidence regions above are not too different because the simulated data was strongly identified. Let&#39;s see what happens when we change the simulation to have weaker identification.</p><pre><code class="language-julia hljs"># make π0 nearly rank-deficient
+π0 = ones(iv,k) .+ vcat(I*0.05,zeros(iv-k,k))
+ρ = 0.5
+Random.seed!(14)
+(y,x,z) = simulate_ivshare(n,β0,π0,ρ)
+ar_ivshare = θ-&gt;ar(θ,β-&gt;gi_ivshare(β,y,x,z))
+optcue = optimize(ar_ivshare,
+                  β0, BFGS(), autodiff =:forward)
+@show βcue = optcue.minimizer
+Vcue = gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
+display(Vcue)
+plot_cr(βcue,Vcue, ar_ivshare)</code></pre><img src="2033fa74.svg" alt="Example block output"/><p>Now the confidence regions are dramatically different. Does either one have correct coverage? Let&#39;s simulate to find the size of the AR and Wald tests of <span>$H_0 : \beta = \beta_0$</span></p><pre><code class="language-julia hljs">S = 500
+n = 150
+function sim_p(π0)
+  (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
+  opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
+                  β0, BFGS(), autodiff =:forward)
+  if (!opt1.g_converged)
+    opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
+                    β0, NewtonTrustRegion(), autodiff =:forward)
+  end
+  β1 = opt1.minimizer
+
+  V1 = gmmVar(β1,β-&gt;gi_ivshare(β,y,x,z),I)
+
+  optcue = optimize(θ-&gt;ar(θ,β-&gt;gi_ivshare(β,y,x,z)),
+                    β0, BFGS(), autodiff =:forward)
+  if (!optcue.g_converged)
+    optcue = optimize(θ-&gt;ar(θ,β-&gt;gi_ivshare(β,y,x,z)),
+                      β0, NewtonTrustRegion(), autodiff =:forward)
+  end
+  if (!optcue.g_converged)
+    display(optcue)
+    βcue = deepcopy(β1)
+  else
+    βcue = optcue.minimizer
+  end
+  Vcue =
+    gmmVar(βcue,β-&gt;gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
+  arp = θ-&gt;(1.0-cdf(Chisq(size(z)[2]),ar(θ,β-&gt;gi_ivshare(β,y,x,z))))
+  waldp = θ-&gt;(1.0-cdf(Chisq(length(βcue)),(θ-βcue)&#39;*inv(Vcue)*(θ-βcue)))
+  waldp1 = θ-&gt;(1.0-cdf(Chisq(length(β1)),(θ-β1)&#39;*inv(V1)*(θ-β1)))
+  [arp(β0) waldp(β0) waldp1(β0)]
+end
+πweak = ones(iv,k) .+ vcat(diagm(0=&gt;fill(0.01,k)),zeros(iv-k,k))
+πstrong = vcat(5*diagm(0=&gt;ones(k)),ones(iv-k,k))
+@time pweak=vcat([sim_p(πweak) for s in 1:S]...)
+@time pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
+
+pgrid = 0:0.01:1
+plot(pgrid, p-&gt;mean( pstrong[:,1] .&lt;= p)-p, legend=:bottomleft,
+     label=&quot;AR, strong ID&quot;, style=:dash, color=:red,
+     xlabel=&quot;p&quot;, ylabel=&quot;P(p value &lt; p) - p&quot;,
+     title=&quot;Simulated size distortion&quot;)
+plot!(pgrid, p-&gt;mean( pstrong[:,2] .&lt;= p)-p,
+      label=&quot;Wald CUE, strong ID&quot;, style=:dash, color=:blue)
+plot!(pgrid, p-&gt;mean( pstrong[:,3] .&lt;= p)-p,
+      label=&quot;Wald I, strong ID&quot;, style=:dash, color=:green)
+
+plot!(pgrid, p-&gt;mean( pweak[:,1] .&lt;= p)-p,
+      label=&quot;AR, weak ID&quot;, style=:solid, color=:red)
+plot!(pgrid, p-&gt;mean( pweak[:,2] .&lt;= p)-p,
+      label=&quot;Wald CUE, weak ID&quot;, style=:solid, color=:blue)
+plot!(pgrid, p-&gt;mean( pweak[:,3] .&lt;= p)-p,
+      label=&quot;Wald I, weak ID&quot;, style=:solid, color=:green)</code></pre><img src="fa6cdb24.svg" alt="Example block output"/><p>We see that the Wald test has fairly large size distortions, even when identification is strong. The AR test has approximately correct size for both the weakly and strongly identified DGP. </p><h3 id="Other-identification-robust-tests"><a class="docs-heading-anchor" href="#Other-identification-robust-tests">Other identification robust tests</a><a id="Other-identification-robust-tests-1"></a><a class="docs-heading-anchor-permalink" href="#Other-identification-robust-tests" title="Permalink"></a></h3><p>There are also identification robust versions of likelihood ratio and lagrange multiplier test. <a href="../references/#moreira2003">(Moreira, 2003)</a> proposed a conditional likelihood ratio (CLR) test for weakly identified linear IV models. <a href="../references/#kleibergen2005">(Kleibergen, 2005)</a> developed a Lagrange multiplier (often called the KLM) test and extended Moreira&#39;s CLR test to weakly identified GMM models.  More recently, <a href="../references/#andrews2015">(Andrews and Guggenberger, 2015)</a> and <a href="../references/#andrews2017">(Andrews and Guggenberger, 2017)</a> showed the validity of these tests under more general conditions. These tests are somewhat more complicated than the AR test, but they have the advantage that they are often more powerful. The AR test statistic has a \chi^2<em>{m} distribution, where m is the number of moments. The CLR and KLM statistics under strong identification have \chi^2</em>k distributions (as does the Wald statistic), where k is the number of parameters. Consequently, when the model is overidentified, the CLR and LM tests are more powerful than the AR test. </p><p>Here is an implementation of the KLM and CLR statistics. The names of variables roughly follows the notation of <a href="../references/#andrews2017">(Andrews and Guggenberger, 2017)</a>.</p><pre><code class="language-julia hljs">using ForwardDiff, Plots, Optim
+Plots.gr()
+function statparts(θ,gi)
+  # compute common components of klm, rk, &amp; clr stats
+  # follows notation of Andrews &amp; Guggenberger 2017, section 3.1
+  function P(A::AbstractMatrix) # projection matrix
+    A*pinv(A&#39;*A)*A&#39;
+  end
+  giθ = gi(θ)
+  p = length(θ)
+  (n, k) = size(giθ)
+  Ω = cov(giθ)
+  gn=mean(gi(θ), dims=1)&#39;
+  #G = ForwardDiff.jacobian(θ-&gt;mean(gi(θ),dims=1),θ)
+  Gi= ForwardDiff.jacobian(gi,θ)
+  Gi = reshape(Gi, n , k, p)
+  G = mean(Gi, dims=1)
+  Γ = zeros(eltype(G),p,k,k)
+  D = zeros(eltype(G),k, p)
+  for j in 1:p
+    for i in 1:n
+      Γ[j,:,:] += (Gi[i,:,j] .- G[1,:,j]) * giθ[i,:]&#39;
+    end
+    Γ[j,:,:] ./= n
+    D[:,j] = G[1,:,j] - Γ[j,:,:]*inv(Ω)*gn
+  end
+  return(n,k,p,gn, Ω, D, P)
+end
+
+function klm(θ,gi)
+  (n,k,p,gn, Ω, D, P) = statparts(θ,gi)
+  lm = n*(gn&#39;*Ω^(-1/2)*P(Ω^(-1/2)*D)*Ω^(-1/2)*gn)[1]
+end
+
+function clr(θ,gi)
+  (n,k,p,gn, Ω, D, P) = statparts(θ,gi)
+
+  rk = eigmin(n*D&#39;*inv(Ω)*D)
+  AR  = (n*gn&#39;*inv(Ω)*gn)[1]
+  lm = (n*(gn&#39;*Ω^(-1/2)*P(Ω^(-1/2)*D)*Ω^(-1/2)*gn))[1]
+  lr = 1/2*(AR - rk + sqrt( (AR-rk)^2 + 4*lm*rk))
+
+  # simulate to find p-value
+  S = 5000
+  function randc(k,p,r,S)
+    χp = rand(Chisq(p),S)
+    χkp = rand(Chisq(k-p),S)
+    0.5.*(χp .+ χkp .- r .+
+          sqrt.((χp .+ χkp .- r).^2 .+ 4 .* χp.*r))
+  end
+  csim = randc(k,p,rk,S)
+  pval = mean(csim.&lt;=lr)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">clr (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">function plot_cr(β,V, tests::AbstractArray{Function}, labels; ngrid=30)
+  lb = β - sqrt.(diag(V))*5
+  ub = β + sqrt.(diag(V))*5
+  fig=scatter([β0[1]], [β0[2]], markersize=8, legend=false,
+              xlabel=L&quot;\beta_1&quot;, ylabel=L&quot;\beta_2&quot;)
+  ntest = 1000
+  βtest = [rand(2).*(ub-lb) .+ lb for i in 1:ntest]
+  pval = tests[1].(βtest)
+  βtest = vcat(βtest&#39;...)
+  crit = 0.9
+  fig=scatter!(βtest[:,1],βtest[:,2], group=(pval.&lt;crit), legend=false,
+               markersize=4, markerstrokewidth=0.0, seriesalpha=0.5,
+               palette=:heat)
+  b1 = lb[1]:(ub[1]-lb[1])/ngrid:ub[1]
+  b2 = lb[2]:(ub[2]-lb[2])/ngrid:ub[2]
+  colors = [:black, :red, :blue, :green]
+  for t in eachindex(tests)
+    fig=contour!(b1,b2,(a,b)-&gt;tests[t]([a,b]),
+             levels = [0.9, 0.95],
+             contour_labels=false, legend=false,
+             label = labels[t],
+             c=cgrad([colors[t],colors[t]],[0.0,1.0]))
+  end
+  fig
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">plot_cr (generic function with 2 methods)</code></pre><p>Here&#39;s what the confidence regions look like when identification is fairly weak. The green lines are the Wald confidence region, blue is AR, red is KLM, and black is CLR. </p><pre><code class="language-julia hljs">n = 50
+k = 2
+iv =3
+π0 = vcat(0.1*diagm(0=&gt;ones(k)),0.2*ones(iv-k,k))
+ρ = 0.5
+Random.seed!(622)
+(y,x,z) = simulate_ivshare(n,β0,π0,ρ)
+opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
+                β0, BFGS(), autodiff =:forward)
+β1 = opt1.minimizer
+V1 = gmmVar(β1,β-&gt;gi_ivshare(β,y,x,z),I)
+
+
+pklm = θ-&gt;cdf(Chisq(length(βcue)),klm(θ, β-&gt;gi_ivshare(β,y,x,z)))
+par  = θ-&gt;cdf(Chisq(size(z)[2]), ar(θ, β-&gt;gi_ivshare(β,y,x,z)))
+pclr  = θ-&gt;clr(θ, β-&gt;gi_ivshare(β,y,x,z))
+pwald = θ -&gt; cdf(Chisq(length(β1)),(θ-β1)&#39;*inv(V1)*(θ-β1))
+plot_cr(β1,V1, [pclr, pklm, par, pwald],
+        [&quot;CLR&quot;,&quot;KLM&quot;,&quot;AR&quot;,&quot;Wald&quot;], ngrid=40)</code></pre><img src="c0faa392.svg" alt="Example block output"/><p>Here&#39;s what the confidence regions look like when identification is stronger.</p><pre><code class="language-julia hljs">n = 50
+k = 2
+iv =3
+π0 = vcat(3*diagm(0=&gt;ones(k)),ones(iv-k,k))
+ρ = 0.5
+Random.seed!(622)
+(y,x,z) = simulate_ivshare(n,β0,π0,ρ)
+opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
+                β0, BFGS(), autodiff =:forward)
+β1 = opt1.minimizer
+V1 = gmmVar(β1,β-&gt;gi_ivshare(β,y,x,z),I)
+
+
+pklm = θ-&gt;cdf(Chisq(length(βcue)),klm(θ, β-&gt;gi_ivshare(β,y,x,z)))
+par  = θ-&gt;cdf(Chisq(size(z)[2]), ar(θ, β-&gt;gi_ivshare(β,y,x,z)))
+pclr  = θ-&gt;clr(θ, β-&gt;gi_ivshare(β,y,x,z))
+pwald = θ -&gt; cdf(Chisq(length(β1)),(θ-β1)&#39;*inv(V1)*(θ-β1))
+plot_cr(β1,V1, [pclr, pklm, par, pwald],
+        [&quot;CLR&quot;,&quot;KLM&quot;,&quot;AR&quot;,&quot;Wald&quot;], ngrid=40)</code></pre><img src="ba18bb9b.svg" alt="Example block output"/><p>Check the size</p><pre><code class="language-julia hljs">S = 300
+n = 100
+function sim_p(π0)
+  (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
+  opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
+                  β0, BFGS(), autodiff =:forward)
+  if (!opt1.g_converged)
+    opt1 = optimize(θ-&gt;gmmObj(θ, β-&gt;gi_ivshare(β,y,x,z) ,I),
+                    β0, NewtonTrustRegion(), autodiff =:forward)
+  end
+  β1 = opt1.minimizer
+  V1 = gmmVar(β1,β-&gt;gi_ivshare(β,y,x,z),I)
+
+  pklm = θ-&gt;cdf(Chisq(length(β1)),klm(θ, β-&gt;gi_ivshare(β,y,x,z)))
+  par  = θ-&gt;cdf(Chisq(size(z)[2]), ar(θ, β-&gt;gi_ivshare(β,y,x,z)))
+  pclr  = θ-&gt;clr(θ, β-&gt;gi_ivshare(β,y,x,z))
+  pwald = θ -&gt; cdf(Chisq(length(β1)),(θ-β1)&#39;*inv(V1)*(θ-β1))
+  [par(β0) pwald(β0) pclr(β0) pklm(β0)]
+end
+πweak = ones(iv,k) .+ vcat(diagm(0=&gt;fill(0.01,k)),zeros(iv-k,k))
+πstrong = vcat(3*diagm(0=&gt;ones(k)),ones(iv-k,k))
+pweak=vcat([sim_p(πweak ) for s in 1:S]...)
+pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
+
+pgrid = 0:0.01:1
+plot(pgrid, p-&gt;mean( pstrong[:,1] .&lt;= p)-p, legend=:topleft,
+     label=&quot;AR, strong ID&quot;, style=:dash, color=:blue,
+     xlabel=&quot;p&quot;, ylabel=&quot;P(p value &lt; p)&quot;,
+     title=&quot;Simulated size distortion&quot;)
+plot!(pgrid, p-&gt;mean( pstrong[:,2] .&lt;= p)-p,
+      label=&quot;Wald I, strong ID&quot;, style=:dash, color=:green)
+plot!(pgrid, p-&gt;mean( pstrong[:,3] .&lt;= p)-p,
+      label=&quot;CLR, strong ID&quot;, style=:dash, color=:black)
+plot!(pgrid, p-&gt;mean( pstrong[:,4] .&lt;= p)-p,
+      label=&quot;KLM, strong ID&quot;, style=:dash, color=:red)
+
+plot!(pgrid, p-&gt;mean( pweak[:,1] .&lt;= p)-p,
+      label=&quot;AR, weak ID&quot;, style=:solid, color=:blue)
+plot!(pgrid, p-&gt;mean( pweak[:,2] .&lt;= p)-p,
+      label=&quot;Wald I, weak ID&quot;, style=:solid, color=:green)
+plot!(pgrid, p-&gt;mean( pweak[:,3] .&lt;= p)-p,
+      label=&quot;CLR, weak ID&quot;, style=:solid, color=:black)
+plot!(pgrid, p-&gt;mean( pweak[:,4] .&lt;= p)-p,
+      label=&quot;KLM, weak ID&quot;, style=:solid, color=:red)</code></pre><img src="717b5d47.svg" alt="Example block output"/></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../extremumEstimation/">« Extremum Estimation</a><a class="docs-footer-nextpage" href="../bootstrap/">Bootstrap »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.0.1 on <span class="colophon-date" title="Tuesday 19 September 2023 16:41">Tuesday 19 September 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
