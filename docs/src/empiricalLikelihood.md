@@ -1,60 +1,10 @@
----
-title       : "Empirical likelihood"
-subtitle    :
-author      : Paul Schrimpf
-date        : `j using Dates; print(Dates.today())`
-bibliography: "ee.bib"
----
-
-[![](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
-
-This work is licensed under a [Creative Commons Attribution-ShareAlike
-4.0 International
-License](http://creativecommons.org/licenses/by-sa/4.0/) 
-
-### About this document 
-
-This document was created using Weave.jl. The code is available in
-[on github](https://github.com/schrimpf/GMMInference.jl). The same
-document generates both static webpages and associated [jupyter
-notebook](empiricalLikelihood.ipynb).
-
-$$
-\def\indep{\perp\!\!\!\perp}
-\def\Er{\mathrm{E}}
-\def\R{\mathbb{R}}
-\def\En{{\mathbb{E}_n}}
-\def\Pr{\mathrm{P}}
-\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
-\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\argmin}{arg\,min}
-\def\inprob{\,{\buildrel p \over \rightarrow}\,} 
-\def\indist{\,{\buildrel d \over \rightarrow}\,} 
-$$
-
-```julia; echo=false; results="hidden"
-markdown = try
-  "md" in keys(WEAVE_ARGS) && WEAVE_ARGS["md"]
-catch
-  false
-end
-
-if !("DISPLAY" ∈ keys(ENV))
-  ENV["GKSwstype"]="nul"
-  ENV["MPLBACKEND"]="Agg"
-end
-```
-
 # Empirical likelihood
 
 An interesting alternative to GMM is (generalized) empirical
 likelihood (GEL). Empirical likelihood has some appealing higher-order
 statistical properties. In particular, it can be shown to have lower
-higher order asymptotic bias than GMM. See Newey and Smith
-(2004)[@newey2004]. Relatedly, certain test statistics based on EL are
-robust to weak identification (Guggenberger and Smith
-2005)[@guggenberger2005]. In fact, the identification robust tests
+higher order asymptotic bias than GMM. See [newey2004](@cite). Relatedly, certain test statistics based on EL are
+robust to weak identification [guggenberger2005](@cite). In fact, the identification robust tests
 that we have discusses are all based on the CUE-GMM objective
 function. The CUE-GMM objetive is a special case of generalized
 empirical likelihood.
@@ -66,44 +16,44 @@ very feasible.
 
 As in the extremum estimation notes, suppose we have moment conditions
 such that
-$$
-\Er[g_i(\theta)] = 0
-$$
-where $g_i:\R^d \to \R^k$ are some data dependent moment
+```math
+\mathrm{E}[g_i(\theta)] = 0
+```
+where ``g_i:\R^d \to \R^k`` are some data dependent moment
 conditions. The empirical likelihood estimator solves
-$$
+```math
 \begin{align*}
     (\hat{\theta}, \hat{p}) = & \argmax_{\theta,p} \frac{1}{n} \sum_i
     \log(p_i) \;\; s.t.  \\
      & \sum_i p_i = 1, \;\; 0\leq p_i \leq 1 \\
      & \sum_i p_i g_i(\theta) = 0 
 \end{align*}
-$$
+```
 
-Generalized empirical likelihood replaces $\log(p)$ with some other
-convex function $h(p)$, 
-$$
+Generalized empirical likelihood replaces ``\log(p)`` with some other
+convex function ``h(p)``, 
+```math
 \begin{align*}
     (\hat{\theta}^{GEL,h}, \hat{p}) = & \argmin_{\theta,p}
     \frac{1}{n}\sum_i h(p_i) \;\; s.t.  \\
      & \sum_i p_i = 1, \;\; 0\leq p \leq 1 \\
      & \sum_i p_i g_i(\theta) = 0 
 \end{align*}
-$$
-setting $h(p) = \frac{1}{2}(p^2-(1/n)^2)$ results in an estimator
+```
+setting ``h(p) = \frac{1}{2}(p^2-(1/n)^2)`` results in an estimator
 identical to the CUE-GMM estimator.
 
-A common approach to computing GEL estimators is to eliminate $\pi$ by
+A common approach to computing GEL estimators is to eliminate ``\pi`` by
 looking at the dual problem
-$$
+```math
 \hat{\theta}^{GEL}  = \argmin_{\theta}\sup_\lambda \sum_i \rho(\lambda'g_i(\theta))
-$$
-where $\rho$ is some function related to $h$. See Newey and Smith (2004)[@newey2004] for
+```
+where ``\rho`` is some function related to ``h``. See [newey2004](@cite) for
 details. There can be some analytic advantages to doing so, but
 computationally, the original statement of the problem has some
 advantages. First, there is more existing software for solving
 constrained minimization problems than for solving saddle point
-problems. Second, although $p$ is high dimensional, it enters the
+problems. Second, although ``p`` is high dimensional, it enters the
 constraints linearly, and the objective function is concave. Many
 optimization algorithms will take good advantage of this. 
 
@@ -112,8 +62,9 @@ variables with linear constraints, it is worthwhile to use JuMP for
 optimization. The code is slightly more verbose, but the speed of
 JuMP (and the Ipopt solver) are often worth it.
 
-```julia; cache=false
-using GMMInference, JuMP, Ipopt, LinearAlgebra, Distributions #, KNITRO 
+```@example el
+using GMMInference, JuMP, Ipopt, LinearAlgebra, Distributions 
+import Random
 
 n = 300
 d = 4
@@ -121,10 +72,11 @@ k = 2*d
 β0 = ones(d)
 π0 = vcat(I,ones(k-d,d))
 ρ = 0.5
+Random.seed!(622)
 data = IVLogitShare(n, β0, π0, ρ);
 ```
 
-```julia; cache=false
+```@example el
 # set up JuMP problem
 Ty = quantile.(Logistic(),data.y)   
 m = Model()
@@ -139,8 +91,8 @@ The `gel_jump_problem` function from `GMMInference.jl` does the same
 thing as the above code cell. 
 
 Let's solve the optimization problem.
-```julia; cache=true
-set_optimizer(m, with_optimizer(Ipopt.Optimizer, print_level=5))
+```@example el
+set_optimizer(m, optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 5))
 set_start_value.(m[:θ], 0.0)
 set_start_value.(m[:p], 1/n)
 optimize!(m)
@@ -151,10 +103,10 @@ optimize!(m)
 For comparison here is how long it takes JuMP + Ipopt to solve for the
 CUE-GMM estimator. 
 
-```julia; cache=true
+```@example el
 @show mcue = gmm_jump_problem(data, cue_objective)
 set_start_value.(mcue[:θ], 0.0)
-set_optimizer(mcue,  with_optimizer(Ipopt.Optimizer,print_level=5))
+set_optimizer(mcue,  optimizer_with_attributes(Ipopt.Optimizer, "print_level" =>5))
 optimize!(mcue)
 @show value.(mcue[:θ]) 
 ```
@@ -178,8 +130,8 @@ Ipopt. Essentially, all this does is call `ForwardDiff` on the
 objective function and constraints, and then give the resulting
 gradient and hessian functions to Ipopt.
 
-```julia; cache=true
-using NLPModelsIpopt, NLPModels #NLPModelsKnitro, 
+```@example el
+using NLPModelsIpopt
 gel = gel_nlp_problem(data)
 ip = ipopt(gel)
 ```
@@ -193,7 +145,7 @@ calculate a gradients and hessians for 304 variables.
 
 Let's also estimate the model using `Optim.jl`. 
 
-```julia; cache=true
+```@example el
 using Optim
 args = gel_optim_args(data)
 @time opt=optimize(args[1],args[2],
@@ -212,66 +164,66 @@ iterations.
 
 # Inference for EL
 
-Guggenberger and Smith (2005)[@guggenberger2005] show that GEL
+[guggenberger2005](@cite) show that GEL
 versions of the AR and LM statistics are robust to weak
 identification. The GEL version of the AR statistic is the generalized
-empirical likelihood ratio. Guggenberger and Smith (2005) show that
+empirical likelihood ratio. Specifically, [guggenberger2005](@cite) show that
 
-$$
+```math
 GELR(\theta_0) = 2\sum_{i=1}^n\left(h(p_i(\theta_0))  -
-   h(1/n)\right) \indist \chi^2_k 
-$$
+   h(1/n)\right) \leadsto \chi^2_k 
+```
 
-where $p_i(\theta_0)$ are given by
+where ``p_i(\theta_0)`` are given by
 
-$$
+```math
 \begin{align*}
     p(\theta)  =  \argmax_{0 \leq p \leq 1} \sum h(p_i) \text{ s.t. } & \sum_i p_i
     = 1 \\
 & \sum_i p_i g_i(\theta) = 0
 \end{align*}
-$$
+```
 
 The GELR statistic shares the downsides of the AR statistic --- the
 degrees of freedom is the number of moments instead of the number of
 parameters, which tends to lead to lower power in overidentified
 models; and it combines a test of misspecification with a location
-test for $\theta$. 
+test for ``\theta``. 
 
 Consequently, it can be useful to instead look at a Lagrange
-multiplier style statistic. The true $\theta$ maximizes the
+multiplier style statistic. The true ``\theta`` maximizes the
 empirical likelihood, so 
 
-$$
+```math
 0 = \sum_{i=1}^n \nabla_\theta h(p_i(\theta_0)) = \lambda(\theta_0)' \sum_{i=1}^n
 p_i(\theta_0) \nabla_\theta g_i(\theta_0) \equiv \lambda(\theta_0) D(\theta_0)
-$$
+```
 
-where $p_i(\theta_0)$ is as defined above, and $\lambda(\theta_0)$ are
+where ``p_i(\theta_0)`` is as defined above, and ``\lambda(\theta_0)`` are
 the mulitpliers on the empirical moment condition constraint. Andrews
 and Guggenberger show that a quadratic form in the above score
-equation is asymptotically $\chi^2_d$. To be specific, let
-$\Delta(\theta) = E[(1/n\sum_i g_i(\theta) - E[g(\theta)])(1/n \sum_i
- g_i(\theta) - E[g(\theta)])']$  and define
+equation is asymptotically ``\chi^2_d``. To be specific, let
+``\Delta(\theta) = E[(1/n\sum_i g_i(\theta) - E[g(\theta)])(1/n \sum_i
+ g_i(\theta) - E[g(\theta)])']``  and define
 
-$$
+```math
 S(\theta) = n\lambda(\theta)' D(\theta) \left( D(\theta)
 \Delta(\theta)^{-1} D(\theta) \right)^{-1} D(\theta)'\lambda(\theta)
-$$
+```
 
-then $S(\theta_0) \indist \chi^2_d$. This result holds whether or not
-$\theta$ is strongly identified. 
+then ``S(\theta_0) \leadsto \chi^2_d``. This result holds whether or not
+``\theta`` is strongly identified. 
 
 ### Implementation
 
-Computing the $GELR$ and $S$ statistics requires solving a linear
-program for each $\theta$ we want to test. Fortunately, linear
+Computing the ``GELR`` and ``S`` statistics requires solving a linear
+program for each ``\theta`` we want to test. Fortunately, linear
 programs can be solved very quickly. See `gel_pλ` in `GMMInference.jl`
 for the relevant code. 
 
 Let's do a simulation to check that these tests have correct coverage.
 
-```julia; cache=true
+```@example el
 using Plots
 Plots.gr()
 S = 500
@@ -285,13 +237,13 @@ function sim_p(π0)
   GELR, S, plr, ps = gel_tests(β0, data)
   [plr ps]
 end
-πweak = ones(k,d) .+ vcat(diagm(0=>fill(0.01,d)),zeros(k-d,d))  
+πweak = ones(k,d) .+ vcat(diagm(0=>fill(0.001,d)),zeros(k-d,d))  
 πstrong = vcat(5*diagm(0=>ones(d)),ones(k-d,d)) 
 pweak=vcat([sim_p(πweak ) for s in 1:S]...)
 pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 
 pgrid = 0:0.01:1
-plot(pgrid, p->(mean( pstrong[:,1] .<= p)-p), legend=:topleft,
+plot(pgrid, p->(mean( pstrong[:,1] .<= p)-p), legend=:bottomleft,
      label="GELR, strong ID", style=:dash, color=:blue,
      xlabel="p", ylabel="P(p value < p)-p",
      title="Simulated CDF of p-values - p")  
@@ -307,11 +259,11 @@ plot!(pgrid,0,alpha=0.5, label="")
 
 ### Subvector inference
 
-Guggenberger and Smith (2005)[@guggenberger2005] also give results for
-subvector inference. Let $(\alpha, \beta) =\theta$. Assume $\beta$ is
+[guggenberger2005](@cite) also give results for
+subvector inference. Let ``(\alpha, \beta) =\theta``. Assume ``\beta`` is
 strongly identified. Guggenberger and Smith show that analogs of
-$GELR$ and $S$ with $\beta$ concentrated out lead to valid tests for
-$\alpha$, whether $\alpha$ is weakly or strongly identified. 
+``GELR`` and ``S`` with ``\beta`` concentrated out lead to valid tests for
+``\alpha``, whether ``\alpha`` is weakly or strongly identified. 
 
 
 ## Bootstrap for EL
@@ -320,10 +272,5 @@ For bootstrapping GMM, we discussed how it is important that the null
 hypothesis holds in the bootstrapped data. In GMM we did this by
 substracting the sample averages of the moments. In GEL, an
 alternative way to impose the null, is to sample the data with
-probabilities $\hat{p}_i$ instead of with equal proability. See
-Brown and Newey (2002)[@brown2002] for more information. 
-
-
-# References
-
-\bibliography
+probabilities ``\hat{p}_i`` instead of with equal proability. See
+[brown2002](@cite) for more information. 

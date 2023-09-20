@@ -10,6 +10,11 @@ subtype of `GMMModel` and at least a specialized `get_gi` method. See
 
 ```@autodocs
 Modules = [GMMInference]
+Pages = ["GMMInference.jl"]
+```
+
+```@autodocs
+Modules = [GMMInference]
 Pages = ["gmmmodel.jl"]
 ```
 

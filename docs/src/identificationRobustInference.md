@@ -1,66 +1,29 @@
----
-title       : "Identification Robust Inference"
-subtitle    :
-author      : Paul Schrimpf
-date        : `j using Dates; print(Dates.today())`
-bibliography: "ee.bib"
----
+# Identification robust inference
 
-[![](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
-
-This work is licensed under a [Creative Commons Attribution-ShareAlike
-4.0 International
-License](http://creativecommons.org/licenses/by-sa/4.0/) 
-
-### About this document {-}
-
-This document was created using Weave.jl. The code is available in
-[on github](https://github.com/schrimpf/GMMInference.jl). The same
-document generates both static webpages and associated [jupyter
-notebook](identificationRobustInference.ipynb).
-
-$$
+```math
 \def\indep{\perp\!\!\!\perp}
 \def\Er{\mathrm{E}}
 \def\R{\mathbb{R}}
 \def\En{{\mathbb{E}_n}}
 \def\Pr{\mathrm{P}}
-%\newcommand{\norm}[1]{\left\Vert {#1} \right\Vert}
-%\newcommand{\abs}[1]{\left\vert {#1} \right\vert}
-%\DeclareMathOperator*{\argmax}{arg\,max}
-%\DeclareMathOperator*{\argmin}{arg\,min}
 \def\inprob{\,{\buildrel p \over \rightarrow}\,} 
 \def\indist{\,{\buildrel d \over \rightarrow}\,} 
-$$
-
-```julia; echo=false; results="hidden"
-markdown = try
-  "md" in keys(WEAVE_ARGS) && WEAVE_ARGS["md"]
-catch
-  false
-end
-
-if !("DISPLAY" ∈ keys(ENV))
-  ENV["GKSwstype"]="nul"
-  ENV["MPLBACKEND"]="Agg"
-end
+\,
 ```
 
-# Identification robust inference
-
-As discussed in section 9 of Newey and McFadden (1994)[@newey1994], there are three classic types
+As discussed in section 9 of [newey1994](@cite), there are three classic types
 of statistics for testing restrictions on parameters. Suppose you want
-to test $H_0: a(\theta) = 0$. Let $\hat{\theta}$ denote the
-unrestricted estimate, and let $\hat{\theta}^r$ denote the
-estimate of $\theta$ subject to the restriction. Wald test-statistics
-are based on $\hat{\theta}-\hat{\theta}^r$. Lagrange multiplier tests
+to test ``H_0: a(\theta) = 0``. Let ``\hat{\theta}`` denote the
+unrestricted estimate, and let ``\hat{\theta}^r`` denote the
+estimate of ``\theta`` subject to the restriction. Wald test-statistics
+are based on ``\hat{\theta}-\hat{\theta}^r``. Lagrange multiplier tests
 look at the distribution of the estimated Lagrange
-multiplier. Likelihood ratio (aka distance metric in Newey and McFadden (1994)[@newey1994]) tests
-look at $Q_n(\hat{\theta}) - Q_n(\hat{\theta}^r)$. If we consider
-testing $H_0: \theta = \vartheta$ for some fixed $\vartheta$, then the
-usual approach based on the asymptotic normality of $\hat{\theta}$
+multiplier. Likelihood ratio (aka distance metric in [newey1994](@cite)) tests
+look at ``Q_n(\hat{\theta}) - Q_n(\hat{\theta}^r)``. If we consider
+testing ``H_0: \theta = \vartheta`` for some fixed ``\vartheta``, then the
+usual approach based on the asymptotic normality of ``\hat{\theta}``
 discussed above is exactly the same as the Wald test of this
-restriction. As discussed by Newey and McFadden (1994)[@newey1994], under standard assumptions,
+restriction. As discussed by [newey1994](@cite), under standard assumptions,
 all three testing approaches are asymptotically equivalent. However,
 the tests can and will differ in finite samples. More importantly, in
 the face of identification problems, Wald tests tend to break down,
@@ -77,117 +40,124 @@ most often arrive and have been studied in the context of GMM. Also,
 it is not difficult to transform other extremum estimators into GMM. 
 
 For a GMM objective function of the form:
-$$ [1/n \sum_i g_i(\theta)] W_n [1/n \sum g_i(\theta)]$$, 
+```math
+ \left(\frac{1}{n} \sum_i g_i(\theta)\right)' W_n \left(\frac{1}{n} \sum g_i(\theta)\right),
+```
 if we assume:
 
-1. $1/\sqrt{n} \sum_i g_i(\theta_0) \leadsto N(0,\Sigma)$
+1. ``1/\sqrt{n} \sum_i g_i(\theta_0) \leadsto N(0,\Sigma)``
 
-2. $1/n \sum_i \nabla g_i(\theta) \to^p E[\nabla g(\theta)]\equiv D$, 
-   $W_n \to^p W$
+2. ``1/n \sum_i \nabla g_i(\theta) \to^p E[\nabla g(\theta)]\equiv D``, 
+   ``W_n \to^p W``
 
-3. $(D'WD)$ is nonsingular.
+3. ``(D'WD)`` is nonsingular.
 
 then the above theorem for asymptotic normality of extremum
 estimators implies that 
-$$
+```math
 \sqrt{n}(\hat{\theta} - \theta_0) \leadsto N(0,\Omega)
-$$
+```
 where 
-$$
+```math
  \Omega= (D'WD)^{-1} (D' W \Sigma W D) (D'WD)^{-1}.
-$$
-If we additionally assume $W_n \to^p \Sigma^{-1}$, e.g. observations
-are independent and $W_n =
-\widehat{Var}(g_i(\theta))^{-1}$, then the asymptotic variance
-simplifies to $(D' \Sigma^{-1} D)^{-1}$. 
+```
+If we additionally assume ``W_n \to^p \Sigma^{-1}``, e.g. observations
+are independent and ``W_n =
+\widehat{Var}(g_i(\theta))^{-1}``, then the asymptotic variance
+simplifies to ``(D' \Sigma^{-1} D)^{-1}``. 
 
 ### Anderson-Rubin test
 
-As already stated, the assumption that $(D'WD)$ is nonsingular is
+As already stated, the assumption that ``(D'WD)`` is nonsingular is
 problematic if we want to allow for identification problems. However,
 if we assume only that 
 
-1. $1/\sqrt{n} \sum_i g_i(\theta_0) \indist N(0,\Sigma)$
+1. ``\frac{1}{\sqrt{n}} \sum_i g_i(\theta_0) \leadsto N(0,\Sigma)``
 
-2. $W_n \inprob \Sigma^{-1}$
+2. ``W_n \to^p \Sigma^{-1}``
 
 then 
-$$
-n [1/n \sum g_i(\theta_0)]' W_n [1/n \sum g_i(\theta_0)]
-  \indist \chi^2_m
-$$
-where $m$ is the number of moments (dimension of $g_i(\theta)$). This
+```math
+n \left(\frac{1}{n} \sum_i g_i(\theta)\right)' W_n \left(\frac{1}{n} \sum g_i(\theta)\right)
+  \leadsto \chi^2_m
+```
+where ``m`` is the number of moments (dimension of ``g_i(\theta)``). This
 is called the Anderson-Rubin test. Note that this result holds without
 any explicit nonsingular assumption about a Hessian. Hence, there is
 hope that this result would be true even with identification
-problems. Indeed, it is. Stock and Wright (2000)[@stock2000] first proposed using this test
-statistic for weakly identified GMM estimators. Stock, Wright, and Yogo (2002)[@stock2002] gives an
+problems. Indeed, it is. [stock2000](@cite) first proposed using this test
+statistic for weakly identified GMM estimators. [stock2002](@cite) gives an
 overview of this test and related tests with a focus on linear
-IV. Caner (2009)[@caner2009] discusses this test in the context of GMM.
+IV. [caner2009](@cite) discusses this test in the context of GMM.
 
 Typical usage of the AR test is to invert the test to construct a
-confidence region for $\theta$. For each $\theta \in \Theta$, 
+confidence region for ``\theta``. For each ``\theta \in \Theta``, 
 let 
-$$
+```math
 AR(\theta) = n [1/n \sum g_i(\theta)]' \widehat{Var}(g_i(\theta))^{-1}
 [1/n \sum g_i(\theta)] 
-$$
-and let $c_{\alpha}= \alpha$ quantile of $\chi^2_m$. Then a $\alpha$
-confidence region for $\theta_0$ is
-$$
+```
+and let ``c_{\alpha}= \alpha`` quantile of ``\chi^2_m``. Then a ``\alpha``
+confidence region for ``\theta_0`` is
+```math
 \{ \theta \in \Theta: AR(\theta) \leq c_\alpha \}
-$$
+```
 
 ### Example: IV logit demand
 
 A common way to model demand for differentiated products is to
 aggregate an individual discrete choice. We will look at the simplest
 such model here. This is a model for when we have data on product
-market shares, $y_j$, and product attributes, $x_j$, for many
+market shares, ``y_j``, and product attributes, ``x_j``, for many
 different markets. In concrete applications, markets may be defined
 geographically, temporally, by consumer segment, or some combination
 thereof. 
 
 Consider a single good, which consumers chooose to
-purchase or not. Consumer $i$'s utility from consuming the good is
-$$
+purchase or not. Consumer ``i``'s utility from consuming the good is
+```math
 u_{ij} = x_j \beta + \xi_j + \epsilon_{ij}
-$$
-where $x_j$ are the observed attributes of the good in market $j$,
-$\xi_j$ is a market level demand shock, and $\epsilon_{ij}$ is an
-individual taste shock. Person $i$ purchases the good if 
-$u_{ij} \geq 0$. Aggregating individual purchases implies that the
-market share in market $j$ is 
-$$ y_j = F_{-\epsilon}(x_j \beta + \xi_j) $$
-where $F_{-\epsilon}$ is the CDF of $-\epsilon$.
+```
+where ``x_j`` are the observed attributes of the good in market ``j``,
+``\xi_j`` is a market level demand shock, and ``\epsilon_{ij}`` is an
+individual taste shock. Person ``i`` purchases the good if 
+``u_{ij} \geq 0``. Aggregating individual purchases implies that the
+market share in market ``j`` is 
+```math
+y_j = F_{-\epsilon}(x_j \beta + \xi_j) 
+```
+where ``F_{-\epsilon}`` is the CDF of ``-\epsilon``.
 
-We assume that $\epsilon_{ij}$ is independent of $x_j$ and
-$\xi_j$. Typically, $x_j$ includes some easily adjusted product
-attributes, such as price, so we want to allow $x_j$ to be correlated
-with $\xi_j$. Assume that we have some instruments $z_j$ such that
-$\Er[\xi_j z_j]=0.$  We can write this moment condition in terms of
-observables and $\beta$ as
-$$ \Er[ (F^{-1}_{-\epsilon}(y_j) - x_j\beta) z_j ] = 0 $$
-This is the moment condition we will use to estimate $\beta$.
+We assume that ``\epsilon_{ij}`` is independent of ``x_j`` and
+``\xi_j``. Typically, ``x_j`` includes some easily adjusted product
+attributes, such as price, so we want to allow ``x_j`` to be correlated
+with ``\xi_j``. Assume that we have some instruments ``z_j`` such that
+``\mathrm{E}[\xi_j z_j]=0.``  We can write this moment condition in terms of
+observables and ``\beta`` as
+```math
+\mathrm{E}[ (F^{-1}_{-\epsilon}(y_j) - x_j\beta) z_j ] = 0
+```
+This is the moment condition we will use to estimate ``\beta``.
 
 First, we will simulate the model, then estimate it. This code looks
 at three variants of GMM. 
 
-First, it computes an estimate with $W_n = I$. 
+First, it computes an estimate with ``W_n = I``. 
 
 Second, it computes an efficiently weighted estimated with 
-$$
+```math
 W_n = \widehat{Var}(g_i(\hat{\theta}_{(1)}))
-$$
+```
 where
-$\hat{\theta}_{(1)}$ is the first estimate. 
+``\hat{\theta}_{(1)}`` is the first estimate. 
 
-Third, it computes the continuous updating estimator, which uses
-$AR(\theta)$ as the objective function ( $W$ is "continuously updated"
-to be $\widehat{Var}( g_i(\theta))$ ).
+Third, it computes the continuously updating estimator, which uses
+``AR(\theta)`` as the objective function ( ``W`` is "continuously updated"
+to be ``\widehat{Var}( g_i(\theta))`` ).
 
-```julia
+```@example iri
 using Optim, ForwardDiff, LinearAlgebra, Distributions
+import Random
 function simulate_ivshare(n,β,γ,ρ)
   z = randn(n, size(γ)[1])
   endo = randn(n, length(β))
@@ -202,6 +172,7 @@ iv = 3
 β0 = ones(k)
 π0 = vcat(5*I,ones(iv-k,k)) 
 ρ = 0.5  
+Random.seed!(622)
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 
 function gi_ivshare(β,y,x,z)
@@ -228,7 +199,7 @@ function ar(θ,gi)
 end
 ```
 
-```julia; cache=true
+```@example iri
 opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
                 zeros(k), BFGS(), autodiff =:forward)
 @show β1 = opt1.minimizer
@@ -249,7 +220,7 @@ display(Vcue)
 Now we compare confidence regions based on the Wald test, and from
 inverting the AR statistic.
 
-```julia
+```@example iri
 using Plots, LaTeXStrings
 Plots.gr()
 function plot_cr(β,V, AR)
@@ -285,10 +256,11 @@ The two confidence regions above are not too different because the
 simulated data was strongly identified. Let's see what happens when we
 change the simulation to have weaker identification.
 
-```julia
+```@example iri
 # make π0 nearly rank-deficient
 π0 = ones(iv,k) .+ vcat(I*0.05,zeros(iv-k,k))  
 ρ = 0.5  
+Random.seed!(14)
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 ar_ivshare = θ->ar(θ,β->gi_ivshare(β,y,x,z))
 optcue = optimize(ar_ivshare,
@@ -297,14 +269,13 @@ optcue = optimize(ar_ivshare,
 Vcue = gmmVar(βcue,β->gi_ivshare(β,y,x,z),inv(cov(gi_ivshare(βcue,y,x,z))))
 display(Vcue)
 plot_cr(βcue,Vcue, ar_ivshare)
-
 ```
 
 Now the confidence regions are dramatically different. Does either one
 have correct coverage? Let's simulate to find the size of the AR and
-Wald tests of $H_0 : \beta = \beta_0$
+Wald tests of ``H_0 : \beta = \beta_0``
 
-```julia; cache=true
+```@example iri
 S = 500
 n = 150
 function sim_p(π0)
@@ -369,26 +340,26 @@ for both the weakly and strongly identified DGP.
 ### Other identification robust tests
 
 There are also identification robust versions of likelihood ratio and
-lagrange multiplier test. Moreira (2003)[@moreira2003] proposed a conditional
+lagrange multiplier test. [moreira2003](@cite) proposed a conditional
 likelihood ratio (CLR) test for weakly identified linear IV
-models. Kleibergen (2005)[@kleibergen2005] developed a Lagrange multiplier (often called
+models. [kleibergen2005](@cite) developed a Lagrange multiplier (often called
 the KLM) test and extended Moreira's CLR test to weakly identified GMM
-models.  More recently, Andrews and Guggenberger (2015) [@andrews2015]
-and Andrews and Guggenberger (2017) [@andrews2017] showed the
+models.  More recently, [andrews2015](@cite)
+and [andrews2017](@cite) showed the
 validity of these tests under more general conditions. These tests are
 somewhat more complicated than the AR test, but they have the
 advantage that they are often more powerful. The AR test statistic has
-a $\chi^2_{m}$ distribution, where $m$ is the number of moments. The
-CLR and KLM statistics under strong identification have $\chi^2_k$
-distributions (as does the Wald statistic), where $k$ is the number of
+a \\chi^2_{m} distribution, where m is the number of moments. The
+CLR and KLM statistics under strong identification have \\chi^2_k
+distributions (as does the Wald statistic), where k is the number of
 parameters. Consequently, when the model is overidentified, the CLR
 and LM tests are more powerful than the AR test. 
 
 
 Here is an implementation of the KLM and CLR statistics. The names of
-variables roughly follows the notation of Andrews and
-Guggenberge(2017) [@andrews2017].
-```julia; cache=false
+variables roughly follows the notation of [andrews2017](@cite).
+
+```@example iri
 using ForwardDiff, Plots, Optim
 Plots.gr()
 function statparts(θ,gi)
@@ -444,7 +415,7 @@ function clr(θ,gi)
 end
 ```
 
-```julia; cache=false
+```@example iri
 function plot_cr(β,V, tests::AbstractArray{Function}, labels; ngrid=30)
   lb = β - sqrt.(diag(V))*5
   ub = β + sqrt.(diag(V))*5
@@ -461,7 +432,7 @@ function plot_cr(β,V, tests::AbstractArray{Function}, labels; ngrid=30)
   b1 = lb[1]:(ub[1]-lb[1])/ngrid:ub[1]
   b2 = lb[2]:(ub[2]-lb[2])/ngrid:ub[2]
   colors = [:black, :red, :blue, :green]
-  for t in 1:length(tests)
+  for t in eachindex(tests)
     fig=contour!(b1,b2,(a,b)->tests[t]([a,b]),
              levels = [0.9, 0.95],
              contour_labels=false, legend=false,
@@ -475,12 +446,13 @@ end
 Here's what the confidence regions look like when identification is
 fairly weak. The green lines are the Wald confidence region, blue is
 AR, red is KLM, and black is CLR. 
-```julia; cache=true
+```@example iri
 n = 50
 k = 2
 iv =3 
 π0 = vcat(0.1*diagm(0=>ones(k)),0.2*ones(iv-k,k)) 
 ρ = 0.5  
+Random.seed!(622)
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
                 β0, BFGS(), autodiff =:forward)
@@ -498,12 +470,13 @@ plot_cr(β1,V1, [pclr, pklm, par, pwald],
 
 Here's what the confidence regions look like when identification is
 stronger.
-```julia; cache=true
+```@example iri
 n = 50
 k = 2
 iv =3 
 π0 = vcat(3*diagm(0=>ones(k)),ones(iv-k,k)) 
 ρ = 0.5  
+Random.seed!(622)
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
                 β0, BFGS(), autodiff =:forward)
@@ -522,7 +495,7 @@ plot_cr(β1,V1, [pclr, pklm, par, pwald],
 
 
 Check the size
-```julia; cache=true
+```@example iri
 S = 300
 n = 100
 function sim_p(π0)
@@ -567,24 +540,7 @@ plot!(pgrid, p->mean( pweak[:,3] .<= p)-p,
       label="CLR, weak ID", style=:solid, color=:black)
 plot!(pgrid, p->mean( pweak[:,4] .<= p)-p,
       label="KLM, weak ID", style=:solid, color=:red)
-
 ```
 
 
-<!-- ## Bootstrap -->
-
-<!-- The bootstrap and related simulation methods can also be used for -->
-<!-- inference. We will look at these in more detail in the next set of notes. -->
-
-<!-- ## Bayesian methods -->
-
-<!-- Bayesian methods give an alternative approach to both estimation and -->
-<!-- inference. In some situations, Bayesian methods can be more convenient -->
-<!-- and/or more numerically robust. In well behaved settings, when viewed -->
-<!-- from a frequentist perspective, Bayesian methods asymptotically give -->
-<!-- the same results as MLE (or efficiently weighted GMM in the case of -->
-<!-- quasi-Bayesian models).  -->
     
-# References
-
-\bibliography

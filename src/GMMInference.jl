@@ -5,7 +5,7 @@
 """
 module GMMInference
 
-using JuMP, NLPModels, Distributions, LinearAlgebra, Optim,
+using JuMP, ADNLPModels, Distributions, LinearAlgebra, Optim,
   ForwardDiff, ECOS
 import Convex
 
