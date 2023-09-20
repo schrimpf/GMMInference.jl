@@ -1,7 +1,7 @@
 """
-This test is the using the same procedure as identificationRobustInference.jmd 
+This test is the using the same procedure as identificationRobustInference.md 
 with using new funciton which have been added to scr/HypothesisTests. 
-For compating, the same methods in identificationRobustInference.jmd also
+For compating, the same methods in identificationRobustInference.md also
 has been presented.
 """
 
@@ -50,17 +50,15 @@ and Andrews and Guggenberge (2017) [@andrews2017] showed the
 validity of these tests under more general conditions. These tests are
 somewhat more complicated than the AR test, but they have the
 advantage that they are often more powerful. The AR test statistic has
-a $\chi^2_{m}$ distribution, where $m$ is the number of moments. The
-CLR and KLM statistics under strong identification have $\chi^2_k$
-distributions (as does the Wald statistic), where $k$ is the number of
+a ``\\chi^2_{m}`` distribution, where ``m`` is the number of moments. The
+CLR and KLM statistics under strong identification have ``\\chi^2_k``
+distributions (as does the Wald statistic), where ``k`` is the number of
 parameters. Consequently, when the model is overidentified, the CLR
 and LM tests are more powerful than the AR test. 
 
 
 Here is an implementation of the KLM and CLR statistics. The names of
-variables roughly follows the notation of Andrews and
-Guggenberge(2017
-
+variables roughly follows the notation of [andrews2017](@cite).
 """
 
 """
@@ -160,7 +158,7 @@ function plot_cr(β,V, tests::AbstractArray{Function}, labels; ngrid=30)
   b1 = lb[1]:(ub[1]-lb[1])/ngrid:ub[1]
   b2 = lb[2]:(ub[2]-lb[2])/ngrid:ub[2]
   colors = [:black, :red, :blue, :green]
-  for t in 1:length(tests)
+  for t in eachindex(tests)
     fig=contour!(b1,b2,(a,b)->tests[t]([a,b]),
              levels = [0.9, 0.95],
              contour_labels=false, legend=false,
@@ -328,7 +326,7 @@ function plot_cr(β,V, tests::AbstractArray{Function}, labels; ngrid=30)
   b1 = lb[1]:(ub[1]-lb[1])/ngrid:ub[1]
   b2 = lb[2]:(ub[2]-lb[2])/ngrid:ub[2]
   colors = [:black, :red, :blue, :green]
-  for t in 1:length(tests)
+  for t in eachindex(tests)
     fig=contour!(b1,b2,(a,b)->tests[t]([a,b]),
              levels = [0.9, 0.95],
              contour_labels=false, legend=false,

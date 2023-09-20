@@ -2,7 +2,7 @@
     AR_gmm_obj(gi:Function)
 
 Returns a function `ar(θ)` where:
-``ar(θ) = n [1/n \\sum g_i(θ)]' \\widehat{Var}(g_i(θ))^{-1}[1/n \\sum g_i(θ)] ``
+``ar(θ) = n [1/n \\sum g_i(θ)]' \\widehat{Var}(g_i(θ))^{-1}[1/n \\sum g_i(θ)]``
 """
 function AR_gmm_obj(gi::Function)
   function(θ)

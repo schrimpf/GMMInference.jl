@@ -29,7 +29,8 @@ function gel_pλ(model::GMMModel, h::Function=log)
   function(θ)
     g = gi(θ)
     problem.constraints[3] =  g'*p==0
-    Convex.solve!(problem, ECOSSolver(verbose=false), #warmstart=false,
+    optimizer = optimizer_with_attributes(ECOS.Optimizer, "verbose"=>false)
+    Convex.solve!(problem, optimizer, #warmstart=false,
                   verbose=false)
     (p=p.value ,λ=problem.constraints[3].dual)
   end

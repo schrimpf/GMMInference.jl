@@ -1,58 +1,32 @@
-using Documenter, GMMInference, DocumenterMarkdown
-
-runweave=true
-runnotebook=false
-if runweave
-  using Weave
-  wd = pwd()
-  try
-    builddir=joinpath(dirname(Base.pathof(GMMInference)),"..","docs","build")
-    mkpath(builddir)
-    cd(builddir)
-    jmdfiles = filter(x->occursin(r".jmd$",x), readdir(joinpath("..","jmd")))
-    for f in jmdfiles
-      src = joinpath("..","jmd",f)
-      target = joinpath("..","build",replace(f, r"jmd$"=>s"md"))
-      if stat(src).mtime > stat(target).mtime
-        weave(src,out_path=joinpath("..","build"),
-              cache=:user,
-              cache_path=joinpath("..","weavecache"),
-              doctype="github", mod=Main,
-              args=Dict("md" => true))
-      end
-      target = joinpath("..","build",replace(f, r"jmd$"=>s"ipynb"))
-      if (runnotebook && stat(src).mtime > stat(target).mtime)
-          notebook(src,out_path=joinpath("..","build"),
-                   nbconvert_options="--allow-errors")
-      end
-    end
-  finally
-    cd(wd)
-  end
-  if (isfile("build/temp.md"))
-    rm("build/temp.md")
-  end
-end
+using Documenter, GMMInference, DocumenterCitations
+bib = CitationBibliography(joinpath(@__DIR__,"ee.bib"), style=:authoryear)
 
 makedocs(
   modules=[GMMInference],
-  format=Markdown(),
-  clean=false,
+  clean=true,
   pages=[
-    "Home" => "index.md", # this won't get used anyway; we use mkdocs instead for interoperability with weave's markdown output.
+    "Extremum Estimation" => "extremumEstimation.md",
+    "Identification Robust Inference" => "identificationRobustInference.md",
+    "Bootstrap" => "bootstrap.md",
+    "Empirical Likelihood" => "empiricalLikelihood.md",
+    "Autodocs" => "index.md", 
+    "References" => "references.md",
+    "License" => "license.md"
   ],
-  repo="https://github.com/schrimpf/GMMInference.jl/blob/{commit}{path}#L{line}",
+  repo=Remotes.GitHub("schrimpf","GMMInference.jl"), #"https://github.com/schrimpf/GMMInference.jl/blob/{commit}{path}#L{line}",
   sitename="GMMInference.jl",
   authors="Paul Schrimpf <paul.schrimpf@gmail.com>",
+  draft=false,
+  plugins=[bib]
 )
 
-run(`mkdocs build`)
 
-#deploydocs(;
-#    repo="github.com/schrimpf/GMMInference.jl",
-#)
+include("faketravis.jl")
 
-deploy=true
-if deploy || "deploy" in ARGS
-  run(`mkdocs gh-deploy`)
-end
+deploydocs(deps = nothing, make = nothing,
+  repo="github.com/schrimpf/GMMInference.jl.git",
+  target = "build",
+  branch = "gh-pages",
+  devbranch = "master",
+)
+

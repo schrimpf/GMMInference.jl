@@ -1,11 +1,11 @@
 """
 There are also identification robust versions of likelihood ratio and
-lagrange multiplier test. Moreire (2003)[@moreira2003] proposed a conditional
+lagrange multiplier test. [moreira2003](@cite) proposed a conditional
 likelihood ratio (CLR) test for weakly identified linear IV
-models. Kleibergen (2005)[@kleibergen2005] developed a Lagrange multiplier (often called
+models. [kleibergen2005](@cite) developed a Lagrange multiplier (often called
 the KLM) test and extended Moreira's CLR test to weakly identified GMM
-models.  More recently, Andrews and Guggenberge (2015) [@andrews2015]
-and Andrews and Guggenberge (2017) [@andrews2017] showed the
+models.  More recently, [andrews2015](@cite)
+and [andrews2017](@cite) showed the
 validity of these tests under more general conditions. These tests are
 somewhat more complicated than the AR test, but they have the
 advantage that they are often more powerful. The AR test statistic has
@@ -17,8 +17,7 @@ and LM tests are more powerful than the AR test.
 
 
 Here is an implementation of the KLM and CLR statistics. The names of
-variables roughly follows the notation of Andrews and
-Guggenberge(2017
+variables roughly follows the notation of [andrews2017](@cite).
 
 """
 
@@ -28,13 +27,11 @@ Guggenberge(2017
 Return a function.
     
 compute common components of klm, rk, & clr stats
-follows notation of Andrews & Guggenberger 2017, section 3.1
+follows notation of [andrews2017](@cite), section 3.1
 """
 function statparts(gi::Function)
-  # compute common components of klm, rk, & clr stats
-  # follows notation of Andrews & Guggenberger 2017, section 3.1
     function P(A::AbstractMatrix) # projection matrix
-    A*pinv(A'*A)*A'
+        A*pinv(A'*A)*A'
     end
     function(θ)
         giθ = gi(θ)
