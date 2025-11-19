@@ -1,6 +1,6 @@
 name = "GMMInference"
 uuid = "bac0df68-cab7-482a-aa4b-d3925df9b168"
-authors = ["Paul Schrimpf <paul.schrimpf@gmail.com>"]
+authors = ["Paul Schrimpf <paul.schrimpf@ubc.com>"]
 version = "0.1.0"
 
 [deps]

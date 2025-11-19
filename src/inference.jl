@@ -4,7 +4,7 @@
 
 ######################################################################
 
-# EL inference 
+# EL inference
 
 """
     gel_pλ(model::GMMModel, h::Function=log)
@@ -15,9 +15,9 @@ Return a function that given parameters θ solves
 
 The returned function gives (p(θ),λ(θ))
 
-The returned function is not thread-safe.  
+The returned function is not thread-safe.
 """
-function gel_pλ(model::GMMModel, h::Function=log)  
+function gel_pλ(model::GMMModel, h::Function=log)
   n = number_observations(model)
   d = number_parameters(model)
   k = number_moments(model)
@@ -25,18 +25,18 @@ function gel_pλ(model::GMMModel, h::Function=log)
   g = gi(zeros(d))
   p = Convex.Variable(n)
   el = sum(h.(p))
-  problem = Convex.maximize(el, sum(p)==1, p>=0, g'*p==0) 
+  problem = Convex.maximize(el, sum(p)==1, p>=0, g'*p==0)
   function(θ)
     g = gi(θ)
     problem.constraints[3] =  g'*p==0
     optimizer = optimizer_with_attributes(ECOS.Optimizer, "verbose"=>false)
     Convex.solve!(problem, optimizer, #warmstart=false,
-                  verbose=false)
+                  silent=true)
     (p=p.value ,λ=problem.constraints[3].dual)
   end
 end
 
-""" 
+"""
     gel_tests(θ, model::GMMModel, h::Function=log)
 
 Computes GEL test statistics for H₀ : θ = θ₀. Returns a tuple
@@ -50,12 +50,10 @@ function gel_tests(θ, model::GMMModel, h::Function=log)
   n = length(p)
   λ /= -n
   lr = -2*sum(h.(p) .- h(1/n))
-  
+
   gi = get_gi(model)
   iΔ = inv(cov(gi(θ)))
   D = ForwardDiff.jacobian(x->gi(x)'*p, θ)
   S = (n*λ'*D*inv(D'*iΔ*D)*D'*λ)[1]
   return(GELR=lr, S=S, plr=cdf(Chisq(k),lr), ps=cdf(Chisq(d),S))
 end
-
-

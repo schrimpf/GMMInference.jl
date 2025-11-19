@@ -6,8 +6,8 @@
 \def\R{\mathbb{R}}
 \def\En{{\mathbb{E}_n}}
 \def\Pr{\mathrm{P}}
-\def\inprob{\,{\buildrel p \over \rightarrow}\,} 
-\def\indist{\,{\buildrel d \over \rightarrow}\,} 
+\def\inprob{\,{\buildrel p \over \rightarrow}\,}
+\def\indist{\,{\buildrel d \over \rightarrow}\,}
 \,
 ```
 
@@ -28,7 +28,7 @@ all three testing approaches are asymptotically equivalent. However,
 the tests can and will differ in finite samples. More importantly, in
 the face of identification problems, Wald tests tend to break down,
 while Lagrange multiplier and likelihood ratio style tests can
-continue to work. 
+continue to work.
 
 By identification robust, we mean an inference procedure that has
 correct size regardless of whether identification is strong, weak,
@@ -37,7 +37,7 @@ above, non-strong identification will create problems for assumption
 3, in particular the assumption that the Hessian is non-singular. For
 this section, we will focus on GMM estimators. Identification problems
 most often arrive and have been studied in the context of GMM. Also,
-it is not difficult to transform other extremum estimators into GMM. 
+it is not difficult to transform other extremum estimators into GMM.
 
 For a GMM objective function of the form:
 ```math
@@ -47,36 +47,36 @@ if we assume:
 
 1. ``1/\sqrt{n} \sum_i g_i(\theta_0) \leadsto N(0,\Sigma)``
 
-2. ``1/n \sum_i \nabla g_i(\theta) \to^p E[\nabla g(\theta)]\equiv D``, 
+2. ``1/n \sum_i \nabla g_i(\theta) \to^p E[\nabla g(\theta)]\equiv D``,
    ``W_n \to^p W``
 
 3. ``(D'WD)`` is nonsingular.
 
 then the above theorem for asymptotic normality of extremum
-estimators implies that 
+estimators implies that
 ```math
 \sqrt{n}(\hat{\theta} - \theta_0) \leadsto N(0,\Omega)
 ```
-where 
+where
 ```math
  \Omega= (D'WD)^{-1} (D' W \Sigma W D) (D'WD)^{-1}.
 ```
 If we additionally assume ``W_n \to^p \Sigma^{-1}``, e.g. observations
 are independent and ``W_n =
 \widehat{Var}(g_i(\theta))^{-1}``, then the asymptotic variance
-simplifies to ``(D' \Sigma^{-1} D)^{-1}``. 
+simplifies to ``(D' \Sigma^{-1} D)^{-1}``.
 
 ### Anderson-Rubin test
 
 As already stated, the assumption that ``(D'WD)`` is nonsingular is
 problematic if we want to allow for identification problems. However,
-if we assume only that 
+if we assume only that
 
 1. ``\frac{1}{\sqrt{n}} \sum_i g_i(\theta_0) \leadsto N(0,\Sigma)``
 
 2. ``W_n \to^p \Sigma^{-1}``
 
-then 
+then
 ```math
 n \left(\frac{1}{n} \sum_i g_i(\theta)\right)' W_n \left(\frac{1}{n} \sum g_i(\theta)\right)
   \leadsto \chi^2_m
@@ -91,11 +91,11 @@ overview of this test and related tests with a focus on linear
 IV. [caner2009](@cite) discusses this test in the context of GMM.
 
 Typical usage of the AR test is to invert the test to construct a
-confidence region for ``\theta``. For each ``\theta \in \Theta``, 
-let 
+confidence region for ``\theta``. For each ``\theta \in \Theta``,
+let
 ```math
 AR(\theta) = n [1/n \sum g_i(\theta)]' \widehat{Var}(g_i(\theta))^{-1}
-[1/n \sum g_i(\theta)] 
+[1/n \sum g_i(\theta)]
 ```
 and let ``c_{\alpha}= \alpha`` quantile of ``\chi^2_m``. Then a ``\alpha``
 confidence region for ``\theta_0`` is
@@ -111,7 +111,7 @@ such model here. This is a model for when we have data on product
 market shares, ``y_j``, and product attributes, ``x_j``, for many
 different markets. In concrete applications, markets may be defined
 geographically, temporally, by consumer segment, or some combination
-thereof. 
+thereof.
 
 Consider a single good, which consumers chooose to
 purchase or not. Consumer ``i``'s utility from consuming the good is
@@ -120,11 +120,11 @@ u_{ij} = x_j \beta + \xi_j + \epsilon_{ij}
 ```
 where ``x_j`` are the observed attributes of the good in market ``j``,
 ``\xi_j`` is a market level demand shock, and ``\epsilon_{ij}`` is an
-individual taste shock. Person ``i`` purchases the good if 
+individual taste shock. Person ``i`` purchases the good if
 ``u_{ij} \geq 0``. Aggregating individual purchases implies that the
-market share in market ``j`` is 
+market share in market ``j`` is
 ```math
-y_j = F_{-\epsilon}(x_j \beta + \xi_j) 
+y_j = F_{-\epsilon}(x_j \beta + \xi_j)
 ```
 where ``F_{-\epsilon}`` is the CDF of ``-\epsilon``.
 
@@ -140,16 +140,16 @@ observables and ``\beta`` as
 This is the moment condition we will use to estimate ``\beta``.
 
 First, we will simulate the model, then estimate it. This code looks
-at three variants of GMM. 
+at three variants of GMM.
 
-First, it computes an estimate with ``W_n = I``. 
+First, it computes an estimate with ``W_n = I``.
 
-Second, it computes an efficiently weighted estimated with 
+Second, it computes an efficiently weighted estimated with
 ```math
 W_n = \widehat{Var}(g_i(\hat{\theta}_{(1)}))
 ```
 where
-``\hat{\theta}_{(1)}`` is the first estimate. 
+``\hat{\theta}_{(1)}`` is the first estimate.
 
 Third, it computes the continuously updating estimator, which uses
 ``AR(\theta)`` as the objective function ( ``W`` is "continuously updated"
@@ -162,16 +162,16 @@ function simulate_ivshare(n,β,γ,ρ)
   z = randn(n, size(γ)[1])
   endo = randn(n, length(β))
   x = z*γ .+ endo
-  ξ = rand(Normal(0,sqrt((1.0-ρ^2))),n).+endo[:,1]*ρ 
+  ξ = rand(Normal(0,sqrt((1.0-ρ^2))),n).+endo[:,1]*ρ
   y = cdf.(Logistic(), x*β .+ ξ)
-  return((y=y,x=x,z=z))  
+  return((y=y,x=x,z=z))
 end
 n = 100
 k = 2
 iv = 3
 β0 = ones(k)
-π0 = vcat(5*I,ones(iv-k,k)) 
-ρ = 0.5  
+π0 = vcat(5*I,ones(iv-k,k))
+ρ = 0.5
 Random.seed!(622)
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 
@@ -258,8 +258,8 @@ change the simulation to have weaker identification.
 
 ```@example iri
 # make π0 nearly rank-deficient
-π0 = ones(iv,k) .+ vcat(I*0.05,zeros(iv-k,k))  
-ρ = 0.5  
+π0 = ones(iv,k) .+ vcat(I*0.05,zeros(iv-k,k))
+ρ = 0.5
 Random.seed!(14)
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 ar_ivshare = θ->ar(θ,β->gi_ivshare(β,y,x,z))
@@ -282,24 +282,24 @@ function sim_p(π0)
   (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
   opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
                   β0, BFGS(), autodiff =:forward)
-  if (!opt1.g_converged)
+  if (!opt1.stopped_by.g_converged)
     opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
                     β0, NewtonTrustRegion(), autodiff =:forward)
   end
   β1 = opt1.minimizer
 
   V1 = gmmVar(β1,β->gi_ivshare(β,y,x,z),I)
-  
+
   optcue = optimize(θ->ar(θ,β->gi_ivshare(β,y,x,z)),
                     β0, BFGS(), autodiff =:forward)
-  if (!optcue.g_converged)
+  if (!optcue.stopped_by.g_converged)
     optcue = optimize(θ->ar(θ,β->gi_ivshare(β,y,x,z)),
                       β0, NewtonTrustRegion(), autodiff =:forward)
   end
-  if (!optcue.g_converged)
+  if (!optcue.stopped_by.g_converged)
     display(optcue)
     βcue = deepcopy(β1)
-  else 
+  else
     βcue = optcue.minimizer
   end
   Vcue =
@@ -309,8 +309,8 @@ function sim_p(π0)
   waldp1 = θ->(1.0-cdf(Chisq(length(β1)),(θ-β1)'*inv(V1)*(θ-β1)))
   [arp(β0) waldp(β0) waldp1(β0)]
 end
-πweak = ones(iv,k) .+ vcat(diagm(0=>fill(0.01,k)),zeros(iv-k,k))  
-πstrong = vcat(5*diagm(0=>ones(k)),ones(iv-k,k)) 
+πweak = ones(iv,k) .+ vcat(diagm(0=>fill(0.01,k)),zeros(iv-k,k))
+πstrong = vcat(5*diagm(0=>ones(k)),ones(iv-k,k))
 @time pweak=vcat([sim_p(πweak) for s in 1:S]...)
 @time pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 
@@ -318,7 +318,7 @@ pgrid = 0:0.01:1
 plot(pgrid, p->mean( pstrong[:,1] .<= p)-p, legend=:bottomleft,
      label="AR, strong ID", style=:dash, color=:red,
      xlabel="p", ylabel="P(p value < p) - p",
-     title="Simulated size distortion") 
+     title="Simulated size distortion")
 plot!(pgrid, p->mean( pstrong[:,2] .<= p)-p,
       label="Wald CUE, strong ID", style=:dash, color=:blue)
 plot!(pgrid, p->mean( pstrong[:,3] .<= p)-p,
@@ -335,7 +335,7 @@ plot!(pgrid, p->mean( pweak[:,3] .<= p)-p,
 
 We see that the Wald test has fairly large size distortions, even when
 identification is strong. The AR test has approximately correct size
-for both the weakly and strongly identified DGP. 
+for both the weakly and strongly identified DGP.
 
 ### Other identification robust tests
 
@@ -353,7 +353,7 @@ a \\chi^2_{m} distribution, where m is the number of moments. The
 CLR and KLM statistics under strong identification have \\chi^2_k
 distributions (as does the Wald statistic), where k is the number of
 parameters. Consequently, when the model is overidentified, the CLR
-and LM tests are more powerful than the AR test. 
+and LM tests are more powerful than the AR test.
 
 
 Here is an implementation of the KLM and CLR statistics. The names of
@@ -369,9 +369,9 @@ function statparts(θ,gi)
     A*pinv(A'*A)*A'
   end
   giθ = gi(θ)
-  p = length(θ)    
+  p = length(θ)
   (n, k) = size(giθ)
-  Ω = cov(giθ)  
+  Ω = cov(giθ)
   gn=mean(gi(θ), dims=1)'
   #G = ForwardDiff.jacobian(θ->mean(gi(θ),dims=1),θ)
   Gi= ForwardDiff.jacobian(gi,θ)
@@ -396,12 +396,12 @@ end
 
 function clr(θ,gi)
   (n,k,p,gn, Ω, D, P) = statparts(θ,gi)
-  
+
   rk = eigmin(n*D'*inv(Ω)*D)
   AR  = (n*gn'*inv(Ω)*gn)[1]
-  lm = (n*(gn'*Ω^(-1/2)*P(Ω^(-1/2)*D)*Ω^(-1/2)*gn))[1]  
+  lm = (n*(gn'*Ω^(-1/2)*P(Ω^(-1/2)*D)*Ω^(-1/2)*gn))[1]
   lr = 1/2*(AR - rk + sqrt( (AR-rk)^2 + 4*lm*rk))
-  
+
   # simulate to find p-value
   S = 5000
   function randc(k,p,r,S)
@@ -445,20 +445,20 @@ end
 
 Here's what the confidence regions look like when identification is
 fairly weak. The green lines are the Wald confidence region, blue is
-AR, red is KLM, and black is CLR. 
+AR, red is KLM, and black is CLR.
 ```@example iri
 n = 50
 k = 2
-iv =3 
-π0 = vcat(0.1*diagm(0=>ones(k)),0.2*ones(iv-k,k)) 
-ρ = 0.5  
+iv =3
+π0 = vcat(0.1*diagm(0=>ones(k)),0.2*ones(iv-k,k))
+ρ = 0.5
 Random.seed!(622)
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
                 β0, BFGS(), autodiff =:forward)
 β1 = opt1.minimizer
 V1 = gmmVar(β1,β->gi_ivshare(β,y,x,z),I)
-  
+
 
 pklm = θ->cdf(Chisq(length(βcue)),klm(θ, β->gi_ivshare(β,y,x,z)))
 par  = θ->cdf(Chisq(size(z)[2]), ar(θ, β->gi_ivshare(β,y,x,z)))
@@ -473,16 +473,16 @@ stronger.
 ```@example iri
 n = 50
 k = 2
-iv =3 
-π0 = vcat(3*diagm(0=>ones(k)),ones(iv-k,k)) 
-ρ = 0.5  
+iv =3
+π0 = vcat(3*diagm(0=>ones(k)),ones(iv-k,k))
+ρ = 0.5
 Random.seed!(622)
 (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
 opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
                 β0, BFGS(), autodiff =:forward)
 β1 = opt1.minimizer
 V1 = gmmVar(β1,β->gi_ivshare(β,y,x,z),I)
-  
+
 
 pklm = θ->cdf(Chisq(length(βcue)),klm(θ, β->gi_ivshare(β,y,x,z)))
 par  = θ->cdf(Chisq(size(z)[2]), ar(θ, β->gi_ivshare(β,y,x,z)))
@@ -502,21 +502,21 @@ function sim_p(π0)
   (y,x,z) = simulate_ivshare(n,β0,π0,ρ)
   opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
                   β0, BFGS(), autodiff =:forward)
-  if (!opt1.g_converged)
+  if (!opt1.stopped_by.g_converged)
     opt1 = optimize(θ->gmmObj(θ, β->gi_ivshare(β,y,x,z) ,I),
                     β0, NewtonTrustRegion(), autodiff =:forward)
   end
   β1 = opt1.minimizer
   V1 = gmmVar(β1,β->gi_ivshare(β,y,x,z),I)
-  
+
   pklm = θ->cdf(Chisq(length(β1)),klm(θ, β->gi_ivshare(β,y,x,z)))
   par  = θ->cdf(Chisq(size(z)[2]), ar(θ, β->gi_ivshare(β,y,x,z)))
   pclr  = θ->clr(θ, β->gi_ivshare(β,y,x,z))
-  pwald = θ -> cdf(Chisq(length(β1)),(θ-β1)'*inv(V1)*(θ-β1))  
+  pwald = θ -> cdf(Chisq(length(β1)),(θ-β1)'*inv(V1)*(θ-β1))
   [par(β0) pwald(β0) pclr(β0) pklm(β0)]
 end
-πweak = ones(iv,k) .+ vcat(diagm(0=>fill(0.01,k)),zeros(iv-k,k))  
-πstrong = vcat(3*diagm(0=>ones(k)),ones(iv-k,k)) 
+πweak = ones(iv,k) .+ vcat(diagm(0=>fill(0.01,k)),zeros(iv-k,k))
+πstrong = vcat(3*diagm(0=>ones(k)),ones(iv-k,k))
 pweak=vcat([sim_p(πweak ) for s in 1:S]...)
 pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 
@@ -524,7 +524,7 @@ pgrid = 0:0.01:1
 plot(pgrid, p->mean( pstrong[:,1] .<= p)-p, legend=:topleft,
      label="AR, strong ID", style=:dash, color=:blue,
      xlabel="p", ylabel="P(p value < p)",
-     title="Simulated size distortion") 
+     title="Simulated size distortion")
 plot!(pgrid, p->mean( pstrong[:,2] .<= p)-p,
       label="Wald I, strong ID", style=:dash, color=:green)
 plot!(pgrid, p->mean( pstrong[:,3] .<= p)-p,
@@ -541,6 +541,3 @@ plot!(pgrid, p->mean( pweak[:,3] .<= p)-p,
 plot!(pgrid, p->mean( pweak[:,4] .<= p)-p,
       label="KLM, weak ID", style=:solid, color=:red)
 ```
-
-
-    
