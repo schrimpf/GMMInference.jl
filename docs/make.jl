@@ -27,11 +27,33 @@ makedocs(
 )
 
 
-include("faketravis.jl")
+module Local
 
-deploydocs(deps = nothing, make = nothing,
-  repo="github.com/schrimpf/GMMInference.jl.git",
-  target = "build",
-  branch = "gh-pages",
-  devbranch = "master",
+import Documenter
+
+struct LocalConfig <: Documenter.DeployConfig
+end
+
+function Documenter.deploy_folder(cfg::LocalConfig; repo, devbranch, push_preview, devurl,
+    tag_prefix, kwargs...)
+    Documenter.DeployDecision(true, "gh-pages", false, repo, "")
+end
+
+function Documenter.authentication_method(cfg::LocalConfig)
+    Documenter.SSH
+end
+
+function Documenter.documenter_key(cfg::LocalConfig)
+    @show read("ssh.key", String)
+end
+
+end
+
+deploydocs(;
+           deps = nothing, make = nothing,
+           repo="github.com/schrimpf/GMMInference.jl.git",
+           target = "build",
+           deploy_config=Local.LocalConfig(),
+           dirname="",
+           devbranch="master",
 )
