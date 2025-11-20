@@ -12,7 +12,7 @@ empirical likelihood.
 A perceived downside of GEL is that it involves a more difficult
 looking optimization problem than GMM. However, given the ease with
 which Julia can solve high dimensional optimization problems, GEL is
-very feasible. 
+very feasible.
 
 As in the extremum estimation notes, suppose we have moment conditions
 such that
@@ -26,18 +26,18 @@ conditions. The empirical likelihood estimator solves
     (\hat{\theta}, \hat{p}) = & \argmax_{\theta,p} \frac{1}{n} \sum_i
     \log(p_i) \;\; s.t.  \\
      & \sum_i p_i = 1, \;\; 0\leq p_i \leq 1 \\
-     & \sum_i p_i g_i(\theta) = 0 
+     & \sum_i p_i g_i(\theta) = 0
 \end{align*}
 ```
 
 Generalized empirical likelihood replaces ``\log(p)`` with some other
-convex function ``h(p)``, 
+convex function ``h(p)``,
 ```math
 \begin{align*}
     (\hat{\theta}^{GEL,h}, \hat{p}) = & \argmin_{\theta,p}
     \frac{1}{n}\sum_i h(p_i) \;\; s.t.  \\
      & \sum_i p_i = 1, \;\; 0\leq p \leq 1 \\
-     & \sum_i p_i g_i(\theta) = 0 
+     & \sum_i p_i g_i(\theta) = 0
 \end{align*}
 ```
 setting ``h(p) = \frac{1}{2}(p^2-(1/n)^2)`` results in an estimator
@@ -55,7 +55,7 @@ advantages. First, there is more existing software for solving
 constrained minimization problems than for solving saddle point
 problems. Second, although ``p`` is high dimensional, it enters the
 constraints linearly, and the objective function is concave. Many
-optimization algorithms will take good advantage of this. 
+optimization algorithms will take good advantage of this.
 
 Let's look at some Julia code. Since the problem involves many
 variables with linear constraints, it is worthwhile to use JuMP for
@@ -63,7 +63,7 @@ optimization. The code is slightly more verbose, but the speed of
 JuMP (and the Ipopt solver) are often worth it.
 
 ```@example el
-using GMMInference, JuMP, Ipopt, LinearAlgebra, Distributions 
+using GMMInference, JuMP, Ipopt, LinearAlgebra, Distributions
 import Random
 
 n = 300
@@ -78,7 +78,7 @@ data = IVLogitShare(n, β0, π0, ρ);
 
 ```@example el
 # set up JuMP problem
-Ty = quantile.(Logistic(),data.y)   
+Ty = quantile.(Logistic(),data.y)
 m = Model()
 @variable(m, 0.0 <= p[1:n] <= 1.0)
 @variable(m, θ[1:d])
@@ -88,7 +88,7 @@ m = Model()
 m
 ```
 The `gel_jump_problem` function from `GMMInference.jl` does the same
-thing as the above code cell. 
+thing as the above code cell.
 
 Let's solve the optimization problem.
 ```@example el
@@ -101,14 +101,14 @@ optimize!(m)
 ```
 
 For comparison here is how long it takes JuMP + Ipopt to solve for the
-CUE-GMM estimator. 
+CUE-GMM estimator.
 
 ```@example el
 @show mcue = gmm_jump_problem(data, cue_objective)
 set_start_value.(mcue[:θ], 0.0)
 set_optimizer(mcue,  optimizer_with_attributes(Ipopt.Optimizer, "print_level" =>5))
 optimize!(mcue)
-@show value.(mcue[:θ]) 
+@show value.(mcue[:θ])
 ```
 
 In this comparison, EL is both faster and more robust to initial
@@ -123,7 +123,7 @@ advantage that the problem does not have to be written in any special
 syntax. However, other packages have the downside that they will not
 recognize any special structure in the constraints (linear, quadratic,
 sparse, etc) unless we explicitly provide it. Let's see how much, if
-any difference this makes to performance. 
+any difference this makes to performance.
 
 Here we will use the `NLPModels.jl` interface to
 Ipopt. Essentially, all this does is call `ForwardDiff` on the
@@ -143,7 +143,7 @@ derivatives) very quickly, while NLP takes much much longer. I would
 guess that this is largely because it is using ForwardDiff to
 calculate a gradients and hessians for 304 variables.
 
-Let's also estimate the model using `Optim.jl`. 
+Let's also estimate the model using `Optim.jl`.
 
 ```@example el
 using Optim
@@ -160,7 +160,7 @@ args = gel_optim_args(data)
 
 The `IPNewton()` optimizer from `Optim.jl` appears to be much less
 efficient than `Ipopt`. `IPNewton` takes more than 4 times as many
-iterations. 
+iterations.
 
 # Inference for EL
 
@@ -171,7 +171,7 @@ empirical likelihood ratio. Specifically, [guggenberger2005](@cite) show that
 
 ```math
 GELR(\theta_0) = 2\sum_{i=1}^n\left(h(p_i(\theta_0))  -
-   h(1/n)\right) \leadsto \chi^2_k 
+   h(1/n)\right) \leadsto \chi^2_k
 ```
 
 where ``p_i(\theta_0)`` are given by
@@ -188,11 +188,11 @@ The GELR statistic shares the downsides of the AR statistic --- the
 degrees of freedom is the number of moments instead of the number of
 parameters, which tends to lead to lower power in overidentified
 models; and it combines a test of misspecification with a location
-test for ``\theta``. 
+test for ``\theta``.
 
 Consequently, it can be useful to instead look at a Lagrange
 multiplier style statistic. The true ``\theta`` maximizes the
-empirical likelihood, so 
+empirical likelihood, so
 
 ```math
 0 = \sum_{i=1}^n \nabla_\theta h(p_i(\theta_0)) = \lambda(\theta_0)' \sum_{i=1}^n
@@ -212,14 +212,14 @@ S(\theta) = n\lambda(\theta)' D(\theta) \left( D(\theta)
 ```
 
 then ``S(\theta_0) \leadsto \chi^2_d``. This result holds whether or not
-``\theta`` is strongly identified. 
+``\theta`` is strongly identified.
 
 ### Implementation
 
 Computing the ``GELR`` and ``S`` statistics requires solving a linear
 program for each ``\theta`` we want to test. Fortunately, linear
 programs can be solved very quickly. See `gel_pλ` in `GMMInference.jl`
-for the relevant code. 
+for the relevant code.
 
 Let's do a simulation to check that these tests have correct coverage.
 
@@ -237,8 +237,8 @@ function sim_p(π0)
   GELR, S, plr, ps = gel_tests(β0, data)
   [plr ps]
 end
-πweak = ones(k,d) .+ vcat(diagm(0=>fill(0.001,d)),zeros(k-d,d))  
-πstrong = vcat(5*diagm(0=>ones(d)),ones(k-d,d)) 
+πweak = ones(k,d) .+ vcat(diagm(0=>fill(0.001,d)),zeros(k-d,d))
+πstrong = vcat(5*diagm(0=>ones(d)),ones(k-d,d))
 pweak=vcat([sim_p(πweak ) for s in 1:S]...)
 pstrong=vcat([sim_p(πstrong) for s in 1:S]...)
 
@@ -246,7 +246,7 @@ pgrid = 0:0.01:1
 plot(pgrid, p->(mean( pstrong[:,1] .<= p)-p), legend=:bottomleft,
      label="GELR, strong ID", style=:dash, color=:blue,
      xlabel="p", ylabel="P(p value < p)-p",
-     title="Simulated CDF of p-values - p")  
+     title="Simulated CDF of p-values - p")
 plot!(pgrid, p->(mean( pstrong[:,2] .<= p)-p),
       label="S, strong ID", style=:dash, color=:green)
 
@@ -263,7 +263,7 @@ plot!(pgrid,0,alpha=0.5, label="")
 subvector inference. Let ``(\alpha, \beta) =\theta``. Assume ``\beta`` is
 strongly identified. Guggenberger and Smith show that analogs of
 ``GELR`` and ``S`` with ``\beta`` concentrated out lead to valid tests for
-``\alpha``, whether ``\alpha`` is weakly or strongly identified. 
+``\alpha``, whether ``\alpha`` is weakly or strongly identified.
 
 
 ## Bootstrap for EL
@@ -273,4 +273,4 @@ hypothesis holds in the bootstrapped data. In GMM we did this by
 substracting the sample averages of the moments. In GEL, an
 alternative way to impose the null, is to sample the data with
 probabilities ``\hat{p}_i`` instead of with equal proability. See
-[brown2002](@cite) for more information. 
+[brown2002](@cite) for more information.
